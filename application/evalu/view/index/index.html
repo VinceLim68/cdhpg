@@ -1,0 +1,15 @@
+{extend name="evalubase" /} {block name="info"} {if count($fields)>=1}
+<div class="panel panel-default">
+    <div class="panel-heading">请选择你想查询的小区</div>
+    <div class="panel-body">
+        <div class="list-group">
+            {foreach $fields as $vo}
+            <a href="#" class="list-group-item ">
+                <h4 class="list-group-item-heading">{$vo['comm_name']}</h4>
+                <p class="list-group-item-text">ID:{$vo['comm_id']};&nbsp;&nbsp;级别:{$vo['pri_level']};&nbsp;&nbsp;关键词:"{$vo['keywords']}"</p>
+            </a>
+            {/foreach}
+        </div>
+    </div>
+</div>
+{/if} {/block}

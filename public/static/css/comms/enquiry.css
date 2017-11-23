@@ -1,0 +1,31 @@
+form .form-group input{
+    border-radius: 4px!important;
+    padding-left: 2%;
+}
+
+form .form-group input:focus{
+    border: 1px solid #99cc99; 
+}
+
+.btn {
+     border: 0px solid #FFF; 
+    border-radius: 4px;
+}
+
+.btn-lg{
+    height: 46px;
+}
+
+/*媒体查询，大于480小于640 */
+
+@media (min-width:360px) and (max-width:640px){
+    .hide-xs{
+        display: inline-block!important;
+    }
+}
+
+@media (max-width:360px){
+    .hide-xs{
+        display: none!important;
+    }
+}

@@ -1,0 +1,96 @@
+﻿{extend name="mainbase" /} {block name="pg_cs"}
+<!-- 以下三个是本页加的CSS -->
+<link rel="stylesheet" href="__CSS__/jquery-ui.min.css" />
+<link rel="stylesheet" href="__CSS__/bootstrap-datepicker3.min.css" />
+<!--    这个是弹出的编辑窗口   -->
+<link rel="stylesheet" href="__CSS__/ui.jqgrid.min.css" />
+{/block} {block name="breadcrumb"}
+<ul class="breadcrumb">
+    <li>
+        <i class="ace-icon fa fa-home home-icon"></i>
+        <a href="#">Home</a>
+    </li>
+    <li>
+        <a href="#">挂牌信息</a>
+    </li>
+    <li class="active">挂牌信息</li>
+</ul>
+<div class="btn-group" style="float: right; margin-top: 5px">
+    <button data-toggle="dropdown" class="btn btn-success btn-sm dropdown-toggle">
+        操作
+        <span class="ace-icon fa fa-caret-down icon-on-right"></span>
+    </button>
+    <ul class="dropdown-menu dropdown-info dropdown-menu-right">
+        <li>
+            <a  id="allsales">所有挂牌信息列表</a>
+        </li>
+        <li>
+            <a  id="nomatch">未匹配到小区id的挂牌信息列表</a>
+        </li>
+        <li>
+            <a  id="mulmatch">匹配多个小区的挂牌信息列表</a>
+        </li>
+        <li class="divider"></li>
+        <li>
+            <a  id="getval">获得当前input值</a>
+        </li>
+        <li>
+            <a  id="match">匹配小区ID的测试</a>
+            <!--  这个日前只是返回了MatchLogic的comms类型  -->
+        </li>
+        <li>
+            <a  id="len">返回共有小区的数目</a>
+        </li>
+    </ul>
+</div>
+<div class="nav-search" id="nav-search" style="float: right; right: 5px; position: relative;">
+    <form class="form-search" method="post" id='salesheadsearch'>
+        <span class="input-icon">
+            <input placeholder="搜小区的挂牌信息 ..." class="nav-search-input" id="nav-search-input" autocomplete="off" type="text">
+            <i class="ace-icon fa fa-search nav-search-icon"></i>
+        </span>
+    </form>
+</div>
+<!-- /.breadcrumb -->
+{/block} {block name="main"}
+<div class="page-header ">
+    <h1>
+        挂牌信息
+        <small>
+            <i class="ace-icon fa fa-angle-double-right"></i>
+            查看所有挂牌信息，匹配小区id等
+        </small>
+    </h1>
+</div>
+<input type="hidden" id="saleslist_hidden" value="all">
+
+<table id="grid-table"></table>
+<div id="grid-pager"></div>
+
+<div class="contextMenu row" id="contextMenu" style="display:none;">
+    <ul >
+        <li id="add">
+            <i class="fa fa-external-link fa-lg" style="float:left;margin-top:4px;"></i>
+            <span style="font-size:100%; font-family:Verdana;margin-left:10px;">跳转详细页面</span>
+        </li>
+        <li id="edit">
+            <i class="fa fa-plus-square-o fa-lg" style="float:left;margin-top:4px;"></i>
+            <span style="font-size:100%; font-family:Verdana;margin-left:10px;">匹配小区ID</span>
+        </li>                
+        <li id="del">
+            <span class="glyphicon glyphicon-trash" style="float:left"></span>
+            <span style="font-size:100%; font-family:Verdana;margin-left:10px;">Delete Row</span>
+        </li> 
+        <li id="matchid">
+            <span style="font-size:100%; font-family:Verdana;margin-left:10px;">综合匹配小区id</span>
+        </li>               
+    </ul>
+</div>
+{/block} {block name="pg_js"}
+<script src="__JS__/bootstrap-datepicker.min.js"></script>
+<script src="__JS__/jquery.jqgrid.js"></script>
+<script src="__JS__/grid.locale-en.js"></script>
+<script src="__JS__/jquery.contextmenu.js"></script>
+{/block}{block name="pg_inline_js"}
+<script src="__JS__/comms/saleslist.js"></script>
+{/block}

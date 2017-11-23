@@ -1,0 +1,7 @@
+@CHARSET "UTF-8";
+
+.panel-body-user {
+	height: 400px;
+	overflow: scroll;
+	padding: 0;
+}

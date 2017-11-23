@@ -1,0 +1,80 @@
+﻿{extend name="mainbase" /} 
+
+{block name="pg_cs"}
+{/block} 
+
+{block name="breadcrumb"}
+<ul class="breadcrumb">
+    <li>
+        <i class="ace-icon fa fa-home home-icon"></i>
+        <a href="#">Home</a>
+    </li>
+    <li>
+        <a href="#">挂牌信息</a>
+    </li>
+    <li class="active">把远程库复制到本地</li>
+</ul>
+{/block} 
+
+{block name="main"}
+<div class="jumbotron" style="padding-left:6%;">
+  <h1>备份数据库</h1>
+  <p>把远端数据库的记录备份到本机，远端共有<span id="remoteTotal">{$remoteTotal}</span>个记录,本地共有<span id="localTotal">{$localTotal}</span>个记录。</p>
+  <p><a class="btn btn-primary btn-lg" id="backup-btn" role="button" style="border-radius:4px;">开始</a></p>
+</div>
+
+<div class="progress" style="width:60%;margin:0 auto;height: 30px;">
+  <div class="progress-bar" id="progress-bar" role="progressbar" aria-valuenow="60" aria-valuemin="0" aria-valuemax="100" style="width: 0%;line-height:30px; font-size: 18px;">
+    0%
+  </div>
+</div>
+<div style="text-align:center;font-size: 25px;font-weight: 400;margin-top:1%;"><span id="beDone">0</span>/<span id="forcopynum">{$remoteTotal-$localTotal}</span> </div>
+
+{/block} 
+
+{block name="pg_js"}
+<script type="text/javascript">
+jQuery(function($) {
+	jQuery("#backup-btn").on('click',function(){
+		var i = 0;
+		var forcopynum = $('#forcopynum').text(); 		//本次需要处理的数据量（远程-本地）
+		var localnum = {$localTotal};					//确定起始处理的位置，即为本地数据库的总量
+		//alert(localnum);
+		//var forcopynum = 3000;
+ 		if(forcopynum > 0){
+			var shipmentNum = 1000;		//每批次处理的数量
+			var done = 0;				//已经完成的数量(百分比)
+	 		while(i < forcopynum){
+	 			$.ajax({
+	 				type:"POST", 
+	 				url:'copyShipment',
+	 				data:{
+	 					shipmentNum:shipmentNum,		//limit(start,shipmentNum)
+	 					start:i+localnum,
+	 				},
+	 				async:false,
+	 				success:function(data){
+	 					i += data;
+	 				},
+	 			}); 
+				done = i/forcopynum*100;
+				done = done.toFixed(2);
+				$("#progress-bar").width(done+"%"); 
+				$("#progress-bar").text(done+"%"); 
+				$('#beDone').html("正在备份，已经完成"+i);
+				//i += shipmentNum;
+			}
+			alert("完成了");
+			location.reload(true);
+			//this.location = "{:url('Sales/copyRemoteDbToLocal')}"; 
+		} 
+		//var forcopynum = 500;
+		
+	});
+})
+</script>
+
+{/block}
+
+{block name="pg_inline_js"}
+{/block}

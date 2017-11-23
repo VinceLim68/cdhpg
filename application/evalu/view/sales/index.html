@@ -1,0 +1,79 @@
+{extend name="mainbase" /} {block name="breadcrumb"}
+<ul class="breadcrumb">
+    <li>
+        <i class="ace-icon fa fa-home home-icon"></i>
+        <a href="#">Home</a>
+    </li>
+    <li>
+        <a href="#">Other Pages</a>
+    </li>
+    <li class="active">我试试</li>
+</ul>
+{/block} {block name="main"}
+<ul class="nav nav-tabs">
+    <li class="active">
+        <a href="#tab1">挂牌列表</a>
+    </li>
+    <li>
+        <a href="">文章添加</a>
+    </li>
+</ul>
+<form action="" method="post">
+    <div class="panel panel-default">
+        <div class="panel-body panel-body-user">
+            <table class="table table-hover table-striped table-condensed">
+                <thead>
+                    <tr>
+                        <th>标题</th>
+                        <th>小区</th>
+                        <th>户型</th>
+                        <th>层次</th>
+                        <th>总楼层</th>
+                        <th>建成年份</th>
+                        <th>面积</th>
+                        <th>单价</th>
+                        <th>总价</th>
+                        <th>操作</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {volist name='list' id='vo'}
+                    <tr>
+                        <td>{$vo.title}</td>
+                        <td>{$vo.community_name}</td>
+                        <td>
+                            {$vo.spatial_arrangement}
+                            <!-- <input type="text" class="form-control"> -->
+                        </td>
+                        <td>{$vo.floor_index}</td>
+                        <td>{$vo.total_floor}</td>
+                        <td>{$vo.builded_year}</td>
+                        <td>{$vo.area}</td>
+                        <td>{$vo.price}</td>
+                        <td>{$vo.total_price}</td>
+                        <td>
+                            <div class="btn-group">
+                                <button data-toggle="dropdown" class="btn btn-primary btn-xs dropdown-toggle">
+                                    操作
+                                    <span class="caret"></span>
+                                </button>
+                                <ul class="dropdown-menu dropdown-menu-right">
+                                    <li>
+                                        <a href="">编辑</a>
+                                    </li>
+                                    <li class="divider"></li>
+                                    <li>
+                                        <a href="">删除到回收站</a>
+                                    </li>
+                                </ul>
+                            </div>
+                        </td>
+                    </tr>
+                    {/volist}
+                </tbody>
+            </table>
+        </div>
+    </div>
+</form>
+<div class="pagination pagination-sm pull-right">{$list->render()}</div>
+{/block}

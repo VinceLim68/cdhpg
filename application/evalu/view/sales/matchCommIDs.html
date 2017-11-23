@@ -1,0 +1,84 @@
+﻿{extend name="mainbase" /} 
+
+{block name="pg_cs"}
+{/block} 
+
+{block name="breadcrumb"}
+<ul class="breadcrumb">
+    <li>
+        <i class="ace-icon fa fa-home home-icon"></i>
+        <a href="#">Home</a>
+    </li>
+    <li>
+        <a href="#">挂牌信息</a>
+    </li>
+    <li class="active">匹配小区ID</li>
+</ul>
+{/block} 
+
+{block name="main"}
+<div class="jumbotron" style="padding-left:6%;padding-top:3%">
+  <h1>匹配小区ID</h1>
+  <p>根据小区名称和挂牌记录的标题信息，匹配出小区ID。</p>
+  <p>数据库共有<span id="noCommidNum">{$noCommidNum}</span>条记录无相应的小区id，需要进行匹配。</p>
+  <p><a class="btn btn-primary btn-lg" id="match-btn" role="button" style="border-radius:4px;">开始</a></p>
+</div>
+
+<div class="progress" style="width:60%;margin:0 auto;height: 30px;">
+  <div class="progress-bar" id="progress-bar" role="progressbar" aria-valuenow="60" aria-valuemin="0" aria-valuemax="100" style="width: 0%;line-height:30px; font-size: 18px;">
+    0%
+  </div>
+</div>
+<div style="text-align:center;font-size: 25px;font-weight: 400;margin-top:1%;">
+    <span id="beDone">0</span>
+    /
+    <span id="formatch">{$noCommidNum}</span> 
+    
+    <span id="successMatch"></span>
+</div>
+
+{/block} 
+
+{block name="pg_js"}
+<script type="text/javascript">
+jQuery(function($) {
+	jQuery("#match-btn").on('click',function(){
+		var i = 0;
+		var formatch = {$noCommidNum}; 		//本次需要处理的数据量（远程-本地）
+		var sussces = 0						//匹配成功的数量
+ 		if(formatch > 0){
+			var shipmentNum = 1000;		//每批次处理的数量
+			var done = 0;				//已经完成的数量(百分比)
+	 		while(i < formatch){
+	 			$.ajax({
+	 				type:"POST", 
+	 				url:'matchShipment',
+	 				data:{
+	 					shipmentNum:shipmentNum,		//limit(start,shipmentNum)
+	 					start:i,
+	 				},
+	 				async:false,
+	 				success:function(data){
+	 					if(data){
+	 						sussces += data
+	 						$('#successMatch').html(",成功匹配"+sussces+"条");
+	 					}
+	 				},
+	 			}); 
+				i += shipmentNum;
+				done = i/formatch*100;
+				done = done.toFixed(2);
+				$("#progress-bar").width(done+"%"); 
+				$("#progress-bar").text(done+"%"); 
+				$('#beDone').html("匹配中，已经完成"+i);
+			}; 
+		} 
+	});
+})
+
+</script>
+
+{/block}
+
+{block name="pg_inline_js"}
+{/block}
