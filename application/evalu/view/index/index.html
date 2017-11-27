@@ -6,10 +6,21 @@
             {foreach $fields as $vo}
             <a href="#" class="list-group-item ">
                 <h4 class="list-group-item-heading">{$vo['comm_name']}</h4>
-                <p class="list-group-item-text">ID:{$vo['comm_id']};&nbsp;&nbsp;级别:{$vo['pri_level']};&nbsp;&nbsp;关键词:"{$vo['keywords']}"</p>
+                <p class="list-group-item-text">ID:<span>{$vo['comm_id']}</span>;&nbsp;&nbsp;级别:{$vo['pri_level']};&nbsp;&nbsp;关键词:"{$vo['keywords']}"</p>
             </a>
             {/foreach}
         </div>
     </div>
 </div>
-{/if} {/block}
+
+{/if} 
+<script src="__JS__/jquery-2.1.4.min.js"></script>
+<script type="text/javascript">
+    jQuery(function($) {
+         $("div.panel-body > .list-group > a" ).on('click', function(e) {
+            	alert($(this).children('p').children('span').html()); 
+            
+         });
+    });
+</script>
+{/block}

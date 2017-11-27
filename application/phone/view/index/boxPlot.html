@@ -1,0 +1,65 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport"
+	content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no">
+<title>大叔报价</title>
+<link rel="stylesheet" type="text/css" href="__CSS__/bootstrap.min.css">
+<link rel="stylesheet" type="text/css"
+	href="__CSS__/font-awesome.min.css">
+<!-- <link href="//netdna.bootstrapcdn.com/font-awesome/4.7.0/css/font-awesome.min.css" rel="stylesheet"> -->
+<link rel="stylesheet" type="text/css" href="__CSS__/comms/enquiry.css">
+</head>
+<body>
+	<div class="panel panel-default" style="margin: 0 0;">
+		<div class="panel-heading">
+
+			<h3 style="color: #3c763d;">龙江大厦<small style="padding-left:3%">思明-莲花</small></h3>
+			 
+
+		</div>
+		<div class="panel-body" style="padding-top: 0;font-size: 18px;">
+			<ul class="nav nav-pills " style="margin-bottom: 15px; text-align: center;">
+				<li  style="width: 24%; "><a href="{:url('getPrice')}" style="color: #5cb85c">大叔报价</a></li>
+				<li class="active" style="width: 24%;"><a href="#" style="background-color: #5cb85c;">数据分析</a></li>
+				<li style="width: 24%;"><a href="#" style="color: #5cb85c">报价成交</a></li>
+				<li style="width: 24%;"><a href="#" style="color: #5cb85c">优化报价</a></li>
+			</ul>
+			<div class="panel panel-success">
+				<div class="panel-heading" >
+					<svg xmlns="http://www.w3.org/2000/svg" version="1.1" style="width:100%;color:#5cb85c">
+					<!-- 基本只和X轴有关，Y轴相对固定 -->
+					<!-- 前后端的异常值 -->
+						<line x1="{$B['Qmin']}%" y1="{$B['Y']+5}%" x2="{$B['Qmin']}%" y2="{$B['Y']+$B['box_heigh']-5}%"  style="stroke-width:3;stroke:#5cb85c; stroke-dasharray: 5;stroke-opacity:1"/>
+				  		<line x1="{$B['Qmin']}%" y1="{$B['Y']+$B['box_heigh']/2}%" x2="{$B['Q1']}%" y2="{$B['Y']+$B['box_heigh']/2}%"  style="stroke-width:3;stroke:#5cb85c; stroke-dasharray: 5;stroke-opacity:1"/>
+						<line x1="{$B['Qmax']}%" y1="{$B['Y']+5}%" x2="{$B['Qmax']}%" y2="{$B['Y']+$B['box_heigh']-5}%"  style="stroke-width:3;stroke:#5cb85c;stroke-dasharray: 5;stroke-opacity:1"/>
+				  		<line x1="{$B['Q3']}%" y1="{$B['Y']+$B['box_heigh']/2}%" x2="{$B['Qmax']}%" y2="{$B['Y']+$B['box_heigh']/2}%"  style="stroke-width:3;stroke:#5cb85c; stroke-dasharray: 5;stroke-opacity:1"/>
+				  	<!-- 盒子 -->	
+					  	<rect x="{$B['Q1']}%" y="{$B['Y']}%" width="{$B['Q3']-$B['Q1']}%" height="{$B['box_heigh']}%" style="fill:none;stroke:#5cb85c;stroke-width:3;fill-opacity:0;stroke-opacity:0.9" />
+				  	<!-- 前须 -->
+				  		<line x1="{$B['Q0']}%" y1="{$B['Y']}%" x2="{$B['Q0']}%" y2="{$B['Y']+$B['box_heigh']}%"  style="stroke-width:3;stroke:#5cb85c;"/>
+				  		<line x1="{$B['Q0']}%" y1="{$B['Y']+$B['box_heigh']/2}%" x2="{$B['Q1']}%" y2="{$B['Y']+$B['box_heigh']/2}%"  style="stroke-width:3;stroke:#5cb85c;"/> 
+				  	<!-- 后须 -->
+				  		<line x1="{$B['Q3']}%" y1="{$B['Y']+$B['box_heigh']/2}%" x2="99%" y2="{$B['Y']+$B['box_heigh']/2}%"  style="stroke-width:3;stroke:#5cb85c;"/>
+				  		<line x1="{$B['Q4']}%" y1="{$B['Y']}%" x2="{$B['Q4']}%" y2="{$B['Y']+$B['box_heigh']}%"  style="stroke-width:3;stroke:#5cb85c;"/>
+			  		<!-- 中位数 -->
+				  		<line x1="{$B['Q2']}%" y1="{$B['Y']}%" x2="{$B['Q2']}%" y2="{$B['Y']+$B['box_heigh']}%"  style="stroke-width:3;stroke:#5cb85c;"/>
+					</svg>
+					
+				</div>
+			</div>
+			<div class="list-group"
+				style="font-size: 18px; letter-spacing: 3px; font-weight: 100;">
+				
+			</div>
+			<a class="btn btn-success btn-block btn-lg" href="{:url('index')}">返回</a>
+		</div>
+	</div>
+
+
+<!-- 	<script src="__JS__/jquery-2.1.4.min.js"></script>
+	<script src="__JS__/bootstrap.min.js"></script> -->
+
+</body>
+</html>

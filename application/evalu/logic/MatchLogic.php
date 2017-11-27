@@ -174,11 +174,56 @@ class MatchLogic {
 				//匹配成功，计数
 				$num += 1;
 				Db::table('for_sale_property')->where('id',$matchitem['id'])->setField('community_id', $matchitem['community_id']);
-// 				$this->db->where('id',$matchitem['id'])->setField('community_id', $matchitem['community_id']);
 			}
 		}
 		return $num;
 	}
 
+	public static function matchSearch($search){
+	    /**
+	     * 在搜索框中输入一个小区名，从comm表中匹配出相应的记录
+	     * $search:搜索框中输入的字符串
+	     */
+	    $pickitem = array ();      //存放匹配成功的记录
+	    $list = Comm::getAll();    //取出小区记录：comm_id,comm_name,pri_level,keywords
+	    foreach ( $list as $item ) {
+	        //如果在comm_name中找到输入的$search,就算满足条件，退出
+	        $item['comm_name'] = str_replace("·","",$item['comm_name']);//把小区名中的.去除
+	        if (strpos($item['comm_name'], $search)!== false) {
+	             $pickitem [] = $item;;
+	        }else{
+    	        // 先把关键字按,分开
+    	        $keywords = explode ( ",", $item ['keywords'] );
+    	        $is_break = false;                                     // 跳出关键字判断循环，进入下一条记录的标志位
+    	        foreach ( $keywords as $kw ) {
+    	            if($is_break){
+    	                break;
+    	            }
+    	            // 如果有辅助字的，先需要拆分开来，k[o]是关键字，其他是辅助字
+    	            $k = explode ( "/", $kw );
+    	            $pos = stripos($search,$k[0]);
+    	            if ($pos !== false) {
+    	                //如果找到，看看需要判断辅助字吗
+    	                $len = count($k);
+    	                if($len>1){
+    	                    for( $j = 1; $j < $len; $j++ ) {
+    	                        if (false !== stripos($search,$k[$j])) {
+	                               //关键字也找到，push进pickitem，后面同一个记录的关键字不需要再判断了
+	                               $pickitem [] = $item;
+	                               $is_break = true;
+	                               break;
+    	                        }
+    	                    }
+    	                }else{
+	                       $pickitem [] = $item;           //没有关键字，直接push
+	                       break;
+    	                }
+    	            }
+    	        }
+	        }
+	    }
+	    //dump($pickitem); 
+	    return $pickitem;
+	}
 
 }

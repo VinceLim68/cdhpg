@@ -3,7 +3,7 @@
 namespace app\evalu\controller;
 
 use think\Controller;
-use app\evalu\model\Comm;
+//use app\evalu\model\Comm;
 use think\Loader;
 use app\evalu\logic\CommL;
 use app\evalu\model\SalesModel;

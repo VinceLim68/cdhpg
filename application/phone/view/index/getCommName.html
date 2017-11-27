@@ -1,0 +1,46 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no">
+<title>大叔报价</title>
+<link rel="stylesheet" type="text/css" href="__CSS__/bootstrap.min.css">
+<link rel="stylesheet" type="text/css" href="__CSS__/font-awesome.min.css">
+<!-- <link href="//netdna.bootstrapcdn.com/font-awesome/4.7.0/css/font-awesome.min.css" rel="stylesheet"> -->
+<link rel="stylesheet" type="text/css" href="__CSS__/comms/enquiry.css">
+</head>
+<body>
+  <div class="panel panel-default" style="margin:0 0;">
+    <div class="panel-heading">
+    	<h3 style="color: #3c763d;">
+    	请选择你想查询的小区
+    	</h3>
+   	</div>
+    <div class="panel-body">
+        <div class="list-group" >
+            {foreach $fields as $vo}
+            <a href="{:url('getPrice',array('comm_id'=>$vo['comm_id'],'price'=>$price))}" class="list-group-item " style="color: #3c763d;">
+                <h4 class="list-group-item-heading" style="color: #3c763d;">{$vo['comm_name']}</h4>
+                <p style="margin-top:10px" class="list-group-item-text">版块:{$vo['region']}-{$vo['block']},{$vo['comm_addr']}</p>
+                <p style="margin-top:5px;margin-bottom:0px"> 关键词:"{$vo['keywords']}"</p>
+                
+            </a>
+            <hr style="background-color:#D5D5D5;color:#D5D5D5;"/>
+            {/foreach}
+        </div>
+    </div>
+</div> 
+
+
+    <script src="__JS__/jquery-2.1.4.min.js"></script>
+    <script src="__JS__/bootstrap.min.js"></script>
+<!-- <script type="text/javascript">
+    jQuery(function($) {
+         $("div.panel-body > .list-group > a" ).on('click', function(e) {
+            	alert($(this).children('p').children('comm_id').html()); 
+            
+         });
+    });
+</script> -->
+</body>
+</html>

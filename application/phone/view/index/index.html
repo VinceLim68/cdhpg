@@ -6,10 +6,10 @@
     <title>大叔询价</title>
         <link rel="stylesheet" href="__CSS__/bootstrap.min.css" />
         <link rel="stylesheet" href="__CSS__/font-awesome.min.css" />
-        <link rel="stylesheet" href="__CSS__/fonts.googleapis.com.css" />
+      <!--   <link rel="stylesheet" href="__CSS__/fonts.googleapis.com.css" /> -->
         <link rel="stylesheet" href="__CSS__/ace.min.css" />
 
-        <link rel="stylesheet" href="__CSS__/ace-rtl.min.css" />
+<!--         <link rel="stylesheet" href="__CSS__/ace-rtl.min.css" /> -->
         <link rel="stylesheet" href="__CSS__/comms/enquiry.css" />
 
 </head>
@@ -25,19 +25,19 @@
 
 
 </div>
-<form style="margin: 0 3%;">
+<form style="margin: 0 3%;" action="{:url('getCommName')}" >
     <div class="form-group" >
         <label for="exampleInputEmail1 " class="sr-only" >Email address</label>
-        <input type="text" class="form-control input-lg" id="exampleInputEmail1"  placeholder="您要评估的小区">
+        <input type="text" class="form-control input-lg" name="comm"  placeholder="您要评估的小区">
     </div>
     <div class="form-group hidden" id="sold">
         <label for="exampleInputPassword1 " class="sr-only" >Password</label>
-        <input type="text" class="form-control input-lg" id="exampleInputPassword1" placeholder="需要输入二手房的成交单价">
+        <input type="text" class="form-control input-lg" name="price" placeholder="需要输入二手房的成交单价">
     </div>
-
+	
     <div class="checkbox">
-        <label id="is_sold">
-              <input type="checkbox" >我是二手房
+        <label >
+              <input type="checkbox" id="is_sold">我是二手房
         </label>
     </div>
     <button type="submit" class="btn btn-success btn-block btn-lg">马上估值</button>
@@ -46,17 +46,15 @@
 <script type="text/javascript">
     jQuery(function($) {
          $("#is_sold").on('click', function(e) {
-             
-            e.preventDefault();
-             if (!$("#is_sold input").attr("checked") ){
-                 $("#is_sold input").attr("checked",true);
-//                 $("#is_sold input[type='checkbox']").prop("checked", true);
-                 $("#sold").removeClass("hidden");
-             }else{
-//                 $("#is_sold input[type='checkbox']").removeProp("checked");
-                 $("#is_sold input").removeAttr("checked");
-                 $("#sold").addClass("hidden");
-             };
+
+            if (!$(this).attr("checked") ){
+                $(this).attr("checked",true);
+                $("#sold").removeClass("hidden");
+            }else{
+                $(this).removeAttr("checked");
+                $("#sold").addClass("hidden");
+            };
+
          });
     });
 </script>
