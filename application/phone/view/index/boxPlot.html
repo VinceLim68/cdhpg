@@ -21,10 +21,10 @@
 		</div>
 		<div class="panel-body" style="padding-top: 0;font-size: 18px;">
 			<ul class="nav nav-pills " style="margin-bottom: 15px; text-align: center;">
-				<li  style="width: 24%; "><a href="{:url('getPrice')}" style="color: #5cb85c">大叔报价</a></li>
-				<li class="active" style="width: 24%;"><a href="#" style="background-color: #5cb85c;">数据分析</a></li>
-				<li style="width: 24%;"><a href="#" style="color: #5cb85c">报价成交</a></li>
-				<li style="width: 24%;"><a href="#" style="color: #5cb85c">优化报价</a></li>
+				<li  style="width: 24%; "><a href="{:url('getPrice')}" style="color: #5cb85c">报价</a></li>
+				<li class="active" style="width: 24%;"><a href="#" style="background-color: #5cb85c;">数据</a></li>
+				<li style="width: 24%;"><a href="#" style="color: #5cb85c">历史</a></li>
+				<li style="width: 24%;"><a href="#" style="color: #5cb85c">估价师</a></li>
 			</ul>
 			<div class="panel panel-success">
 				<div class="panel-heading" >
@@ -45,6 +45,13 @@
 				  		<line x1="{$B['Q4']}%" y1="{$B['Y']}%" x2="{$B['Q4']}%" y2="{$B['Y']+$B['box_heigh']}%"  style="stroke-width:3;stroke:#5cb85c;"/>
 			  		<!-- 中位数 -->
 				  		<line x1="{$B['Q2']}%" y1="{$B['Y']}%" x2="{$B['Q2']}%" y2="{$B['Y']+$B['box_heigh']}%"  style="stroke-width:3;stroke:#5cb85c;"/>
+						<text x="{$B['Qmin']}%" y="{$B['Y']-5}%" fill="#5cb85c">{$B['min']}</text>
+						<text x="{$B['Q0']}%" y="{$B['Y']-5}%" fill="#5cb85c">{$B['Q0v']}</text>
+						<text x="{$B['Q1']}%" y="{$B['Y']-5}%" fill="#5cb85c">{$B['v25']}</text>
+						<text x="{$B['Q2']}%" y="{$B['Y']-5}%" fill="#5cb85c">{$B['median']}</text>
+						<text x="{$B['Q3']}%" y="{$B['Y']-5}%" fill="#5cb85c">{$B['v75']}</text>
+						<text x="{$B['Q4']-3}%" y="{$B['Y']-5}%" fill="#5cb85c" text-anchor="middle">{$B['Q4v']}</text>
+						<text x="{$B['Qmax']-3}%" y="{$B['Y']-5}%" fill="#5cb85c" text-anchor="middle">{$B['max']}</text>
 					</svg>
 					
 				</div>
