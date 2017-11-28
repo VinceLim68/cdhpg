@@ -153,7 +153,7 @@ class Index extends Controller {
             $getPrice_result['Q4'] = 99;
         }
         $this->assign('B',$getPrice_result);
-        dump($getPrice_result);
+        //dump($getPrice_result);
         return $this->fetch();
     }
 }
