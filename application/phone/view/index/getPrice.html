@@ -15,7 +15,7 @@
 	<div class="panel panel-default" style="margin: 0 0;">
 		<div class="panel-heading">
 
-			<h3 style="color: #3c763d;">{$result['comm']['comm_name']}<small style="padding-left:3%">{$result['comm']['region']}-{$result['comm']['block']}</small></h3>
+			<h3 style="color: #3c763d;">{$B['comm']['comm_name']}<small style="padding-left:3%">{$B['comm']['region']}-{$B['comm']['block']}</small></h3>
 			 
 
 		</div>
@@ -30,18 +30,22 @@
 				<div class="panel-heading">
 
 					<span class="badge" style="font-size: 16px">
-					{if condition="$result['priceByDeal'] > 0 "}
+					{if condition="$B['priceByDeal'] > 0 "}
 					二手房评估
 					{else /} 抵押评估价
 					{/if}
+					
 					</span>
-					<h1 style="text-align: center; font-weight: 700;">
-						{if condition="$result['priceByDeal'] > 0 "}
-					{$result['priceByDeal']}
-					{else /} {$result['mortgagePrice']}
+					<h1 style="text-align: center; font-weight: 700;{if condition="$B['std_r'] > 12 "}color:#DD5A43;opacity:0.5;{/if}">
+					{if condition="$B['priceByDeal'] > 0 "}
+					{$B['priceByDeal']}
+					{else /} {$B['mortgagePrice']}
 					{/if}
 						元 <small>/平方米</small>
 					</h1>
+					{if condition="$B['std_r'] > 12 "}
+					<p style="text-align:center;opacity:0.5;">数据离散性过大，本报价需要估价师确认</p>
+					{/if}
 
 				</div>
 			</div>
@@ -54,37 +58,77 @@
 
 					<tr>
 						<td class="col-md-4 col-xs-4" style="text-align: right">面积</td>
-						<td class="col-md-8 col-xs-8" style="padding-left: 5%;">{$result['avg_area']}平方米</td>
+						<td class="col-md-8 col-xs-8" style="padding-left: 5%;">{$B['avg_area']}平方米</td>
 
 					</tr>
 
 					<tr>
 						<td class="col-md-4 col-xs-4" style="text-align: right">层次</td>
-						<td class="col-md-8 col-xs-8" style="padding-left: 5%;">{$result['avg_floor_index']}层/共{$result['avg_total_floor']}层</td>
+						<td class="col-md-8 col-xs-8" style="padding-left: 5%;">{$B['avg_floor_index']}层/共{$B['avg_total_floor']}层</td>
 
 					</tr>
 					<tr>
 						<td class="col-md-4 col-xs-4" style="text-align: right">建成年份</td>
-						<td class="col-md-8 col-xs-8" style="padding-left: 5%;">{$result['avg_builded_year']}年</td>
+						<td class="col-md-8 col-xs-8" style="padding-left: 5%;">{$B['avg_builded_year']}年</td>
 
 					</tr>
 					<tr>
-						<td class="col-md-4 col-xs-4" style="text-align: right">数据开始日期</td>
-						<td class="col-md-8 col-xs-8" style="padding-left: 5%;">{$result['from_date']}</td>
+						<td class="col-md-4 col-xs-4" style="text-align: right">数据开始</td>
+						<td class="col-md-8 col-xs-8" style="padding-left: 5%;">{$B['from_date']}</td>
 
 					</tr>
 					<tr>
 						<td class="col-md-4 col-xs-4" style="text-align: right">数据量</td>
-						<td class="col-md-8 col-xs-8" style="padding-left: 5%;">{$result['len']}/{$result['ori_len']}，覆盖{$result['coverage']}%</td>
+						<td class="col-md-8 col-xs-8" style="padding-left: 5%;">{$B['len']}/{$B['ori_len']}，覆盖{$B['coverage']}%</td>
 
 					</tr>
 					<tr>
-						<td class="col-md-4 col-xs-4" style="text-align: right">标准差系统</td>
-						<td class="col-md-8 col-xs-8" style="padding-left: 5%;">{$result['std_r']}%</td>
+						<td class="col-md-4 col-xs-4" style="text-align: right">标准差系数</td>
+						<td class="col-md-8 col-xs-8" style="padding-left: 5%;">{$B['std_r']}%</td>
 
 					</tr>
 				</table>
 
+			</div>
+			<div class="panel panel-success">
+				<div class="panel-heading" style="width:100% ;height:400px" >
+					<svg xmlns="http://www.w3.org/2000/svg" version="1.1" style="width:100%;height:100%;color:#5cb85c">
+						<!-- 竖向盒须图，基本只和Y轴有关，X轴相对固定 -->
+						<!-- 前端的异常值 -->
+						<line x1="{$B['X']+1}%" y1="{$B['Qmin']}%" x2="{$B['X']+$B['box_width']-1}%" y2="{$B['Qmin']}%"  style="stroke-width:3;stroke:#DD5A43; stroke-dasharray: 5;stroke-opacity:1"/>
+						<line x1="{$B['X']+$B['box_width']/2}%" y1="{$B['Qmin']}%" x2="{$B['X']+$B['box_width']/2}%" y2="{$B['Q1']}%"  style="stroke-width:3;stroke:#DD5A43; stroke-dasharray: 5;stroke-opacity:1"/>
+						<!-- 后端的异常值 -->	
+						<line x1="{$B['X']+1}%" y1="{$B['Qmax']}%" x2="{$B['X']+$B['box_width']-1}%" y2="{$B['Qmax']}%"  style="stroke-width:3;stroke:#DD5A43; stroke-dasharray: 5;stroke-opacity:1"/>
+						<line x1="{$B['X']+$B['box_width']/2}%" y1="{$B['Qmax']}%" x2="{$B['X']+$B['box_width']/2}%" y2="{$B['Q3']}%"  style="stroke-width:3;stroke:#DD5A43; stroke-dasharray: 5;stroke-opacity:1"/>
+											
+						<!-- 盒子 -->
+						<rect x="{$B['X']}%" y="{$B['Q1']}%" width="{$B['box_width']}%" height="{$B['Q3']-$B['Q1']}%" style="fill:#DD5A43;stroke:#DD5A43;stroke-width:3;stroke-opacity:0.9" />
+						<!-- 前须 -->
+						<line x1="{$B['X']}%" y1="{$B['Q0']}%" x2="{$B['X']+$B['box_width']}%" y2="{$B['Q0']}%"  style="stroke-width:3;stroke:#DD5A43;stroke-opacity:1"/>
+						<line x1="{$B['X']+$B['box_width']/2}%" y1="{$B['Q0']}%" x2="{$B['X']+$B['box_width']/2}%" y2="{$B['Q1']}%"  style="stroke-width:3;stroke:#DD5A43; stroke-opacity:1"/>
+						<!-- 后须 -->
+						<line x1="{$B['X']}%" y1="{$B['Q4']}%" x2="{$B['X']+$B['box_width']}%" y2="{$B['Q4']}%"  style="stroke-width:3;stroke:#DD5A43; stroke-opacity:1"/>
+						<line x1="{$B['X']+$B['box_width']/2}%" y1="{$B['Q4']}%" x2="{$B['X']+$B['box_width']/2}%" y2="{$B['Q3']}%"  style="stroke-width:3;stroke:#DD5A43; stroke-opacity:1"/>
+						<!-- 中位数 -->
+						<line x1="{$B['X']}%" y1="{$B['Q2']}%" x2="{$B['X']+$B['box_width']}%" y2="{$B['Q2']}%"  style="stroke-width:3;stroke:#DFF0D8; stroke-opacity:1"/>
+						<!-- 显示数字 -->
+						<text x="{$B['X']+$B['box_width']+2}%" y="{$B['Qmin']}%" fill="#DD5A43">{$B['min']}</text>
+						<text x="{$B['X']+$B['box_width']+2}%" y="{$B['Q0']}%" fill="#DD5A43">{$B['Q0v']}</text>
+						<text x="{$B['X']+$B['box_width']+2}%" y="{$B['Q1']}%" fill="#DD5A43">{$B['v25']}</text>
+						<text x="{$B['X']+$B['box_width']+2}%" y="{$B['Q2']}%" fill="#DD5A43">{$B['median']}</text>
+						<text x="{$B['X']+$B['box_width']+2}%" y="{$B['Q3']}%" fill="#DD5A43">{$B['v75']}</text>
+						<text x="{$B['X']+$B['box_width']+2}%" y="{$B['Q4']}%" fill="#DD5A43" >{$B['Q4v']}</text>
+						<text x="{$B['X']+$B['box_width']+2}%" y="{$B['Qmax']}%" fill="#DD5A43" >{$B['max']}</text>
+			            <!-- 画直方图 -->
+						{volist name="B['barChart']" id="vo"  }
+						<!-- 	{$key}.{$vo} -->
+							<rect x="{$B['X']-$vo*$B['x_unit']-10}%" y="{$key*$B['y_unit']+$B['Y_padding']}%" width="{$vo*$B['x_unit']}%" height="{$B['y_unit']-1}%" style="fill:#5cb85c;stroke:#5cb85c;stroke-width:3;stroke-opacity:0.9" />
+							<text x="{$B['X']-8}%" y="{$key*$B['y_unit']+$B['Y_padding']+$B['y_unit']}%" fill="#5cb85c" style="font-size: 12px;">{$vo}</text>
+						
+						{/volist}
+					</svg>
+					
+				</div>
 			</div>
 			<a class="btn btn-success btn-block btn-lg" href="{:url('index')}">返回</a>
 			<button class="btn btn-success btn-block btn-lg">我有异议</button>
