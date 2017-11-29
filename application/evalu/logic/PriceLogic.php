@@ -50,6 +50,8 @@ class PriceLogic
                     $result ['dealPricePosition'] = $this->dealPricePosition($result['mean']);
                     $result ['dealPrice'] = $this->getValByPosition($result ['dealPricePosition']);
                     $result ['len'] = count($this->arr);                                       //清洗后的有效数据数量
+                    //计算直方图的数据,分30条
+                    $result['barChart'] = $this->barChart(30);
                     return $result;
                 }
             }
@@ -201,6 +203,27 @@ class PriceLogic
 	    $priceByDeal = min($data['dealPrice'],$deal*config('deal_discount'));
 	    $priceByDeal = max($priceByDeal,$data['mortgagePrice']);
 	    return $priceByDeal;
+	}
+	
+	private function barChart($num){
+	    $minOfArr = min ($this->price);
+	    $eachScope = (max ($this->price) - $minOfArr) / $num;
+	    $barChartArr = array ();
+	    for($i = 0; $i < $num; $i ++) {
+	        $barChartArr [$i] = 0; // 给数组赋值0；
+	    }
+	    //$total = 0;
+	    foreach ($this->price as $arr ) {
+	        // 当前数据在哪个维度，从0开始
+	        $j = floor ( ($arr - $minOfArr) / $eachScope );
+	        if ($j == $num) {
+	            $j = $j - 1;
+	        }
+	        $barChartArr [$j] += 1;
+	       // $total += 1;
+	    }
+	    
+	    return ($barChartArr);
 	}
 }
 

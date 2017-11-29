@@ -27,8 +27,40 @@
 				<li style="width: 24%;"><a href="#" style="color: #5cb85c">估价师</a></li>
 			</ul>
 			<div class="panel panel-success">
+
+
+
 				<div class="panel-heading" style="width:100% ;height:400px" >
-					
+					<svg xmlns="http://www.w3.org/2000/svg" version="1.1" style="width:100%;height:100%;color:#5cb85c">
+						<!-- 竖向盒须图，基本只和Y轴有关，X轴相对固定 -->
+						<!-- 前端的异常值 -->
+						<line x1="{$B['X']+1}%" y1="{$B['Qmin']}%" x2="{$B['X']+$B['box_width']-1}%" y2="{$B['Qmin']}%"  style="stroke-width:3;stroke:#5cb85c; stroke-dasharray: 5;stroke-opacity:1"/>
+						<line x1="{$B['X']+$B['box_width']/2}%" y1="{$B['Qmin']}%" x2="{$B['X']+$B['box_width']/2}%" y2="{$B['Q1']}%"  style="stroke-width:3;stroke:#5cb85c; stroke-dasharray: 5;stroke-opacity:1"/>
+						<!-- 后端的异常值 -->	
+						<line x1="{$B['X']+1}%" y1="{$B['Qmax']}%" x2="{$B['X']+$B['box_width']-1}%" y2="{$B['Qmax']}%"  style="stroke-width:3;stroke:#5cb85c; stroke-dasharray: 5;stroke-opacity:1"/>
+						<line x1="{$B['X']+$B['box_width']/2}%" y1="{$B['Qmax']}%" x2="{$B['X']+$B['box_width']/2}%" y2="{$B['Q3']}%"  style="stroke-width:3;stroke:#5cb85c; stroke-dasharray: 5;stroke-opacity:1"/>
+											
+						<!-- 盒子 -->
+						<rect x="{$B['X']}%" y="{$B['Q1']}%" width="{$B['box_width']}%" height="{$B['Q3']-$B['Q1']}%" style="fill:#5cb85c;stroke:#5cb85c;stroke-width:3;stroke-opacity:0.9" />
+						<!-- 前须 -->
+						<line x1="{$B['X']}%" y1="{$B['Q0']}%" x2="{$B['X']+$B['box_width']}%" y2="{$B['Q0']}%"  style="stroke-width:3;stroke:#5cb85c;stroke-opacity:1"/>
+						<line x1="{$B['X']+$B['box_width']/2}%" y1="{$B['Q0']}%" x2="{$B['X']+$B['box_width']/2}%" y2="{$B['Q1']}%"  style="stroke-width:3;stroke:#5cb85c; stroke-opacity:1"/>
+						<!-- 后须 -->
+						<line x1="{$B['X']}%" y1="{$B['Q4']}%" x2="{$B['X']+$B['box_width']}%" y2="{$B['Q4']}%"  style="stroke-width:3;stroke:#5cb85c; stroke-opacity:1"/>
+						<line x1="{$B['X']+$B['box_width']/2}%" y1="{$B['Q4']}%" x2="{$B['X']+$B['box_width']/2}%" y2="{$B['Q3']}%"  style="stroke-width:3;stroke:#5cb85c; stroke-opacity:1"/>
+						<!-- 中位数 -->
+						<line x1="{$B['X']}%" y1="{$B['Q2']}%" x2="{$B['X']+$B['box_width']}%" y2="{$B['Q2']}%"  style="stroke-width:3;stroke:#DFF0D8; stroke-opacity:1"/>
+						<!-- 显示数字 -->
+						<text x="{$B['X']+$B['box_width']+2}%" y="{$B['Qmin']}%" fill="#5cb85c">{$B['min']}</text>
+						<text x="{$B['X']+$B['box_width']+2}%" y="{$B['Q0']}%" fill="#5cb85c">{$B['Q0v']}</text>
+						<text x="{$B['X']+$B['box_width']+2}%" y="{$B['Q1']}%" fill="#5cb85c">{$B['v25']}</text>
+						<text x="{$B['X']+$B['box_width']+2}%" y="{$B['Q2']}%" fill="#5cb85c">{$B['median']}</text>
+						<text x="{$B['X']+$B['box_width']+2}%" y="{$B['Q3']}%" fill="#5cb85c">{$B['v75']}</text>
+						<text x="{$B['X']+$B['box_width']+2}%" y="{$B['Q4']}%" fill="#5cb85c" >{$B['Q4v']}</text>
+						<text x="{$B['X']+$B['box_width']+2}%" y="{$B['Qmax']}%" fill="#5cb85c" >{$B['max']}</text>
+					</svg>
+
+
 					
 				</div>
 			</div>
