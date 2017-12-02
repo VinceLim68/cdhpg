@@ -171,17 +171,6 @@ class Index extends Common {
             ]);
         }
         //===================登记查询记录===============================================
-//         QueryRecordsModel::create([
-//             'user_id'       =>  session('user.user_id'),
-//             'user_name'     =>  session('user.user_name'),
-//             'comm_name'     =>  $getPrice_result['comm']['comm_name'],
-//             'comm_id'       =>  $getPrice_result['comm']['comm_id'],
-//             'block'         =>  $getPrice_result['comm']['block']  ,    
-//             'price'         =>  $getPrice_result['priceByDeal']> 0 ? $getPrice_result['priceByDeal']:$getPrice_result['mortgagePrice'],
-//             'price_type'    =>  $getPrice_result['priceByDeal']> 0 ? 2:1,
-//             'dealprice'     =>  $getPrice_result['price'],
-        
-//         ]);
         QueryRecordsModel::insert_record($getPrice_result);
         
         return $this->fetch();
@@ -189,9 +178,24 @@ class Index extends Common {
     }
     
     public function dispute(){
-        //在查询结果中，如果有争议可以进行记录
-        $arr = [1,2,3,4,5,6,7,8,9,10,11];
-         PriceLogic::test_array_multisort();
+       //在查询结果中，如果有争议可以进行记录
+       //1、先看数据是否合法
+       $result = $this->validate ( input ( 'param.' ), [
+           'myprice'=>   'number',
+       ],
+       [
+           'myprice.number'  =>'建议评估价只能输入数字',
+       ] );
+        
+       if (true !== $result) {
+           // 验证失败 输出错误信息
+           return ['h'=>'请注意','b'=>$result];
+       } else {
+           if(input('myprice')<input('my_min')*0.8 or input('myprice')>input('my_max')){
+               return ['h'=>'抱歉','b'=>'感谢您的参与，但是您提供的参考价格未被接受'];
+           }
+           return  QueryRecordsModel::update_dispute(input());
+       }
     }
     
     public function test(){

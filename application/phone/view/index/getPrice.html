@@ -12,6 +12,8 @@
 <link rel="stylesheet" type="text/css" href="__CSS__/comms/enquiry.css">
 </head>
 <body>
+
+
 	<div class="panel panel-default" style="margin: 0 0;">
 		<div class="panel-heading">
 			<h3 style="color: #3c763d;">{$B['comm']['comm_name']}<small style="padding-left:3%">{$B['comm']['region']}-{$B['comm']['block']}</small></h3>
@@ -23,7 +25,6 @@
 				<li ><a href="#box1" aria-controls="box1" role="tab" data-toggle="tab" >参数</a></li>
 				<li ><a href="#box2" aria-controls="box2" role="tab" data-toggle="tab" >有异议</a></li>
 			</ul>
-			<!-- style="background-color: #5cb85c;" style="color: #5cb85c"-->
 			
 			  <div class="tab-content">
 			  
@@ -163,19 +164,72 @@
 			
 			
 			<a class="btn btn-success btn-block btn-lg" href="{:url('index')}">返回</a>
-			<!-- <button class="btn btn-success btn-block btn-lg">我有异议</button> -->
+
 			 <div class="input-group input-group-lg" style="margin-top:10px;">
-		      <input type="text" class="form-control" placeholder="输入您认为合适的评估价...">
+		      <input type="text" class="form-control" placeholder="输入您认为合适的评估价..." id="myprice">
 		      <span class="input-group-btn ">
-		        <button class="btn btn-success " type="button">&emsp;&emsp;我有异议 !&emsp;&emsp;   </button>
+		        <button class="btn btn-success " id="dispute" type="button">&emsp;&emsp;我有异议 !&emsp;&emsp;   </button>
 		      </span>
 		    </div>
 		</div>
 	</div>
+<!-- 模态框 -->
+<div class="modal" tabindex="-1" role="dialog" id="mymodal">
+  <div class="modal-dialog" role="document">
+    <div class="modal-content">
+      <div class="modal-header">
+        <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+        <h4 class="modal-title" id="mymodal_header">Modal title</h4>
+      </div>
+      <div class="modal-body" id='mymodal-body'>
+        <p>One fine body&hellip;</p>
+      </div>
+      <div class="modal-footer">
+        <button type="button" class="btn btn-default" data-dismiss="modal">关闭</button>
+      </div>
+    </div><!-- /.modal-content -->
+  </div><!-- /.modal-dialog -->
+</div><!-- /.modal -->
 
 
 	<script src="__JS__/jquery-2.1.4.min.js"></script>
 	<script src="__JS__/bootstrap.min.js"></script> 
+<!-- 	<script src="__JS__/comms/phoneGetPrice.js"></script>  -->
+	<script type="text/JavaScript">
+	jQuery(function($) {
+		
+		jQuery("#dispute").on('click',function (){
+			$.ajax({
+				url:'{:url('dispute')}',
+				type:'POST',
+				data:{
+					comm_id:{$B['comm']['comm_id']},
+					myprice:$('#myprice').val(),
+					my_min:{$B['min']},
+					my_max:{$B['max']},
+        		},
+         		/* beforeSend:function(){
+        			if(($('#myprice').val()<{$B['min']*0.8}) || ($('#myprice').val()>{$B['max']})){
+        				$('#mymodal_header').html('抱歉');
+        				$('#mymodal-body').html('感谢您的参与，但您提供的评估价未被采纳');
+        				$('#mymodal').modal('show');
+        				$('#myprice').val('');
+        				return false;
+        			}
+        		} , */
+        		success: function(msg){
+        			$('#mymodal_header').html(msg['h']);
+    				$('#mymodal-body').html('<p>'+ msg['b'] + '</p>');
+    				$('#mymodal').modal('show');
+    				$('#myprice').val('');
+       		   }
+				
+			});
+		} );
+		     
+	})
+	</script>
+	
 
 </body>
 </html>

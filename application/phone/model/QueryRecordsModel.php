@@ -16,19 +16,12 @@ class QueryRecordsModel extends Model {
 	    /*
 	     * 添加记录，增加了判断重复的功能：同一个用户，同一个小区，2小时内不再记录
 	     */
-	    //             'user_id'       =>  session('user.user_id'),
-	    //             'user_name'     =>  session('user.user_name'),
-	    //             'comm_name'     =>  $getPrice_result['comm']['comm_name'],
-	    //             'comm_id'       =>  $getPrice_result['comm']['comm_id'],
-	    //             'block'         =>  $getPrice_result['comm']['block']  ,
-	    //             'price'         =>  $getPrice_result['priceByDeal']> 0 ? $getPrice_result['priceByDeal']:$getPrice_result['mortgagePrice'],
-	    //             'price_type'    =>  $getPrice_result['priceByDeal']> 0 ? 2:1,
-	    //             'dealprice'     =>  $getPrice_result['price'],
 	    $res = self::field('id')
                     ->where('user_id',session('user.user_id'))
             	    ->where('comm_id',$getPrice_result['comm']['comm_id'])
-            	    ->where("create_time", "> time", strtotime("-1 hours"))
+            	    ->where("create_time", "> time", strtotime("-2 hours"))
             	    ->find();
+	    //halt($res->id);
 	    //没找到才追加
 	    if(!$res){
 	        self::create([
@@ -45,4 +38,21 @@ class QueryRecordsModel extends Model {
 	    
 	}
 	
+	static public function update_dispute($data){
+	    /*
+	     * 更新争议价格，一般是先查询，再进行争议，所以先找到刚才查询的记录，再作更新
+	     */
+	    $res = self::field('id')
+	    ->where('user_id',session('user.user_id'))
+	    ->where('comm_id',$data['comm_id'])
+	    ->where("create_time", "> time", strtotime("-2 hours"))
+	    ->find();
+	    //找到了进行更新
+	    if($res){
+	        self::where('id', $res->id)->update(['dispute'  => $data['myprice']]);
+	        return ['h'=>'感谢','b'=>'您的宝贵意见已经被记录，我们会认真考虑您的建议'];
+	    }else{
+	        return ['h'=>'糟糕','b'=>'忘了您刚才说的是哪个小区了'];
+	    }
+	}
 }
