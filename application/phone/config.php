@@ -16,4 +16,5 @@ return [
     'box_width'                     =>5,                //盒须图本身的宽度        
     'Y_padding'                     =>5,                //相当于top_padding
     'barChart_num'                  =>30,               //直方图的数量
+    'std_r_limit'                   =>10,               //判断标准差系数是否异常的标准
 ];

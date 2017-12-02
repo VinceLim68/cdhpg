@@ -57,7 +57,7 @@ table {
 }
 .table>tbody>tr>td.left {
 	text-align: right;
-	color: #3c763d;;
+	color: #3c763d;
     background-color: #EDF3F4;
 }
 
@@ -110,6 +110,24 @@ table {
 	font-size: 12px;
  }
 
+.form-control{
+	border: 1px solid #4CAE4C;
+	color:#3c763d;
+ }
+ .input-group > .form-control{
+	border-top-left-radius: 6px;
+	border-top-right-radius: 0px;
+	border-bottom-right-radius: 0px;
+	border-bottom-left-radius: 6px;
+ }
+ 
+ .input-group > .input-group-btn > .btn {
+	border-top-left-radius: 0px;
+	border-top-right-radius: 6px;
+	border-bottom-right-radius: 6px;
+	border-bottom-left-radius: 0px;
+	
+ }
 
  
 /*媒体查询 */

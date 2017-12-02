@@ -4,8 +4,9 @@ use think\Controller;
 use app\evalu\logic\MatchLogic;
 use think\Db;
 use app\evalu\logic\PriceLogic;
-use app\evalu\model\MissCommModel;
 use app\evalu\controller\Common;
+use app\evalu\model\ErrorCommModel;
+use app\phone\model\QueryRecordsModel;
 
 class Index extends Common {
     
@@ -16,7 +17,7 @@ class Index extends Common {
     
     public function getCommName(){
         //把输入的小区名称转化成相应的小区编号
-        if (request()->isGet()) {
+        if (request()->isPost()) {
             $result = $this->validate ( input ( 'param.' ), [
                 'comm' => 'require|max:25|min:2',
                 'price'=>   'number|between:100,12000000',
@@ -39,9 +40,11 @@ class Index extends Common {
                 if(!$commnames){
                     //2如果没有查到，记录到miss_comm表中去
                     try{
-                        $misscomm = MissCommModel::create([
-                            'miss_comm'  =>  input('param.comm'),
-                            'user' =>  'test'
+                        $errorcomm = ErrorCommModel::create([
+                            'memo'     =>  input('param.comm'),
+                            'user_id'       =>  session('user.user_id'),
+                            'user_name'     =>  session('user.user_name'),
+                            'type'          =>  1,
                         ]);
                     }catch(\Exception $e){
                         $this->error('没有查询到叫"'.input('param.comm').'"的地方');
@@ -155,6 +158,32 @@ class Index extends Common {
         $getPrice_result['x_unit'] = ($getPrice_result['X'] - 10)/max($getPrice_result['barChart']);
         $getPrice_result['y_unit'] = (100 - $getPrice_result['Y_padding'])/config('barChart_num');
         $this->assign('B',$getPrice_result);
+        
+        //===================把离散值过大的数据记录error_comm,以备改进=================================
+        if($getPrice_result['std_r'] > config('std_r_limit')){
+            $errorcomm = ErrorCommModel::create([
+                'memo'          =>  $getPrice_result['std_r'],
+                'user_id'       =>  session('user.user_id'),
+                'user_name'     =>  session('user.user_name'),
+                'type'          =>  2,
+                'comm_name'     =>  $getPrice_result['comm']['comm_name'],
+                'comm_id'       =>  $getPrice_result['comm']['comm_id'],
+            ]);
+        }
+        //===================登记查询记录===============================================
+//         QueryRecordsModel::create([
+//             'user_id'       =>  session('user.user_id'),
+//             'user_name'     =>  session('user.user_name'),
+//             'comm_name'     =>  $getPrice_result['comm']['comm_name'],
+//             'comm_id'       =>  $getPrice_result['comm']['comm_id'],
+//             'block'         =>  $getPrice_result['comm']['block']  ,    
+//             'price'         =>  $getPrice_result['priceByDeal']> 0 ? $getPrice_result['priceByDeal']:$getPrice_result['mortgagePrice'],
+//             'price_type'    =>  $getPrice_result['priceByDeal']> 0 ? 2:1,
+//             'dealprice'     =>  $getPrice_result['price'],
+        
+//         ]);
+        QueryRecordsModel::insert_record($getPrice_result);
+        
         return $this->fetch();
 
     }
