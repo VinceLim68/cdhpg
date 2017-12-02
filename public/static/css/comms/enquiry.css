@@ -32,16 +32,113 @@ form .form-group input:focus{
 	border-top-style:none; */
 }
 
-/*媒体查询，大于480小于640 */
+/*以下是getprice页面*/
+
+.nav{
+	margin-bottom: 15px; 
+	text-align: center;
+}
+.nav-pills > li{
+	width:24%;
+}
+
+.panel{
+	border: none;
+}
+.list-group{
+	
+	letter-spacing: 2px;
+	font-weight: 100;
+	font-size: 20px;
+}
+
+table {
+	border-bottom: 1px solid rgb(221, 221, 221);
+}
+.table>tbody>tr>td.left {
+	text-align: right;
+	color: #3c763d;;
+    background-color: #EDF3F4;
+}
+
+.table>tbody>tr>td.right {
+	padding-left: 1%;
+}
+
+ .nav-pills > li.active > a, .nav-pills > li.active > a:focus, .nav-pills > li.active > a:hover {
+	background-color: #5CB85C;
+ 	color: #FFF;
+ }
+ a,a:hover {
+	color: #5cb85c;
+ }
+ 
+ svg{
+	/*style="width:100%;height:100%;color:#5cb85c"*/
+ 	width:100%;
+ 	height:100%;
+ 	color:#5cb85c;
+ }
+ svg .plotboxtext{
+	 fill:#DD5A43;
+ }
+ 
+ svg line{
+	stroke-width:3;
+	stroke:#DD5A43; 
+	/* stroke-dasharray: 5; */
+	stroke-opacity:1;
+ 	
+ }
+ 
+ svg .plotbox_box{
+	fill:#DD5A43;
+	stroke:#DD5A43;
+	stroke-width:3;
+	opacity:1;
+ }
+ 
+ svg .barChart{
+	fill:#5cb85c;
+	stroke:#5cb85c;
+	stroke-width:3;
+	stroke-opacity:0.9;
+ }
+ 
+ svg .barChart_text{
+	fill:#5cb85c;
+	font-size: 12px;
+ }
+
+
+ 
+/*媒体查询 */
+@media (min-width:640px){
+	.table>tbody>tr>td.left,.table>tbody>tr>td.right,.nav>li>a{
+	 	font-size: 18px;
+	
+	}
+
+}
 
 @media (min-width:360px) and (max-width:640px){
-    .hide-xs{
+	.table>tbody>tr>td.left,.table>tbody>tr>td.right,.nav>li>a{
+	 	font-size: 16px;
+	
+	}
+	.hide-xs{
         display: inline-block!important;
     }
+
 }
+
 
 @media (max-width:360px){
     .hide-xs{
         display: none!important;
     }
+    .list-group,.table>tbody>tr>td.left,.table>tbody>tr>td.right,.nav>li>a {
+		font-size: 14px;
+    }
+
 }

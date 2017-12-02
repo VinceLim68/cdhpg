@@ -12,9 +12,10 @@ class Common extends Controller
 		//执行登录验证
 		if(!session('user.user_id'))
 		{
-			//$data = db('user')->find(1);
-			//halt($data);
-			$this->redirect('evalu/login/login');
+// 			注意这里传递了参数，但是用url方式，接收时要使用$_GET
+		    $this->redirect('evalu/login/login',['modulestr' => $request->module()]);
 		}
+		//对功能模块进行限制，小区和挂牌数据列表非管理员不让看
+		
 	}
 }

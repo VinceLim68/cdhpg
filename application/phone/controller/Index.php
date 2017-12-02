@@ -4,8 +4,10 @@ use think\Controller;
 use app\evalu\logic\MatchLogic;
 use think\Db;
 use app\evalu\logic\PriceLogic;
+use app\evalu\model\MissCommModel;
+use app\evalu\controller\Common;
 
-class Index extends Controller {
+class Index extends Common {
     
     public function index() {
         //手机询价界面
@@ -35,8 +37,16 @@ class Index extends Controller {
                 //1查询数据
                 $commnames = MatchLogic::matchSearch(input('param.comm'));
                 if(!$commnames){
-                //2如果没有查到，记录到miss_comm表中去
-                    echo  'no records';
+                    //2如果没有查到，记录到miss_comm表中去
+                    try{
+                        $misscomm = MissCommModel::create([
+                            'miss_comm'  =>  input('param.comm'),
+                            'user' =>  'test'
+                        ]);
+                    }catch(\Exception $e){
+                        $this->error('没有查询到叫"'.input('param.comm').'"的地方');
+                    }
+                    $this->error('没有查询到叫"'.input('param.comm').'"的地方');
                 }elseif(count($commnames)>1){
                 //4如果查到多个，列表展示，让用户手动挑选后，再转入统计模块
                     $commArr = [];      //取出完整的数据
@@ -52,7 +62,6 @@ class Index extends Controller {
                         $this->redirect('getPrice', ['comm_id' => $commnames[0]['comm_id']]);
                     }else{
                         $this->redirect('getPrice', ['comm_id' => $commnames[0]['comm_id'],'price'=>input('price')]);
-                        
                     }
                 }
             }
@@ -84,12 +93,18 @@ class Index extends Controller {
                 ->where('community_id',$comm_id)
                 ->where("first_acquisition_time", "> time", $scope[0]['first_acquisition_time'])
                 ->select();
+//             $result = Db::table('for_sale_property')
+//                 ->field('id,floor_index,total_floor,price,area,builded_year')
+//                 ->where('community_id',$comm_id)
+//                 ->where("first_acquisition_time", "> time", strtotime("-6 month "))
+//                 ->select();
             $records_num = count($result);
             $sele_times += 1;
         }
         $PL = new PriceLogic($result);
         $getPrice_result = $PL->getStatic();
-        $getPrice_result['from_date'] = $scope[0]['first_acquisition_time'];
+//         $getPrice_result['from_date'] = date("Y-m-d",strtotime("-6 month "));
+        $getPrice_result['from_date'] = $scope[0]['first_acquisition_time'] ;
         $getPrice_result['ori_len'] = $records_num;
         $getPrice_result['comm'] = Db::table('comm')->where('comm_id',$comm_id)->find();
         $getPrice_result['price'] = $price;
@@ -106,7 +121,6 @@ class Index extends Controller {
                 $getPrice_result['priceByDeal'] = $PL->dealPrice($price, $getPrice_result);
             }
         }
-        //$this->assign('result',$getPrice_result);
         //==============================以下是计算盒须图====================================
         $getPrice_result['X']= config('X');
         $getPrice_result['box_width']= config('box_width');
@@ -140,12 +154,7 @@ class Index extends Controller {
         //============================以下是计算直方图==============================
         $getPrice_result['x_unit'] = ($getPrice_result['X'] - 10)/max($getPrice_result['barChart']);
         $getPrice_result['y_unit'] = (100 - $getPrice_result['Y_padding'])/config('barChart_num');
-// /*         foreach ($getPrice_result['barChart'] as  $name=>$value){
-// //             echo $name . "=" . $value . "/n";
-//             $name['x'] = $value*$x_unit;
-//         } */
         $this->assign('B',$getPrice_result);
-//         dump($getPrice_result);
         return $this->fetch();
 
     }
@@ -153,9 +162,13 @@ class Index extends Controller {
     public function dispute(){
         //在查询结果中，如果有争议可以进行记录
         $arr = [1,2,3,4,5,6,7,8,9,10,11];
-//         $res = PriceLogic::getValByPosition($arr,50);
-//         dump($res);
          PriceLogic::test_array_multisort();
+    }
+    
+    public function test(){
+//         $request = Request::instance();
+//         echo "当前模块名称是" . $request->module();
+//         返回控制器名
     }
     
     public function boxPlot(){

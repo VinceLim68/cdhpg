@@ -11,13 +11,19 @@ class Login extends Controller
 	 * 登录
 	 */
 	public function login(){
+	    //把从哪里登录的模块记下来，从phone登录，返回phone，从evalu登录，返回evalu
+        $this->assign('mod',input('modulestr'));
+        
 		if(request()->isPost()){
 			$res = (new UserModel())->login(input('post.'));
  			if($res['valid'])
 			{
 				//登录成功
-				//$this->success($res['msg'],'evalu/sales/salesList');exit;
-				$this->redirect('evalu/sales/salesList');
+                if('phone' == input('mod')){
+                    $this->redirect('phone/index/index');
+                }elseif ('evalu' == input('mod')){
+			       $this->redirect('evalu/sales/salesList'); 
+                }
 			}else 
 			{
 				//登录失败
@@ -34,7 +40,7 @@ class Login extends Controller
 	{
 		Session::delete('user.user_id');
 		Session::delete('user.user_name');
-		$this->redirect('evalu/login/login');
+		$this->redirect('phone/index/index');
 	}
 	
 	/*
@@ -46,8 +52,15 @@ class Login extends Controller
 		$res = (new UserModel())->signup(input('post.'));
 		if($res['valid'])
 		{
-			//注册成功，去登录界面
-			$this->success($res['msg'],'login');exit;
+			//注册成功，返回原来想登录的模块
+// 			dump(input('post.'));
+		    if('phone' == input('mod')){
+		        $this->redirect('phone/index/index');
+		    }elseif ('evalu' == input('mod')){
+		        $this->redirect('evalu/sales/salesList');
+		    
+		    }
+// 			$this->success($res['msg'],'login');exit;
 		}else
 		{
 			//注册失败

@@ -167,7 +167,7 @@ class PriceLogic
 	    $min1 = config('min_sale');
 	    $min2 = config('min_evaluation');
 	    $ratio = $min2 / $min1 - ($min2 / $min1 - $max2 / $max1) / ($max1 - $min1) * ($data['mean'] - $min1);
-	    return $ratio;
+	    return round($ratio,4);
 	}
 	private function mortgagePrice($data){
 	    /* 传入均价，根据这个值求出评估值 */

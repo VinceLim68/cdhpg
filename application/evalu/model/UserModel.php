@@ -70,6 +70,18 @@ class UserModel extends Model
 				dump($e);
 			}
 		}
+// 			直接执行登录了
+		session('user.user_id',$this->user_id);
+		session('user.user_name',$data['user_name']);
+		$ip = LoginLogic::getIP();
+		LoginRecordsModel::create([
+		    'user_name'	=>	$data['user_name'],
+		    'login_ip'	=>	$ip,
+		]);
+		$this->save([
+		    'login_times'  => 1,
+		    'last_ip' => $ip,
+		],['user_id' => $this->user_id]);
 		return ['valid'=>1,'msg'=>'注册成功，请登录'];
 			
 	}
