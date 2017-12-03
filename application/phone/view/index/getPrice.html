@@ -23,7 +23,18 @@
 				<li class="active" ><a href="#base" aria-controls="base" role="tab" data-toggle="tab" >基价</a></li>
 				<li ><a href="#box" aria-controls="box" role="tab" data-toggle="tab" >盒须图</a></li>
 				<li ><a href="#box1" aria-controls="box1" role="tab" data-toggle="tab" >参数</a></li>
-				<li ><a href="#box2" aria-controls="box2" role="tab" data-toggle="tab" >有异议</a></li>
+				<!-- <li ><a href="#box2" aria-controls="box2" role="tab" data-toggle="tab" >下拉菜单</a></li> -->
+				<li role="presentation" class="dropdown">
+				    <a class="dropdown-toggle" data-toggle="dropdown" href="#" role="button" aria-haspopup="true" aria-expanded="false">
+				      {$Think.session.user.user_name} <span class="caret"></span>
+				    </a>
+				    <ul class="dropdown-menu">
+				    <li ><a href="#box2" aria-controls="box2" role="tab" data-toggle="tab" >444</a></li>
+				    <li ><a href="#box2" aria-controls="box2" role="tab" data-toggle="tab" >333</a></li>
+				    <li ><a href="{:url('evalu/login/logout')}" >注销</a></li>
+					</ul>
+			    </ul>
+			  </li>
 			</ul>
 			
 			  <div class="tab-content">
@@ -70,7 +81,7 @@
 						</div>
 					</div>
 				</div>
-				
+				<!-- 盒须图 -->
 			    <div role="tabpanel" class="tab-pane" id="box">
 				    <div class="panel panel-success">
 						<div class="panel-heading" style="width:100% ;height:400px" >
@@ -138,7 +149,7 @@
 			
 								</tr>
 								<tr>
-									<td class="col-md-4 col-xs-4 left" >抵押价的折扣率</td>
+									<td class="col-md-4 col-xs-4 left" >抵押折扣率</td>
 									<td class="col-md-8 col-xs-8 right">{$B['mortgageRatio']*100}%</td>
 			
 								</tr>
@@ -155,7 +166,7 @@
 <!-- 					{volist name="B" id="vo"  }
 					{$key}
 					{/volist} -->
-					{php}var_dump($B){/php}
+					<!-- {php}var_dump($B){/php} -->
 			    </div>
 			    <div role="tabpanel" class="tab-pane" id="box2">44</div>
 			  </div>
@@ -173,23 +184,24 @@
 		    </div>
 		</div>
 	</div>
-<!-- 模态框 -->
-<div class="modal" tabindex="-1" role="dialog" id="mymodal">
-  <div class="modal-dialog" role="document">
-    <div class="modal-content">
-      <div class="modal-header">
-        <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
-        <h4 class="modal-title" id="mymodal_header">Modal title</h4>
-      </div>
-      <div class="modal-body" id='mymodal-body'>
-        <p>One fine body&hellip;</p>
-      </div>
-      <div class="modal-footer">
-        <button type="button" class="btn btn-default" data-dismiss="modal">关闭</button>
-      </div>
-    </div><!-- /.modal-content -->
-  </div><!-- /.modal-dialog -->
-</div><!-- /.modal -->
+	
+	<!-- 模态框 -->
+	<div class="modal" tabindex="-1" role="dialog" id="mymodal">
+	  <div class="modal-dialog" role="document">
+	    <div class="modal-content">
+	      <div class="modal-header">
+	        <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+	        <h4 class="modal-title" id="mymodal_header">Modal title</h4>
+	      </div>
+	      <div class="modal-body" id='mymodal-body'>
+	        <p>One fine body&hellip;</p>
+	      </div>
+	      <div class="modal-footer">
+	        <button type="button" class="btn btn-default" data-dismiss="modal">关闭</button>
+	      </div>
+	    </div><!-- /.modal-content -->
+	  </div><!-- /.modal-dialog -->
+	</div><!-- /.modal -->
 
 
 	<script src="__JS__/jquery-2.1.4.min.js"></script>

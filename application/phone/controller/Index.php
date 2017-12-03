@@ -202,6 +202,7 @@ class Index extends Common {
 //         $request = Request::instance();
 //         echo "当前模块名称是" . $request->module();
 //         返回控制器名
+        return $this->fetch();
     }
     
     public function boxPlot(){
