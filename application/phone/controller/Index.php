@@ -170,7 +170,6 @@ class Index extends Common {
             
             //===========================计算面积房价散点图==================================
             $result_arr = $PL->getArr();
-            $total_floor_price =[];
             $area_price_scatter['Xmin'] = 10000000;
             $area_price_scatter['Xmax'] = 0;
             $area_price_scatter['Ymin'] = 10000000;
@@ -192,34 +191,29 @@ class Index extends Common {
                         $area_price_scatter['Ymin'] = $item['area'];
                     }
                 }
-                if ($item['price'] > 0 and $item ['total_floor'] > 0) {
-                    $total_floor_price [] = array($item['price'],$item ['total_floor']);
-                }
             }
-//             halt($area_price_scatter);
-            //halt($area_price);
             //计算最大值最小值
-            $area_price_scatter['scatter_extend_r'] = config('scatter_extend_r');
-            $area_price_scatter['X0'] = floor($area_price_scatter['Xmin']*(1-$area_price_scatter['scatter_extend_r'])/1000)*1000;
-            $area_price_scatter['X5'] = ceil($area_price_scatter['Xmax']*(1+$area_price_scatter['scatter_extend_r'])/1000)*1000;
-            $area_price_scatter['scatter_X_left'] = config('scatter_X_left');
-            $area_price_scatter['Xunit'] = (100 - $area_price_scatter['scatter_X_left'])/($area_price_scatter['X5']-$area_price_scatter['X0']);
-            $area_price_scatter['Y0'] = floor($area_price_scatter['Ymin']*(1-$area_price_scatter['scatter_extend_r'])/10)*10;
-            $area_price_scatter['Y5'] = ceil($area_price_scatter['Ymax']*(1+$area_price_scatter['scatter_extend_r'])/10)*10;
-            $area_price_scatter['scatter_Y_top'] = config('scatter_Y_top');
-            $area_price_scatter['Yunit'] = (100 - $area_price_scatter['scatter_Y_top'])/($area_price_scatter['Y5']-$area_price_scatter['Y0']);
+            $scatter_extend_r = config('scatter_extend_r');
+            $area_price_scatter['X0'] = floor($area_price_scatter['Xmin']*(1-$scatter_extend_r)/1000)*1000;
+            $area_price_scatter['X5'] = ceil($area_price_scatter['Xmax']*(1+$scatter_extend_r)/1000)*1000;
+            $scatter_X_left = config('scatter_X_left');
+            $area_price_scatter['Xunit'] = (100 - $scatter_X_left)/($area_price_scatter['X5']-$area_price_scatter['X0']);
+            $area_price_scatter['Y0'] = floor($area_price_scatter['Ymin']*(1-$scatter_extend_r)/10)*10;
+            $area_price_scatter['Y5'] = ceil($area_price_scatter['Ymax']*(1+$scatter_extend_r)/10)*10;
+            $scatter_Y_top = config('scatter_Y_top');
+            $area_price_scatter['Yunit'] = (100 - $scatter_Y_top)/($area_price_scatter['Y5']-$area_price_scatter['Y0']);
             
             //这是散点
             foreach ($area_price as $A_item){
-                $x = ($A_item['price']-$area_price_scatter['X0'] )*$area_price_scatter['Xunit'] + $area_price_scatter['scatter_X_left'];
-                $y = ($A_item['area']-$area_price_scatter['Y0'] )*$area_price_scatter['Yunit'] + $area_price_scatter['scatter_Y_top'];
+                $x = ($A_item['price']-$area_price_scatter['X0'] )*$area_price_scatter['Xunit'] + $scatter_X_left;
+                $y = ($A_item['area']-$area_price_scatter['Y0'] )*$area_price_scatter['Yunit'] + $scatter_Y_top;
                 $A[] = array('x'=>$x,'y'=>$y);
             }
             //这是纵向的Y轴
             for ($i=0; $i<=5; $i++) {
-                $x0 = $area_price_scatter['scatter_X_left'] + (100 - $area_price_scatter['scatter_X_left'])/5*$i;
+                $x0 = $scatter_X_left + (100 - $scatter_X_left)/5*$i;
                 $x1 = $x0;
-                $y0 = $area_price_scatter['scatter_Y_top'] ;
+                $y0 = $scatter_Y_top ;
                 $y1 = 100;
                 $value = $area_price_scatter['X0']+($area_price_scatter['X5']-$area_price_scatter['X0'])/5*$i;
                 $A_line[] = array('x0'=>$x0,'x1'=>$x1,'y0'=>$y0,'y1'=>$y1,'val'=>$value,'t_x'=>$x0,'t_y'=>$y0-1);
@@ -227,9 +221,9 @@ class Index extends Common {
             }
             //X轴
             for ($i=0; $i<=5; $i++) {
-                $x0 = $area_price_scatter['scatter_X_left'];
+                $x0 = $scatter_X_left;
                 $x1 = 100;
-                $y0 = $area_price_scatter['scatter_Y_top'] + (100 - $area_price_scatter['scatter_Y_top'])/5*$i;
+                $y0 = $scatter_Y_top + (100 - $scatter_Y_top)/5*$i;
                 $y1 = $y0;
                 $value = $area_price_scatter['Y0']+($area_price_scatter['Y5']-$area_price_scatter['Y0'])/5*$i;
                 $A_line[] = array('x0'=>$x0,'x1'=>$x1,'y0'=>$y0,'y1'=>$y1,'val'=>$value,'t_x'=>0,'t_y'=>$y0);
@@ -237,28 +231,106 @@ class Index extends Common {
             }
             
             $axes[] = array(
-                'x0'=>$area_price_scatter['scatter_X_left'],
+                'x0'=>$scatter_X_left,
                 'x1'=>100,
-                'y0'=>$area_price_scatter['scatter_Y_top'],
-                'y1'=>$area_price_scatter['scatter_Y_top'],
+                'y0'=>$scatter_Y_top,
+                'y1'=>$scatter_Y_top,
                 'val'=>'(房价 元/平方米)',
                 't_x'=>100-1,
-                't_y'=>$area_price_scatter['scatter_Y_top']+4
+                't_y'=>$scatter_Y_top+4
             );          //X轴线
             $axes[] = array(
-                'x0'=>$area_price_scatter['scatter_X_left'],
-                'x1'=>$area_price_scatter['scatter_X_left'],
-                'y0'=>$area_price_scatter['scatter_Y_top'],
+                'x0'=>$scatter_X_left,
+                'x1'=>$scatter_X_left,
+                'y0'=>$scatter_Y_top,
                 'y1'=>100,
                 'val'=>'(面积 平方米)',
-                't_x'=>$area_price_scatter['scatter_X_left']+1,
+                't_x'=>$scatter_X_left+1,
                 't_y'=>100-1
             );
             $this->assign('A',$A);
             $this->assign('AL',$A_line);
             $this->assign('AX',$axes);
             
-
+            //===========================计算楼层房价散点图==================================
+            $floor_price_scatter['Xmin'] = 10000000;
+            $floor_price_scatter['Xmax'] = 0;
+            $floor_price_scatter['Ymin'] = 10000000;
+            $floor_price_scatter['Ymax'] = 0;
+            foreach ($result_arr as $item)
+            {
+                if ($item['price'] > 0 and $item ['total_floor'] > 0) {
+                    $floor_price [] = array('price'=>$item['price'],'total_floor'=>$item ['total_floor']);
+                    if($item['price'] > $floor_price_scatter['Xmax']){
+                        $floor_price_scatter['Xmax'] = $item['price'];
+                    }
+                    if($item['price'] < $floor_price_scatter['Xmin']){
+                        $floor_price_scatter['Xmin'] = $item['price'];
+                    }
+                    if($item['total_floor'] > $floor_price_scatter['Ymax']){
+                        $floor_price_scatter['Ymax'] = $item['total_floor'];
+                    }
+                    if($item['total_floor'] < $floor_price_scatter['Ymin']){
+                        $floor_price_scatter['Ymin'] = $item['total_floor'];
+                    }
+                }
+            }
+            //计算最大值最小值
+            $floor_price_scatter['X0'] = floor($floor_price_scatter['Xmin']*(1-$scatter_extend_r)/1000)*1000;
+            $floor_price_scatter['X5'] = ceil($floor_price_scatter['Xmax']*(1+$scatter_extend_r)/1000)*1000;
+            $floor_price_scatter['Xunit'] = (100 - $scatter_X_left)/($floor_price_scatter['X5']-$floor_price_scatter['X0']);
+            $floor_price_scatter['Y0'] = $floor_price_scatter['Ymin']-1;
+            $floor_price_scatter['Y5'] = $floor_price_scatter['Ymax']+1;
+            $floor_price_scatter['Yunit'] = (100 - $scatter_Y_top)/($floor_price_scatter['Y5']-$floor_price_scatter['Y0']);
+            
+            //这是散点
+            foreach ($floor_price as $A_item){
+                $x = ($A_item['price']-$floor_price_scatter['X0'] )*$floor_price_scatter['Xunit'] + $scatter_X_left;
+                $y = ($A_item['total_floor']-$floor_price_scatter['Y0'] )*$floor_price_scatter['Yunit'] + $scatter_Y_top;
+                $F[] = array('x'=>$x,'y'=>$y);
+            }
+            //这是纵向的Y轴
+            for ($i=0; $i<=5; $i++) {
+                $x0 = $scatter_X_left + (100 - $scatter_X_left)/5*$i;
+                $x1 = $x0;
+                $y0 = $scatter_Y_top ;
+                $y1 = 100;
+                $value = $floor_price_scatter['X0']+($floor_price_scatter['X5']-$floor_price_scatter['X0'])/5*$i;
+                $F_line[] = array('x0'=>$x0,'x1'=>$x1,'y0'=>$y0,'y1'=>$y1,'val'=>$value,'t_x'=>$x0,'t_y'=>$y0-1);
+                //'t_x','t_y'是文本显示的位置
+            }
+            //X轴
+            for ($i=0; $i<=5; $i++) {
+                $x0 = $scatter_X_left;
+                $x1 = 100;
+                $y0 = $scatter_Y_top + (100 - $scatter_Y_top)/5*$i;
+                $y1 = $y0;
+                $value = $floor_price_scatter['Y0']+($floor_price_scatter['Y5']-$floor_price_scatter['Y0'])/5*$i;
+                $F_line[] = array('x0'=>$x0,'x1'=>$x1,'y0'=>$y0,'y1'=>$y1,'val'=>$value,'t_x'=>0,'t_y'=>$y0);
+                //'t_x','t_y'是文本显示的位置
+            }
+            
+            $Faxes[] = array(
+                'x0'=>$scatter_X_left,
+                'x1'=>100,
+                'y0'=>$scatter_Y_top,
+                'y1'=>$scatter_Y_top,
+                'val'=>'(房价 元/平方米)',
+                't_x'=>100-1,
+                't_y'=>$scatter_Y_top+4
+            );          //X轴线
+            $Faxes[] = array(
+                'x0'=>$scatter_X_left,
+                'x1'=>$scatter_X_left,
+                'y0'=>$scatter_Y_top,
+                'y1'=>100,
+                'val'=>'(总楼层)',
+                't_x'=>$scatter_X_left+1,
+                't_y'=>100-1
+            );
+            $this->assign('F',$F);
+            $this->assign('FL',$F_line);
+            $this->assign('FX',$Faxes);
             //===================把离散值过大的数据记录error_comm,以备改进=================================
             if($getPrice_result['std_r'] > config('std_r_limit')){
                 $errorcomm = ErrorCommModel::create([
