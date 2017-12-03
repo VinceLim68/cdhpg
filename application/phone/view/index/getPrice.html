@@ -29,8 +29,9 @@
 				      {$Think.session.user.user_name} <span class="caret"></span>
 				    </a>
 				    <ul class="dropdown-menu">
-				    <li ><a href="#box2" aria-controls="box2" role="tab" data-toggle="tab" >444</a></li>
-				    <li ><a href="#box2" aria-controls="box2" role="tab" data-toggle="tab" >333</a></li>
+				    <li ><a href="#scatter_area_price" aria-controls="scatter_area_price" role="tab" data-toggle="tab" >面积/房价散点</a></li>
+				    <li ><a href="#box2" aria-controls="box2" role="tab" data-toggle="tab" >总楼层/房价散点</a></li>
+				    <li ><a href="#box2" aria-controls="box2" role="tab" data-toggle="tab" >导出Excel</a></li>
 				    <li ><a href="{:url('evalu/login/logout')}" >注销</a></li>
 					</ul>
 			    </ul>
@@ -38,7 +39,7 @@
 			</ul>
 			
 			  <div class="tab-content">
-			  
+			  	<!-- 基本报价 -->
 			    <div role="tabpanel" class="tab-pane active" id="base">
 	   				<div class="panel panel-success">
 						<div class="panel-heading">
@@ -123,7 +124,7 @@
 						</div>
 					</div>
 			    </div>
-			    
+			    <!-- 参数 -->
 			    <div role="tabpanel" class="tab-pane" id="box1">
 			    	<div class="list-group"	>
 							<li class="list-group-item" >数据参数</li>
@@ -168,6 +169,33 @@
 					{/volist} -->
 					<!-- {php}var_dump($B){/php} -->
 			    </div>
+			    
+			    <!-- 面积楼价散点图 -->
+			    <div role="tabpanel" class="tab-pane" id="scatter_area_price">
+   				    <div class="panel panel-success">
+						<div class="panel-heading" style="width:100% ;height:400px" >
+							<svg xmlns="http://www.w3.org/2000/svg" version="1.1" width="100%" height="100%">
+								{volist name="AL" id="vo"  }
+									<line x1="{$vo['x0']}%" y1="{$vo['y0']}%" x2="{$vo['x1']}%" y2="{$vo['y1']}%"  class='scatter_line' />
+									<text x="{$vo['t_x']}%" y="{$vo['t_y']}%" 
+									class='{if condition="$vo['t_x'] == 0 ")}
+									scatter_text_y
+									{else /} scatter_text_x
+									{/if} scatter_text' >{$vo['val']}</text>
+								{/volist}
+								{volist name="A" id="vo"  }
+									<circle cx="{$vo['x']}%" cy="{$vo['y']}%" class = 'scatter_circle' r="1%"/>
+								{/volist}
+									<line x1="{$AX[0]['x0']}%" y1="{$AX[0]['y0']}%" x2="{$AX[0]['x1']}%" y2="{$AX[0]['y1']}%"  class='scatter_axes' />
+									<text x="{$AX[0]['t_x']}%" y="{$AX[0]['t_y']}%"  class='XAxesText'>{$AX[0]['val']}</text>
+									<line x1="{$AX[1]['x0']}%" y1="{$AX[1]['y0']}%" x2="{$AX[1]['x1']}%" y2="{$AX[1]['y1']}%"  class='scatter_axes' />
+									<text x="{$AX[1]['t_x']}%" y="{$AX[1]['t_y']}%" class='YAxesText'>{$AX[1]['val']}</text>
+							</svg>
+							
+						</div>
+					</div>
+			    
+				</div>
 			    <div role="tabpanel" class="tab-pane" id="box2">44</div>
 			  </div>
 

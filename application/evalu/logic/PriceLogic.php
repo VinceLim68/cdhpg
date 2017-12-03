@@ -10,7 +10,7 @@ class PriceLogic
      */
     private $price = [];
     private $arr = [];
-    private $arr_cleared = [];
+//     private $arr_cleared = [];
     
     public function __construct($collection){
         array_multisort(array_column ( $collection, 'price' ), SORT_ASC, $collection);
@@ -222,8 +222,11 @@ class PriceLogic
 	        $barChartArr [$j] += 1;
 	       // $total += 1;
 	    }
-	    
 	    return ($barChartArr);
 	}
+    
+    public function getArr(){
+        return $this->arr;
+    }
 }
 

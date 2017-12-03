@@ -117,7 +117,45 @@ table {
 	fill:#5cb85c;
 	font-size: 12px;
  }
+ 
+ svg .scatter_circle{
+	r:0.5%;
+	stroke-width:1;
+	fill:#576874;
+ }
+ 
+ svg .scatter_line{
+	stroke:#ccc; 
+ 	stroke-width:1;
+ }
+ svg .scatter_text{
+	font-size:12px;
+ 	fill:#255625;
+ }
+ 
+ svg .scatter_text_y{
+	/* text-anchor:end; */
+ }
+ 
+ svg .scatter_axes{
+	stroke-width:2;
+ 	fill:#255625;
+ 	stroke:#255625;
+ 	
+ }
+ 
+ svg .YAxesText{
+	fill:#255625;
+ 	font-size:12px;
+ 	letter-spacing:1px;
+ }
 
+ svg .XAxesText{
+	fill:#255625;
+ 	font-size:12px;
+ 	letter-spacing:1px;
+ 	text-anchor:end;
+ }
 .form-control{
 	border: 1px solid #4CAE4C;
 	color:#3c763d;
