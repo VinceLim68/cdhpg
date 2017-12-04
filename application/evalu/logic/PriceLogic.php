@@ -51,7 +51,7 @@ class PriceLogic
                     $result ['dealPrice'] = $this->getValByPosition($result ['dealPricePosition']);
                     $result ['len'] = count($this->arr);                                       //清洗后的有效数据数量
                     //计算直方图的数据,分30条
-                    $result['barChart'] = $this->barChart(30);
+                    $result['barChart'] = $this->barChart(config('barChart_num'));
                     return $result;
                 }
             }

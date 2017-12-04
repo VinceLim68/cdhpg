@@ -117,7 +117,7 @@
 								{volist name="B['barChart']" id="vo"  }
 								<!-- 	{$key}.{$vo} -->
 									<rect x="{$B['X']-$vo*$B['x_unit']-10}%" y="{$key*$B['y_unit']+$B['Y_padding']}%" width="{$vo*$B['x_unit']}%" height="{$B['y_unit']-1}%" class='barChart' />
-									<text x="{$B['X']-8}%" y="{$key*$B['y_unit']+$B['Y_padding']+$B['y_unit']}%" class='barChart_text'>{$vo}</text>
+									<text x="{$B['X']-$vo*$B['x_unit']/2-10}%" y="{$key*$B['y_unit']+$B['Y_padding']+$B['y_unit']-2}%" class='barChart_text'>{$vo}</text>
 								{/volist}
 							</svg>
 							

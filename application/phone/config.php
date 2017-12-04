@@ -15,7 +15,7 @@ return [
     'X'                             => 75,              //竖向的盒须图，在左侧留出%给直方图用
     'box_width'                     =>5,                //盒须图本身的宽度        
     'Y_padding'                     =>5,                //相当于top_padding
-    'barChart_num'                  =>30,               //直方图的数量
+    'barChart_num'                  =>15,               //直方图的数量
     'std_r_limit'                   =>10,               //判断标准差系数是否异常的标准
     'scatter_extend_r'              =>0.00,                //散点图扩展百分比。5表示在X、Y轴都扩展5%
     'scatter_X_left'                =>  5,              //  散点图在X轴左侧留的百分比，用于显示Y轴的标数

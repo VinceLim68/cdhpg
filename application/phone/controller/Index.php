@@ -389,45 +389,4 @@ class Index extends Common {
         return $this->fetch();
     }
     
-    public function boxPlot(){
-        $getPrice_result =array(
-            'median' => 49863,
-              'min' => 44640,
-              'max' =>  54347,
-              'v75' =>  51145,
-              'v25' =>  48101,
-//             'Y' => 40,                  //盒须图起始的Y的位置，即padding-top,单位是%
-//             'box_heigh' =>30,
-                'X'     => 75,
-                'box_width' =>5,
-                'Y_padding' =>5,            //相当于top_padding
-        );
-        $getPrice_result['Q0v'] = max(
-            $getPrice_result['min'],
-            $getPrice_result['v25']-($getPrice_result['v75']-$getPrice_result['v25'])*1.5
-            );
-        $getPrice_result['Q4v'] = min(
-            $getPrice_result['max'],
-            $getPrice_result['v75']+($getPrice_result['v75']-$getPrice_result['v25'])*1.5
-            );
-        $unit = (100-$getPrice_result['Y_padding'])/($getPrice_result['max']-$getPrice_result['min']);
-        $getPrice_result['Qmin'] = $getPrice_result['Y_padding'];
-//         $getPrice_result['Qmin'] = 1;
-        $getPrice_result['Qmax'] = 99;
-//         $getPrice_result['Q0'] = ($getPrice_result['Q0v']-$getPrice_result['min'])*$unit;
-        $getPrice_result['Q0'] = ($getPrice_result['Q0v']-$getPrice_result['min'])*$unit + $getPrice_result['Y_padding'];
-//         if($getPrice_result['Q0'] == 0){
-//             $getPrice_result['Q0'] = 1;
-//         }
-        $getPrice_result['Q1'] = ($getPrice_result['v25']-$getPrice_result['min'])*$unit + $getPrice_result['Y_padding'];
-        $getPrice_result['Q2'] = ($getPrice_result['median']-$getPrice_result['min'])*$unit + $getPrice_result['Y_padding'];
-        $getPrice_result['Q3'] = ($getPrice_result['v75']-$getPrice_result['min'])*$unit + $getPrice_result['Y_padding'];
-        $getPrice_result['Q4'] = ($getPrice_result['Q4v']-$getPrice_result['min'])*$unit + $getPrice_result['Y_padding'];
-        if($getPrice_result['Q4'] >= 99){
-            $getPrice_result['Q4'] = 99;
-        }
-        $this->assign('B',$getPrice_result);
-        //dump($getPrice_result);
-        return $this->fetch();
-    }
 }

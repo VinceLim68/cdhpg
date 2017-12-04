@@ -1,5 +1,6 @@
 body {
-	background-color: #E4E6E9;
+
+	background-color: #E4E6E9; 
 }
 hr {
 	margin-top: 0px;
@@ -39,7 +40,7 @@ form .form-group input:focus{
 	text-align: center;
 }
 .nav-pills > li{
-	width:24%;
+	/* width:24%; */
 }
 .dropdown-menu > .active > a, .dropdown-menu > .active > a:focus,
 .dropdown-menu > .active > a:hover{
@@ -88,34 +89,36 @@ table {
  	color:#5cb85c;
  }
  svg .plotboxtext{
-	 fill:#DD5A43;
+	 fill:#51626E;
  }
  
  svg line{
 	stroke-width:3;
-	stroke:#DD5A43; 
+	stroke:#51626E; 
 	/* stroke-dasharray: 5; */
 	stroke-opacity:1;
  	
  }
  
  svg .plotbox_box{
-	fill:#DD5A43;
-	stroke:#DD5A43;
+	fill:#51626E;
+	stroke:#51626E;
 	stroke-width:3;
 	opacity:1;
  }
  
  svg .barChart{
-	fill:#5cb85c;
-	stroke:#5cb85c;
-	stroke-width:3;
+	fill:#77A9AE;
+	stroke:#8BC0C6;
+	stroke-width:1;
 	stroke-opacity:0.9;
  }
  
  svg .barChart_text{
-	fill:#5cb85c;
-	font-size: 12px;
+	fill:#d6e9c6;
+	font-size: 14px;
+ 	stroke-width:2;
+ 	font-weight:700;
  }
  
  svg .scatter_circle{
