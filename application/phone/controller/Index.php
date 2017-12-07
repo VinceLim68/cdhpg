@@ -87,6 +87,11 @@ class Index extends Common {
         if(count($result[1])>0){
             $PL = new PriceLogic($result);
             $getPrice_result = $PL->getStatic($getComm,$price);
+            $getPrice_result['emplorers'] = config('emplorers');
+            $getPrice_result['use'] = config('use');
+            $getPrice_result['elevator'] = config('elevator');
+            $getPrice_result['structuer'] = config('structuer');
+            
             $this->assign('B',$getPrice_result);
 
             //===================把离散值过大的数据记录error_comm,以备改进=================================
@@ -146,6 +151,21 @@ class Index extends Common {
 //         echo "当前模块名称是" . $request->module();
 //         返回控制器名
         return $this->fetch();
+    }
+    
+    public function insertquery(){
+        //插入询价记录
+        $result = $this->validate(input(),'InsertQueryValidate');
+        if(true !== $result){
+            // 验证失败 输出错误信息
+            return ['status'=>'输入不规范','msg'=> $result];
+        };
+        $data = input();
+        $data['Enquiry_Source'] = '估价师报价';
+        $data['Enquiry_Date'] = date ( "Y-m-d");
+        //同一估价师，同一小区，同一用途，在一段时间内不允许重复报价
+        //不同估价师，同一小区，同一用途，在一段时间内不允许报相同的价;
+        return ['status'=>'成功','msg'=> $data];
     }
     
 }

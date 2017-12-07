@@ -6,8 +6,7 @@
 	content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no">
 <title>大叔报价</title>
 <link rel="stylesheet" type="text/css" href="__CSS__/bootstrap.min.css">
-<link rel="stylesheet" type="text/css"
-	href="__CSS__/font-awesome.min.css">
+<link rel="stylesheet" type="text/css"	href="__CSS__/font-awesome.min.css">
 <!-- <link href="//netdna.bootstrapcdn.com/font-awesome/4.7.0/css/font-awesome.min.css" rel="stylesheet"> -->
 <link rel="stylesheet" type="text/css" href="__CSS__/comms/enquiry.css">
 </head>
@@ -22,13 +21,15 @@
 			<ul class="nav nav-pills nav-tabs" >
 				<li class="active" ><a href="#base" aria-controls="base" role="tab" data-toggle="tab" >基价</a></li>
 				<li ><a href="#box" aria-controls="box" role="tab" data-toggle="tab" >盒须图</a></li>
-				<li ><a href="#box1" aria-controls="box1" role="tab" data-toggle="tab" >参数</a></li>
+ 				<!-- <li ><a href="#" id='query_record'>记录</a></li>  -->
+ 				<li ><a href="#query_record" aria-controls="query_record" role="tab" data-toggle="tab" >记录</a></li> 
 				<!-- <li ><a href="#box2" aria-controls="box2" role="tab" data-toggle="tab" >下拉菜单</a></li> -->
 				<li role="presentation" class="dropdown">
 				    <a class="dropdown-toggle" data-toggle="dropdown" href="#" role="button" aria-haspopup="true" aria-expanded="false">
 				      {$Think.session.user.user_name} <span class="caret"></span>
 				    </a>
 				    <ul class="dropdown-menu">
+				    	<li ><a href="#box1" aria-controls="box1" role="tab" data-toggle="tab" >参数</a></li>
 					    <li ><a href="#scatter_area_price" aria-controls="scatter_area_price" role="tab" data-toggle="tab" >面积/房价散点</a></li>
 					    <li ><a href="#scatter_floor_price" aria-controls="scatter_floor_price" role="tab" data-toggle="tab" >总楼层/房价散点</a></li>
 					    <li ><a href="#box2" aria-controls="box2" role="tab" data-toggle="tab" >导出Excel</a></li>
@@ -78,7 +79,7 @@
 									<td class="col-md-4 col-xs-4 left " >建成年份</td>
 									<td class="col-md-8 col-xs-8 right">{$B['avg_builded_year']}年</td>
 								</tr>
-								</table>
+							</table>
 						</div>
 					</div>
 				</div>
@@ -115,7 +116,6 @@
 								<text x="{$B['X']+$B['box_width']+2}%" y="{$B['Qmax']}%" class='plotboxtext' >{$B['max']}</text>
 					            <!-- 画直方图 -->
 								{volist name="B['barChart']" id="vo"  }
-								<!-- 	{$key}.{$vo} -->
 									<rect x="{$B['X']-$vo*$B['x_unit']-10}%" y="{$key*$B['y_unit']+$B['Y_padding']}%" width="{$vo*$B['x_unit']}%" height="{$B['y_unit']-1}%" class='barChart' />
 									<text x="{$B['X']-$vo*$B['x_unit']/2-10}%" y="{$key*$B['y_unit']+$B['Y_padding']+$B['y_unit']-2}%" class='barChart_text'>{$vo}</text>
 								{/volist}
@@ -124,6 +124,110 @@
 						</div>
 					</div>
 			    </div>
+				<!-- 登记询价记录 -->
+				<div role="tabpanel" class="tab-pane " id="query_record">
+	   				<div class="panel panel-success">
+						<div class="panel-heading">
+							<button type="button" class="btn btn-success btn-lg" id='insertQuery'>登记询价记录</button>
+						</div>
+						<div class="list-group "	>
+							<form class="form-horizontal" id = "insertQueryForm">
+							  	<table class="table">
+								<tr>
+									<td class="col-md-4 col-xs-4 left" >小区</td>
+									<td class="col-md-8 col-xs-8 right">
+										<input type="text" name="Enquiry_CellName" value="{$B['comm']['comm_name']}">
+									</td>
+								</tr>
+								<tr>
+									<td class="col-md-4 col-xs-4 left" >报价</td>
+									<td class="col-md-8 col-xs-8 right">
+										<input type="text" name="Apprsal_Up" value="{$B['mortgagePrice']}">
+									</td>
+								</tr>
+								<tr>
+									<td class="col-md-4 col-xs-4 left" >备注</td>
+									<td class="col-md-8 col-xs-8 right">
+										<input type="text" name="Remark" value="{$B['len']}个数据，挂牌价格{$B['min']}-{$B['max']}元/平方米">
+									</td>
+								</tr>
+								<tr>
+									<td class="col-md-4 col-xs-4 left" >询价</td>
+									<td class="col-md-8 col-xs-8 right">
+										<input type="text" name="Enquiry_PmName" value="公司外部" list="emplorers">
+										<datalist id="emplorers">
+										  	{volist name="B['emplorers']" id="vo"  }
+											  <option value="{$vo}">
+											{/volist}
+										</datalist>
+									</td>
+								</tr>
+						
+								<tr>
+									<td class="col-md-4 col-xs-4 left" >地址</td>
+									<td class="col-md-8 col-xs-8 right">
+										<input type="text" name="PA_Located" value="二手房可以评估{$B['dealPrice']}">
+									</td>
+								</tr>
+								<tr>
+									<td class="col-md-4 col-xs-4 left" >用途</td>
+									<td class="col-md-8 col-xs-8 right">
+										<input type="text" name="Apprsal_Use" value="住宅" list="use">
+										<datalist id="use">
+										  	{volist name="B['use']" id="vo"  }
+											  <option value="{$vo}">
+											{/volist}
+										</datalist>
+									</td>
+								</tr>
+								<tr>
+									<td class="col-md-4 col-xs-4 left" >建成</td>
+									<td class="col-md-8 col-xs-8 right">
+										<input type="text" name="PA_YearBuilt" value="{$B['avg_builded_year']}" >
+									</td>
+								</tr>
+								<tr>
+									<td class="col-md-4 col-xs-4 left" >电梯</td>
+									<td class="col-md-8 col-xs-8 right">
+										<input type="text" name="PA_Elevator" value=
+										{$B['avg_total_floor'] > 8 ? '带电梯' : '无电梯'}
+										 list="elevator">
+										<datalist id="elevator">
+										  	{volist name="B['elevator']" id="vo"  }
+											  <option value="{$vo}">
+											{/volist}
+										</datalist>
+									</td>
+								</tr>
+								<tr>
+									<td class="col-md-4 col-xs-4 left" >结构</td>
+									<td class="col-md-8 col-xs-8 right">
+										<input type="text" name="PA_Structure" value={$B['avg_total_floor'] > 7 ? '钢混结构' : '砖混结构'} list="structuer">
+										<datalist id="structuer">
+										  	{volist name="B['structuer']" id="vo"  }
+											  <option value="{$vo}">
+											{/volist}
+										</datalist>
+									</td>
+								</tr>
+								<tr>
+									<td class="col-md-4 col-xs-4 left" >层次</td>
+									<td class="col-md-8 col-xs-8 right">
+										<input type="text" name="PA_Level" value="{$B['avg_floor_index']}">
+									</td>
+								</tr>
+								<tr>
+									<td class="col-md-4 col-xs-4 left" >总层</td>
+									<td class="col-md-8 col-xs-8 right">
+										<input type="text" name="Enquiry_Layout" value="{$B['avg_total_floor']}">
+									</td>
+								</tr>
+							</table>
+						  </form>
+							
+						</div>
+					</div>
+				</div>
 			    <!-- 参数 -->
 			    <div role="tabpanel" class="tab-pane" id="box1">
 			    	<div class="list-group"	>
@@ -165,9 +269,8 @@
 								</table>
 						</div>
 <!-- 					{volist name="B" id="vo"  }
-					{$key}
-					{/volist} -->
-					<!-- {php}var_dump($B){/php} -->
+							{$key}
+						{/volist} -->
 			    </div>
 			    
 			    <!-- 面积楼价散点图 -->
@@ -231,7 +334,7 @@
 			 <div class="input-group input-group-lg" style="margin-top:10px;">
 		      <input type="text" class="form-control" placeholder="输入您认为合适的评估价..." id="myprice">
 		      <span class="input-group-btn ">
-		        <button class="btn btn-success " id="dispute" type="button">&emsp;我有异议 !&emsp;</button>
+		        <button class="btn btn-success " id="dispute" type="button">我有异议 !</button>
 		      </span>
 		    </div>
 		</div>
@@ -272,15 +375,6 @@
 					my_min:{$B['min']},
 					my_max:{$B['max']},
         		},
-         		/* beforeSend:function(){
-        			if(($('#myprice').val()<{$B['min']*0.8}) || ($('#myprice').val()>{$B['max']})){
-        				$('#mymodal_header').html('抱歉');
-        				$('#mymodal-body').html('感谢您的参与，但您提供的评估价未被采纳');
-        				$('#mymodal').modal('show');
-        				$('#myprice').val('');
-        				return false;
-        			}
-        		} , */
         		success: function(msg){
         			$('#mymodal_header').html(msg['h']);
     				$('#mymodal-body').html('<p>'+ msg['b'] + '</p>');
@@ -289,6 +383,24 @@
        		   }
 				
 			});
+		} );
+		
+		jQuery("#insertQuery").on('click',function (){
+			var date = new Date();
+			/* var data = $.param({'state': '123'}) + '&' + $('#insertQueryForm').serialize(); */
+			$.ajax({
+				url:'{:url('insertquery')}',
+				type:'POST',
+				data:$('#insertQueryForm').serialize()+ '&' +$.param({
+					'OfferPeople':'林晓',
+					}),
+				success: function(msg){
+        			$('#mymodal_header').html(msg['status']);
+    				$('#mymodal-body').html('<p>'+ msg['msg'] + '</p>');
+    				$('#mymodal').modal('show');
+       		   	},	
+			});
+
 		} );
 		     
 	})
