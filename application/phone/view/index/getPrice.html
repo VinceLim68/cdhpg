@@ -49,7 +49,7 @@
 							{else /} 抵押评估价
 							{/if}
 							</span>
-							<h1 style="text-align: center; font-weight: 700;{if condition="$B['std_r'] > 12 "}color:#DD5A43;opacity:0.5;{/if}">
+							<h1 style="text-align: center; font-weight: 700;{if condition="$B['std_r'] > 12 "}opacity:0.5;{/if}">
 							{if condition="$B['priceByDeal'] > 0 "}
 							{$B['priceByDeal']}
 							{else /} {$B['mortgagePrice']}
@@ -57,7 +57,7 @@
 								元 <small>/平方米</small>
 							</h1>
 							{if condition="$B['std_r'] > 12 "}
-							<p style="text-align:center;opacity:0.5;">数据离散性过大，本报价需要估价师确认</p>
+							<p  style="text-align:center;color:#DD5A43;">数据离散性过大，本报价需要估价师确认</p>
 							{/if}
 		
 						</div>
@@ -175,7 +175,7 @@
    				    <div class="panel panel-success">
 						<div class="panel-heading" style="width:100% ;height:400px" >
 							<svg xmlns="http://www.w3.org/2000/svg" version="1.1" width="100%" height="100%">
-								{volist name="AL" id="vo"  }
+								{volist name="B['area_price_scatter']['A_line']" id="vo"  }
 									<line x1="{$vo['x0']}%" y1="{$vo['y0']}%" x2="{$vo['x1']}%" y2="{$vo['y1']}%"  class='scatter_line' />
 									<text x="{$vo['t_x']}%" y="{$vo['t_y']}%" 
 									class='{if condition="$vo['t_x'] == 0 ")}
@@ -183,13 +183,13 @@
 									{else /} scatter_text_x
 									{/if} scatter_text' >{$vo['val']}</text>
 								{/volist}
-								{volist name="A" id="vo"  }
+								{volist name="B['area_price_scatter']['A']" id="vo"  }
 									<circle cx="{$vo['x']}%" cy="{$vo['y']}%" class = 'scatter_circle' r="1%"/>
 								{/volist}
-									<line x1="{$AX[0]['x0']}%" y1="{$AX[0]['y0']}%" x2="{$AX[0]['x1']}%" y2="{$AX[0]['y1']}%"  class='scatter_axes' />
-									<text x="{$AX[0]['t_x']}%" y="{$AX[0]['t_y']}%"  class='XAxesText'>{$AX[0]['val']}</text>
-									<line x1="{$AX[1]['x0']}%" y1="{$AX[1]['y0']}%" x2="{$AX[1]['x1']}%" y2="{$AX[1]['y1']}%"  class='scatter_axes' />
-									<text x="{$AX[1]['t_x']}%" y="{$AX[1]['t_y']}%" class='YAxesText'>{$AX[1]['val']}</text>
+									<line x1="{$B['area_price_scatter']['axes'][0]['x0']}%" y1="{$B['area_price_scatter']['axes'][0]['y0']}%" x2="{$B['area_price_scatter']['axes'][0]['x1']}%" y2="{$B['area_price_scatter']['axes'][0]['y1']}%"  class='scatter_axes' />
+									<text x="{$B['area_price_scatter']['axes'][0]['t_x']}%" y="{$B['area_price_scatter']['axes'][0]['t_y']}%"  class='XAxesText'>{$B['area_price_scatter']['axes'][0]['val']}</text>
+									<line x1="{$B['area_price_scatter']['axes'][1]['x0']}%" y1="{$B['area_price_scatter']['axes'][1]['y0']}%" x2="{$B['area_price_scatter']['axes'][1]['x1']}%" y2="{$B['area_price_scatter']['axes'][1]['y1']}%"  class='scatter_axes' />
+									<text x="{$B['area_price_scatter']['axes'][1]['t_x']}%" y="{$B['area_price_scatter']['axes'][1]['t_y']}%" class='YAxesText'>{$B['area_price_scatter']['axes'][1]['val']}</text>
 							</svg>
 						</div>
 					</div>
@@ -200,7 +200,7 @@
 			    	<div class="panel panel-success">
 						<div class="panel-heading" style="width:100% ;height:400px" >
 							<svg xmlns="http://www.w3.org/2000/svg" version="1.1" width="100%" height="100%">
-								{volist name="FL" id="vo"  }
+								{volist name="B['floor_price_scatter']['A_line']" id="vo"  }
 									<line x1="{$vo['x0']}%" y1="{$vo['y0']}%" x2="{$vo['x1']}%" y2="{$vo['y1']}%"  class='scatter_line' />
 									<text x="{$vo['t_x']}%" y="{$vo['t_y']}%" 
 									class='{if condition="$vo['t_x'] == 0 ")}
@@ -208,13 +208,13 @@
 									{else /} scatter_text_x
 									{/if} scatter_text' >{$vo['val']}</text>
 								{/volist}
-								{volist name="F" id="vo"  }
+								{volist name="B['floor_price_scatter']['A']" id="vo"  }
 									<circle cx="{$vo['x']}%" cy="{$vo['y']}%" class = 'scatter_circle' r="1%"/>
 								{/volist}
-									<line x1="{$FX[0]['x0']}%" y1="{$FX[0]['y0']}%" x2="{$FX[0]['x1']}%" y2="{$FX[0]['y1']}%"  class='scatter_axes' />
-									<text x="{$FX[0]['t_x']}%" y="{$FX[0]['t_y']}%"  class='XAxesText'>{$FX[0]['val']}</text>
-									<line x1="{$FX[1]['x0']}%" y1="{$FX[1]['y0']}%" x2="{$FX[1]['x1']}%" y2="{$FX[1]['y1']}%"  class='scatter_axes' />
-									<text x="{$FX[1]['t_x']}%" y="{$FX[1]['t_y']}%" class='YAxesText'>{$FX[1]['val']}</text>
+									<line x1="{$B['floor_price_scatter']['axes'][0]['x0']}%" y1="{$B['floor_price_scatter']['axes'][0]['y0']}%" x2="{$B['floor_price_scatter']['axes'][0]['x1']}%" y2="{$B['floor_price_scatter']['axes'][0]['y1']}%"  class='scatter_axes' />
+									<text x="{$B['floor_price_scatter']['axes'][0]['t_x']}%" y="{$B['floor_price_scatter']['axes'][0]['t_y']}%"  class='XAxesText'>{$B['floor_price_scatter']['axes'][0]['val']}</text>
+									<line x1="{$B['floor_price_scatter']['axes'][1]['x0']}%" y1="{$B['floor_price_scatter']['axes'][1]['y0']}%" x2="{$B['floor_price_scatter']['axes'][1]['x1']}%" y2="{$B['floor_price_scatter']['axes'][1]['y1']}%"  class='scatter_axes' />
+									<text x="{$B['floor_price_scatter']['axes'][1]['t_x']}%" y="{$B['floor_price_scatter']['axes'][1]['t_y']}%" class='YAxesText'>{$B['floor_price_scatter']['axes'][1]['val']}</text>
 							</svg>
 						</div>
 			    	</div>
@@ -231,7 +231,7 @@
 			 <div class="input-group input-group-lg" style="margin-top:10px;">
 		      <input type="text" class="form-control" placeholder="输入您认为合适的评估价..." id="myprice">
 		      <span class="input-group-btn ">
-		        <button class="btn btn-success " id="dispute" type="button">&emsp;&emsp;我有异议 !&emsp;&emsp;   </button>
+		        <button class="btn btn-success " id="dispute" type="button">&emsp;我有异议 !&emsp;</button>
 		      </span>
 		    </div>
 		</div>

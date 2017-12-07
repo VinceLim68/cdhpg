@@ -10,14 +10,17 @@ class PriceLogic
      */
     private $price = [];
     private $arr = [];
+    private $date;
 //     private $arr_cleared = [];
     
     public function __construct($collection){
-        array_multisort(array_column ( $collection, 'price' ), SORT_ASC, $collection);
-        $this->arr = $collection;
+//         halt($collection);
+        array_multisort(array_column ( $collection[1], 'price' ), SORT_ASC, $collection[1]);
+        $this->arr = $collection[1];
         $this->price = array_column ($this->arr, 'price' );
+        $this->date = $collection[0];
     }
-    public function getStatic(){
+    public function getStatic($getComm,$price){
         //获取数据分析的结果
         //1 初步清洗偏离值
         $length = count ($this->arr);
@@ -41,7 +44,7 @@ class PriceLogic
                     //再计算标准差、平均值等
                     $result = array_merge ( $result, $this->std_mean()); 
                     //计算基价的内涵数据
-                    $result ['avg_area'] = $this->getAvg ( 'area' ); // 分蚛平均面积、平均楼层、平均总楼层、平均建成年份写入数组
+                    $result ['avg_area'] = $this->getAvg ( 'area' ); // 分别平均面积、平均楼层、平均总楼层、平均建成年份写入数组
                     $result ['avg_total_floor'] = $this->getAvg (  'total_floor' );
                     $result ['avg_floor_index'] = $this->getAvg ( 'floor_index' );
                     $result ['avg_builded_year'] = $this->getAvg ('builded_year' );
@@ -49,13 +52,170 @@ class PriceLogic
                     $result ['mortgagePrice'] = $this->mortgagePrice ( $result );
                     $result ['dealPricePosition'] = $this->dealPricePosition($result['mean']);
                     $result ['dealPrice'] = $this->getValByPosition($result ['dealPricePosition']);
-                    $result ['len'] = count($this->arr);                                       //清洗后的有效数据数量
-                    //计算直方图的数据,分30条
+                    
+                    //清洗后的有效数据数量
+                    $result ['len'] = count($this->arr); 
+                    //原始的数据数量
+                    $result['ori_len'] = $length;
+                    $result['from_date'] = date('Y-m-d',$this->date );
+                    $result['comm'] = $getComm;
+                    $result['price'] = $price;
+                    $result['priceByDeal'] = 0;
+                    
+                    //这里是处理有输入成交价时
+                    if($price > 0){
+                        if($price > $result['max'] or $price < $result['min']){
+                            $result['priceByDeal'] = -1;           //-1表示异常，0表示没有提供成交价
+                        }else{
+                            $result['priceByDeal'] = $this->dealPrice($price, $result);
+                        }
+                    }
+                    //覆盖率
+                    $result['coverage'] = round($result['len']/$result['ori_len']*100,2);
+                    //标准差系数
+                    $result['std_r'] = round($result['std']/$result['mean']*100,2);
+                    
+                    //计算盒须图
+                    $result = $this->plotBox($result);
+                    //计算直方图的数据
                     $result['barChart'] = $this->barChart(config('barChart_num'));
+                    //============================以下是计算直方图==============================
+                    $result['x_unit'] = ($result['X'] - 10)/max($result['barChart']);
+                    $result['y_unit'] = (100 - $result['Y_padding'])/config('barChart_num');
+                    $result['area_price_scatter'] = $this->scatter('price', 'area');
+                    $result['floor_price_scatter'] = $this->scatter('price', 'total_floor');
                     return $result;
                 }
             }
         }
+    }
+    
+   
+    private function scatter($Xitem,$Yitem){
+        //===========================计算散点图==================================
+//         Xitem表示X轴的参数，$Yitem表示Y轴的参数
+//         $result_arr = $PL->getArr();
+        $area_price_scatter['Xmin'] = 10000000;
+        $area_price_scatter['Xmax'] = 0;
+        $area_price_scatter['Ymin'] = 10000000;
+        $area_price_scatter['Ymax'] = 0;
+        foreach ($this->arr as $item)
+        {
+            if ($item[$Xitem] > 0 and $item [$Yitem] > 0) {
+                $area_price [] = array($Xitem=>$item[$Xitem],$Yitem=>$item [$Yitem]);
+                if($item[$Xitem] > $area_price_scatter['Xmax']){
+                    $area_price_scatter['Xmax'] = $item[$Xitem];
+                }
+                if($item[$Xitem] < $area_price_scatter['Xmin']){
+                    $area_price_scatter['Xmin'] = $item[$Xitem];
+                }
+                if($item[$Yitem] > $area_price_scatter['Ymax']){
+                    $area_price_scatter['Ymax'] = $item[$Yitem];
+                }
+                if($item[$Yitem] < $area_price_scatter['Ymin']){
+                    $area_price_scatter['Ymin'] = $item[$Yitem];
+                }
+            }
+        }
+
+        //计算最大值最小值
+        $scatter_extend_r = config('scatter_extend_r');
+        $area_price_scatter['X0'] = floor($area_price_scatter['Xmin']*(1-$scatter_extend_r)/1000)*1000;
+        $area_price_scatter['X5'] = ceil($area_price_scatter['Xmax']*(1+$scatter_extend_r)/1000)*1000;
+        $scatter_X_left = config('scatter_X_left');
+        $area_price_scatter['Xunit'] = (100 - $scatter_X_left)/($area_price_scatter['X5']-$area_price_scatter['X0']);
+        if($Yitem == 'area'){
+            $area_price_scatter['Y0'] = floor($area_price_scatter['Ymin']*(1-$scatter_extend_r)/10)*10;
+            $area_price_scatter['Y5'] = ceil($area_price_scatter['Ymax']*(1+$scatter_extend_r)/10)*10;
+        }elseif ($Yitem == 'total_floor'){
+            $area_price_scatter['Y0'] = $area_price_scatter['Ymin']-1;
+            $area_price_scatter['Y5'] = $area_price_scatter['Ymax']+1;
+        }
+        $scatter_Y_top = config('scatter_Y_top');
+        $area_price_scatter['Yunit'] = (100 - $scatter_Y_top)/($area_price_scatter['Y5']-$area_price_scatter['Y0']);
+        
+        //这是散点
+        foreach ($area_price as $A_item){
+            $x = ($A_item[$Xitem]-$area_price_scatter['X0'] )*$area_price_scatter['Xunit'] + $scatter_X_left;
+            $y = ($A_item[$Yitem]-$area_price_scatter['Y0'] )*$area_price_scatter['Yunit'] + $scatter_Y_top;
+            $A[] = array('x'=>$x,'y'=>$y);
+        }
+        //这是纵向的Y轴
+        for ($i=0; $i<=5; $i++) {
+            $x0 = $scatter_X_left + (100 - $scatter_X_left)/5*$i;
+            $x1 = $x0;
+            $y0 = $scatter_Y_top ;
+            $y1 = 100;
+            $value = $area_price_scatter['X0']+($area_price_scatter['X5']-$area_price_scatter['X0'])/5*$i;
+            $A_line[] = array('x0'=>$x0,'x1'=>$x1,'y0'=>$y0,'y1'=>$y1,'val'=>$value,'t_x'=>$x0,'t_y'=>$y0-1);
+            //'t_x','t_y'是文本显示的位置
+        }
+
+        //X轴
+        for ($i=0; $i<=5; $i++) {
+            $x0 = $scatter_X_left;
+            $x1 = 100;
+            $y0 = $scatter_Y_top + (100 - $scatter_Y_top)/5*$i;
+            $y1 = $y0;
+            $value = $area_price_scatter['Y0']+($area_price_scatter['Y5']-$area_price_scatter['Y0'])/5*$i;
+            $A_line[] = array('x0'=>$x0,'x1'=>$x1,'y0'=>$y0,'y1'=>$y1,'val'=>$value,'t_x'=>0,'t_y'=>$y0);
+            //'t_x','t_y'是文本显示的位置
+        }
+        
+        $axes[] = array(
+            'x0'=>$scatter_X_left,
+            'x1'=>100,
+            'y0'=>$scatter_Y_top,
+            'y1'=>$scatter_Y_top,
+            'val'=>'(房价 元/平方米)',
+            't_x'=>100-1,
+            't_y'=>$scatter_Y_top+4
+        );          //X轴线
+                
+        $axes[] = array(
+            'x0'=>$scatter_X_left,
+            'x1'=>$scatter_X_left,
+            'y0'=>$scatter_Y_top,
+            'y1'=>100,
+            'val'=>($Yitem == 'area')? '(面积 平方米)':'(总楼层)',
+            't_x'=>$scatter_X_left+1,
+            't_y'=>100-1
+        );
+        
+
+        $scatter['A'] = $A;
+        $scatter['A_line'] = $A_line;
+        $scatter['axes'] = $axes;
+//         halt($scatter);
+        return $scatter;
+    }
+    
+    private function plotBox($getPrice_result){
+        //==============================以下是计算盒须图====================================
+        $getPrice_result['X']= config('X');
+        $getPrice_result['box_width']= config('box_width');
+        $getPrice_result['Y_padding']= config('Y_padding');
+    
+        $getPrice_result['Q0v'] = max(
+            $getPrice_result['min'],
+            $getPrice_result['v25']-($getPrice_result['v75']-$getPrice_result['v25'])*1.5
+            );
+        $getPrice_result['Q4v'] = min(
+            $getPrice_result['max'],
+            $getPrice_result['v75']+($getPrice_result['v75']-$getPrice_result['v25'])*1.5
+            );
+        $unit = (100-$getPrice_result['Y_padding'])/($getPrice_result['max']-$getPrice_result['min']);
+        $getPrice_result['Qmin'] = $getPrice_result['Y_padding'];
+        $getPrice_result['Qmax'] = 99;
+        $getPrice_result['Q0'] = ($getPrice_result['Q0v']-$getPrice_result['min'])*$unit + $getPrice_result['Y_padding'];
+        $getPrice_result['Q1'] = ($getPrice_result['v25']-$getPrice_result['min'])*$unit + $getPrice_result['Y_padding'];
+        $getPrice_result['Q2'] = ($getPrice_result['median']-$getPrice_result['min'])*$unit + $getPrice_result['Y_padding'];
+        $getPrice_result['Q3'] = ($getPrice_result['v75']-$getPrice_result['min'])*$unit + $getPrice_result['Y_padding'];
+        $getPrice_result['Q4'] = ($getPrice_result['Q4v']-$getPrice_result['min'])*$unit + $getPrice_result['Y_padding'];
+        if($getPrice_result['Q4'] >= 99){
+            $getPrice_result['Q4'] = 99;
+        }
+        return $getPrice_result;
     }
     
     private function getValByPosition($position) {
