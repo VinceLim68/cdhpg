@@ -14,8 +14,9 @@ class UserModel extends Model
 	// 定义时间戳字段名
 	protected $createTime = 'register_date';
 	protected $updateTime = 'last_login';
+	protected $resultSetType = 'collection';
 	
-	
+	 
 	/*
 	 * 登录
 	 */
@@ -26,11 +27,9 @@ class UserModel extends Model
 		// 		如果验证不通过
 		if(!$validate->check($data)){
 			return ['valid'=>0,'msg'=>$validate->getError()];
-		// 			dump($validate->getError());
 		}
 		// 		2.比对用户名和密码
 		$userInfo = $this->where('user_name',$data['user_name'])->where('pass',$data['pass'])->find();
-// 				halt($userInfo['last_login']);
 		if(!$userInfo)
 		{
 			//说明在数据库没找到用户

@@ -30,5 +30,22 @@ return [
 				 ],
     'elevator'  =>  ['带电梯','无电梯'],
     'structuer' =>  ['钢混结构','砖混结构','钢结构'],
+    //apprsal_cdh数据库配置
+    'db_apprsal_cdh' => [
+        // 数据库类型
+	    'type'        => 'mysql',
+	    // 服务器地址
+	    'hostname'    => '192.168.1.207',
+	    // 数据库名
+	    'database'    => 'apprsal_cdh',
+	    // 数据库用户名
+	    'username'    => 'root',
+	    // 数据库密码
+	    'password'    => 'root',
+	    // 数据库编码默认采用utf8
+	    'charset'     => 'utf8',
+	    // 数据库调试模式
+	    'debug'       => true,
+    ],
     
 ];

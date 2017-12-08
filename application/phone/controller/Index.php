@@ -8,6 +8,7 @@ use app\evalu\controller\Common;
 use app\evalu\model\ErrorCommModel;
 use app\phone\model\QueryRecordsModel;
 use app\evalu\model\SalesModel;
+use app\phone\model\TEnquiryModel;
 
 class Index extends Common {
     
@@ -147,10 +148,15 @@ class Index extends Common {
     }
     
     public function test(){
+//         $enquiry = new TEnquiryModel();
+//         $result = $enquiry->limit(10)->select();
+//         halt($result);
+        echo date ('Y', strtotime('2006'));
+        
 //         $request = Request::instance();
 //         echo "当前模块名称是" . $request->module();
 //         返回控制器名
-        return $this->fetch();
+//         return $this->fetch();
     }
     
     public function insertquery(){
@@ -163,9 +169,37 @@ class Index extends Common {
         $data = input();
         $data['Enquiry_Source'] = '估价师报价';
         $data['Enquiry_Date'] = date ( "Y-m-d");
+        $data['PA_YearBuilt'] = date ('Y-m-d', strtotime($data['PA_YearBuilt'].'-1-1'));
+        if(!isset($enq)){
+            $enq = new TEnquiryModel();
+        }
+        //不同估价师，同一小区，同一用途，在一段时间内不允许报相同的价;但管理员不受此限
+        if(session('user.user_name') != 'admin'){
+            $findResult2 = $enq->where('Enquiry_CellName',$data['Enquiry_CellName'])
+                        ->where('Apprsal_Use',$data['Apprsal_Use'])
+                        ->where('Enquiry_Date','> time',date ( "Y-m-d", strtotime ( "-30 day" ) ))
+                        ->where('Apprsal_Up',$data['Apprsal_Up'])
+                        ->find();
+            if($findResult2){
+                return ['status'=>'报价雷同','msg'=> '在过去的一个月中已经有估价师对同一小区、同一用途作过相同报价，不再重复记录、'];
+            }
+            
+        }
         //同一估价师，同一小区，同一用途，在一段时间内不允许重复报价
-        //不同估价师，同一小区，同一用途，在一段时间内不允许报相同的价;
-        return ['status'=>'成功','msg'=> $data];
+        $findResult = $enq->where('OfferPeople',$data['OfferPeople'])
+                    ->where('Enquiry_CellName',$data['Enquiry_CellName'])
+                    ->where('Apprsal_Use',$data['Apprsal_Use'])
+                    ->where('Enquiry_Date','> time',date ( "Y-m-d", strtotime ( "-30 day" ) ))
+                    ->find();
+        //插入记录
+        if(!$findResult){
+            
+            $insertEnguery = $enq->data($data)->save();
+            return ['status'=>'登记成功','msg'=> '已将询价记录成功记入数据库中'];
+        }else{
+            return ['status'=>'重复数据','msg'=> '您在过去的一个月中已经对同一小区、同一用途作过报价，不再重复记录、'];
+        }
+//         halt($insertEnguery);
     }
     
 }

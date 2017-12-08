@@ -21,9 +21,7 @@
 			<ul class="nav nav-pills nav-tabs" >
 				<li class="active" ><a href="#base" aria-controls="base" role="tab" data-toggle="tab" >基价</a></li>
 				<li ><a href="#box" aria-controls="box" role="tab" data-toggle="tab" >盒须图</a></li>
- 				<!-- <li ><a href="#" id='query_record'>记录</a></li>  -->
- 				<li ><a href="#query_record" aria-controls="query_record" role="tab" data-toggle="tab" >记录</a></li> 
-				<!-- <li ><a href="#box2" aria-controls="box2" role="tab" data-toggle="tab" >下拉菜单</a></li> -->
+				<li ><a href="#history" aria-controls="history" role="tab" data-toggle="tab" >历史</a></li>
 				<li role="presentation" class="dropdown">
 				    <a class="dropdown-toggle" data-toggle="dropdown" href="#" role="button" aria-haspopup="true" aria-expanded="false">
 				      {$Think.session.user.user_name} <span class="caret"></span>
@@ -32,6 +30,9 @@
 				    	<li ><a href="#box1" aria-controls="box1" role="tab" data-toggle="tab" >参数</a></li>
 					    <li ><a href="#scatter_area_price" aria-controls="scatter_area_price" role="tab" data-toggle="tab" >面积/房价散点</a></li>
 					    <li ><a href="#scatter_floor_price" aria-controls="scatter_floor_price" role="tab" data-toggle="tab" >总楼层/房价散点</a></li>
+		 				{if condition="$Think.session.user.user_name == 'admin'"}
+		 				<li ><a href="#query_record" aria-controls="query_record" role="tab" data-toggle="tab" >登记询价记录</a></li> 
+					    {/if}
 					    <li ><a href="#box2" aria-controls="box2" role="tab" data-toggle="tab" >导出Excel</a></li>
 					    <li ><a href="{:url('evalu/login/logout')}" >注销</a></li>
 					</ul>
@@ -45,10 +46,7 @@
 	   				<div class="panel panel-success">
 						<div class="panel-heading">
 							<span class="badge" style="font-size: 16px">
-							{if condition="$B['priceByDeal'] > 0 "}
-							二手房评估
-							{else /} 抵押评估价
-							{/if}
+							{$B['priceByDeal'] > 0?	'二手房评估':'抵押评估价'}
 							</span>
 							<h1 style="text-align: center; font-weight: 700;{if condition="$B['std_r'] > 12 "}opacity:0.5;{/if}">
 							{if condition="$B['priceByDeal'] > 0 "}
@@ -124,153 +122,247 @@
 						</div>
 					</div>
 			    </div>
+				<!-- 历史记录 -->
+				<div role="tabpanel" class="tab-pane " id="history">
+				<table class="table">
+									<tr>
+										<td class="col-md-4 col-xs-4 left" >小区</td>
+										<td class="col-md-8 col-xs-8 right">
+											<input type="text" name="Enquiry_CellName" value="{$B['comm']['comm_name']}">
+										</td>
+									</tr>
+									<tr>
+										<td class="col-md-4 col-xs-4 left" >报价</td>
+										<td class="col-md-8 col-xs-8 right">
+											<input type="text" name="Apprsal_Up" value="{$B['mortgagePrice']}">
+										</td>
+									</tr>
+									<tr>
+										<td class="col-md-4 col-xs-4 left" >备注</td>
+										<td class="col-md-8 col-xs-8 right">
+											<input type="text" name="Remark" value="{$B['len']}个数据，挂牌价格{$B['min']}-{$B['max']}元/平方米">
+										</td>
+									</tr>
+									<tr>
+										<td class="col-md-4 col-xs-4 left" >询价</td>
+										<td class="col-md-8 col-xs-8 right">
+											<input type="text" name="Enquiry_PmName" value="公司外部" list="emplorers">
+											<datalist id="emplorers">
+											  	{volist name="B['emplorers']" id="vo"  }
+												  <option value="{$vo}">
+												{/volist}
+											</datalist>
+										</td>
+									</tr>
+									<tr>
+										<td class="col-md-4 col-xs-4 left" >地址</td>
+										<td class="col-md-8 col-xs-8 right">
+											<input type="text" name="PA_Located" value="二手房可以评估{$B['dealPrice']}">
+										</td>
+									</tr>
+									<tr>
+										<td class="col-md-4 col-xs-4 left" >用途</td>
+										<td class="col-md-8 col-xs-8 right">
+											<input type="text" name="Apprsal_Use" value="住宅" list="use">
+											<datalist id="use">
+											  	{volist name="B['use']" id="vo"  }
+												  <option value="{$vo}">
+												{/volist}
+											</datalist>
+										</td>
+									</tr>
+									<tr>
+										<td class="col-md-4 col-xs-4 left" >建成</td>
+										<td class="col-md-8 col-xs-8 right">
+											<input type="text" name="PA_YearBuilt" value="{$B['avg_builded_year']}" >
+										</td>
+									</tr>
+									<tr>
+										<td class="col-md-4 col-xs-4 left" >电梯</td>
+										<td class="col-md-8 col-xs-8 right">
+											<input type="text" name="PA_Elevator" value=
+											{$B['avg_total_floor'] > 8 ? '带电梯' : '无电梯'}
+											 list="elevator">
+											<datalist id="elevator">
+											  	{volist name="B['elevator']" id="vo"  }
+												  <option value="{$vo}">
+												{/volist}
+											</datalist>
+										</td>
+									</tr>
+									<tr>
+										<td class="col-md-4 col-xs-4 left" >结构</td>
+										<td class="col-md-8 col-xs-8 right">
+											<input type="text" name="PA_Structure" value={$B['avg_total_floor'] > 7 ? '钢混结构' : '砖混结构'} list="structuer">
+											<datalist id="structuer">
+											  	{volist name="B['structuer']" id="vo"  }
+												  <option value="{$vo}">
+												{/volist}
+											</datalist>
+										</td>
+									</tr>
+									<tr>
+										<td class="col-md-4 col-xs-4 left" >层次</td>
+										<td class="col-md-8 col-xs-8 right">
+											<input type="text" name="PA_Level" value="{$B['avg_floor_index']}">
+										</td>
+									</tr>
+									<tr>
+										<td class="col-md-4 col-xs-4 left" >总层</td>
+										<td class="col-md-8 col-xs-8 right">
+											<input type="text" name="Enquiry_Layout" value="{$B['avg_total_floor']}">
+										</td>
+									</tr>
+								</table>
+				</div>
 				<!-- 登记询价记录 -->
+				
+			{if condition="$Think.session.user.user_name == 'admin'"}
 				<div role="tabpanel" class="tab-pane " id="query_record">
 	   				<div class="panel panel-success">
 						<div class="panel-heading">
 							<button type="button" class="btn btn-success btn-lg" id='insertQuery'>登记询价记录</button>
 						</div>
-						<div class="list-group "	>
-							<form class="form-horizontal" id = "insertQueryForm">
+						<div class="list-group ">
+							<form class="form-horizontal" id="insertQueryForm">
 							  	<table class="table">
-								<tr>
-									<td class="col-md-4 col-xs-4 left" >小区</td>
-									<td class="col-md-8 col-xs-8 right">
-										<input type="text" name="Enquiry_CellName" value="{$B['comm']['comm_name']}">
-									</td>
-								</tr>
-								<tr>
-									<td class="col-md-4 col-xs-4 left" >报价</td>
-									<td class="col-md-8 col-xs-8 right">
-										<input type="text" name="Apprsal_Up" value="{$B['mortgagePrice']}">
-									</td>
-								</tr>
-								<tr>
-									<td class="col-md-4 col-xs-4 left" >备注</td>
-									<td class="col-md-8 col-xs-8 right">
-										<input type="text" name="Remark" value="{$B['len']}个数据，挂牌价格{$B['min']}-{$B['max']}元/平方米">
-									</td>
-								</tr>
-								<tr>
-									<td class="col-md-4 col-xs-4 left" >询价</td>
-									<td class="col-md-8 col-xs-8 right">
-										<input type="text" name="Enquiry_PmName" value="公司外部" list="emplorers">
-										<datalist id="emplorers">
-										  	{volist name="B['emplorers']" id="vo"  }
-											  <option value="{$vo}">
-											{/volist}
-										</datalist>
-									</td>
-								</tr>
-						
-								<tr>
-									<td class="col-md-4 col-xs-4 left" >地址</td>
-									<td class="col-md-8 col-xs-8 right">
-										<input type="text" name="PA_Located" value="二手房可以评估{$B['dealPrice']}">
-									</td>
-								</tr>
-								<tr>
-									<td class="col-md-4 col-xs-4 left" >用途</td>
-									<td class="col-md-8 col-xs-8 right">
-										<input type="text" name="Apprsal_Use" value="住宅" list="use">
-										<datalist id="use">
-										  	{volist name="B['use']" id="vo"  }
-											  <option value="{$vo}">
-											{/volist}
-										</datalist>
-									</td>
-								</tr>
-								<tr>
-									<td class="col-md-4 col-xs-4 left" >建成</td>
-									<td class="col-md-8 col-xs-8 right">
-										<input type="text" name="PA_YearBuilt" value="{$B['avg_builded_year']}" >
-									</td>
-								</tr>
-								<tr>
-									<td class="col-md-4 col-xs-4 left" >电梯</td>
-									<td class="col-md-8 col-xs-8 right">
-										<input type="text" name="PA_Elevator" value=
-										{$B['avg_total_floor'] > 8 ? '带电梯' : '无电梯'}
-										 list="elevator">
-										<datalist id="elevator">
-										  	{volist name="B['elevator']" id="vo"  }
-											  <option value="{$vo}">
-											{/volist}
-										</datalist>
-									</td>
-								</tr>
-								<tr>
-									<td class="col-md-4 col-xs-4 left" >结构</td>
-									<td class="col-md-8 col-xs-8 right">
-										<input type="text" name="PA_Structure" value={$B['avg_total_floor'] > 7 ? '钢混结构' : '砖混结构'} list="structuer">
-										<datalist id="structuer">
-										  	{volist name="B['structuer']" id="vo"  }
-											  <option value="{$vo}">
-											{/volist}
-										</datalist>
-									</td>
-								</tr>
-								<tr>
-									<td class="col-md-4 col-xs-4 left" >层次</td>
-									<td class="col-md-8 col-xs-8 right">
-										<input type="text" name="PA_Level" value="{$B['avg_floor_index']}">
-									</td>
-								</tr>
-								<tr>
-									<td class="col-md-4 col-xs-4 left" >总层</td>
-									<td class="col-md-8 col-xs-8 right">
-										<input type="text" name="Enquiry_Layout" value="{$B['avg_total_floor']}">
-									</td>
-								</tr>
-							</table>
-						  </form>
-							
+									<tr>
+										<td class="col-md-4 col-xs-4 left" >小区</td>
+										<td class="col-md-8 col-xs-8 right">
+											<input type="text" name="Enquiry_CellName" value="{$B['comm']['comm_name']}">
+										</td>
+									</tr>
+									<tr>
+										<td class="col-md-4 col-xs-4 left" >报价</td>
+										<td class="col-md-8 col-xs-8 right">
+											<input type="text" name="Apprsal_Up" value="{$B['mortgagePrice']}">
+										</td>
+									</tr>
+									<tr>
+										<td class="col-md-4 col-xs-4 left" >备注</td>
+										<td class="col-md-8 col-xs-8 right">
+											<input type="text" name="Remark" value="{$B['len']}个数据，挂牌价格{$B['min']}-{$B['max']}元/平方米">
+										</td>
+									</tr>
+									<tr>
+										<td class="col-md-4 col-xs-4 left" >询价</td>
+										<td class="col-md-8 col-xs-8 right">
+											<input type="text" name="Enquiry_PmName" value="公司外部" list="emplorers">
+											<datalist id="emplorers">
+											  	{volist name="B['emplorers']" id="vo"  }
+												  <option value="{$vo}">
+												{/volist}
+											</datalist>
+										</td>
+									</tr>
+									<tr>
+										<td class="col-md-4 col-xs-4 left" >地址</td>
+										<td class="col-md-8 col-xs-8 right">
+											<input type="text" name="PA_Located" value="二手房可以评估{$B['dealPrice']}">
+										</td>
+									</tr>
+									<tr>
+										<td class="col-md-4 col-xs-4 left" >用途</td>
+										<td class="col-md-8 col-xs-8 right">
+											<input type="text" name="Apprsal_Use" value="住宅" list="use">
+											<datalist id="use">
+											  	{volist name="B['use']" id="vo"  }
+												  <option value="{$vo}">
+												{/volist}
+											</datalist>
+										</td>
+									</tr>
+									<tr>
+										<td class="col-md-4 col-xs-4 left" >建成</td>
+										<td class="col-md-8 col-xs-8 right">
+											<input type="text" name="PA_YearBuilt" value="{$B['avg_builded_year']}" >
+										</td>
+									</tr>
+									<tr>
+										<td class="col-md-4 col-xs-4 left" >电梯</td>
+										<td class="col-md-8 col-xs-8 right">
+											<input type="text" name="PA_Elevator" value=
+											{$B['avg_total_floor'] > 8 ? '带电梯' : '无电梯'}
+											 list="elevator">
+											<datalist id="elevator">
+											  	{volist name="B['elevator']" id="vo"  }
+												  <option value="{$vo}">
+												{/volist}
+											</datalist>
+										</td>
+									</tr>
+									<tr>
+										<td class="col-md-4 col-xs-4 left" >结构</td>
+										<td class="col-md-8 col-xs-8 right">
+											<input type="text" name="PA_Structure" value={$B['avg_total_floor'] > 7 ? '钢混结构' : '砖混结构'} list="structuer">
+											<datalist id="structuer">
+											  	{volist name="B['structuer']" id="vo"  }
+												  <option value="{$vo}">
+												{/volist}
+											</datalist>
+										</td>
+									</tr>
+									<tr>
+										<td class="col-md-4 col-xs-4 left" >层次</td>
+										<td class="col-md-8 col-xs-8 right">
+											<input type="text" name="PA_Level" value="{$B['avg_floor_index']}">
+										</td>
+									</tr>
+									<tr>
+										<td class="col-md-4 col-xs-4 left" >总层</td>
+										<td class="col-md-8 col-xs-8 right">
+											<input type="text" name="Enquiry_Layout" value="{$B['avg_total_floor']}">
+										</td>
+									</tr>
+								</table>
+						  	</form>
 						</div>
 					</div>
 				</div>
+			{/if}
+
+				
+
 			    <!-- 参数 -->
 			    <div role="tabpanel" class="tab-pane" id="box1">
 			    	<div class="list-group"	>
-							<li class="list-group-item" >数据参数</li>
-							<table class="table">
-								<tr>
-									<td class="col-md-4 col-xs-4 left " >数据开始</td>
-									<td class="col-md-8 col-xs-8 right">{$B['from_date']}</td>
-			
-								</tr>
-								<tr>
-									<td class="col-md-4 col-xs-4 left" >数据量</td>
-									<td class="col-md-8 col-xs-8 right">{$B['len']}/{$B['ori_len']}，覆盖{$B['coverage']}%</td>
-			
-								</tr>
-								<tr>
-									<td class="col-md-4 col-xs-4 left" >标准差系数</td>
-									<td class="col-md-8 col-xs-8 right">{$B['std_r']}%</td>
-			
-								</tr>
-								<tr>
-									<td class="col-md-4 col-xs-4 left" >均价</td>
-									<td class="col-md-8 col-xs-8 right">{$B['mean']}元/平方米</td>
-			
-								</tr>
-								<tr>
-									<td class="col-md-4 col-xs-4 left" >抵押折扣率</td>
-									<td class="col-md-8 col-xs-8 right">{$B['mortgageRatio']*100}%</td>
-			
-								</tr>
-								<tr>
-									<td class="col-md-4 col-xs-4 left " >二手价</td>
-									<td class="col-md-8 col-xs-8 right">{$B['dealPricePosition']}%/{$B['dealPrice']}</td>
-								</tr>
-								<tr>
-									<td class="col-md-4 col-xs-4 left " >交易价/二手报价</td>
-									<td class="col-md-8 col-xs-8 right">{$B['price']}/{$B['priceByDeal']}</td>
-								</tr>
-								</table>
-						</div>
-<!-- 					{volist name="B" id="vo"  }
-							{$key}
-						{/volist} -->
+						<li class="list-group-item" >数据参数</li>
+						<table class="table">
+							<tr>
+								<td class="col-md-4 col-xs-4 left " >数据开始</td>
+								<td class="col-md-8 col-xs-8 right">{$B['from_date']}</td>
+		
+							</tr>
+							<tr>
+								<td class="col-md-4 col-xs-4 left" >数据量</td>
+								<td class="col-md-8 col-xs-8 right">{$B['len']}/{$B['ori_len']}，覆盖{$B['coverage']}%</td>
+		
+							</tr>
+							<tr>
+								<td class="col-md-4 col-xs-4 left" >标准差系数</td>
+								<td class="col-md-8 col-xs-8 right">{$B['std_r']}%</td>
+		
+							</tr>
+							<tr>
+								<td class="col-md-4 col-xs-4 left" >均价</td>
+								<td class="col-md-8 col-xs-8 right">{$B['mean']}元/平方米</td>
+		
+							</tr>
+							<tr>
+								<td class="col-md-4 col-xs-4 left" >抵押折扣率</td>
+								<td class="col-md-8 col-xs-8 right">{$B['mortgageRatio']*100}%</td>
+		
+							</tr>
+							<tr>
+								<td class="col-md-4 col-xs-4 left " >二手价</td>
+								<td class="col-md-8 col-xs-8 right">{$B['dealPricePosition']}%/{$B['dealPrice']}</td>
+							</tr>
+							<tr>
+								<td class="col-md-4 col-xs-4 left " >交易价/二手报价</td>
+								<td class="col-md-8 col-xs-8 right">{$B['price']}/{$B['priceByDeal']}</td>
+							</tr>
+							</table>
+					</div>
 			    </div>
 			    
 			    <!-- 面积楼价散点图 -->
@@ -325,12 +417,8 @@
 				</div>
 			    <div role="tabpanel" class="tab-pane" id="box2">44</div>
 			  </div>
-
-
-			
 			
 			<a class="btn btn-success btn-block btn-lg" href="{:url('index')}">返回</a>
-
 			 <div class="input-group input-group-lg" style="margin-top:10px;">
 		      <input type="text" class="form-control" placeholder="输入您认为合适的评估价..." id="myprice">
 		      <span class="input-group-btn ">

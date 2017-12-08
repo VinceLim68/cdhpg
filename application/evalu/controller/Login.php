@@ -15,6 +15,7 @@ class Login extends Controller
         $this->assign('mod',input('modulestr'));
         
 		if(request()->isPost()){
+// 		    halt(input('post.'));
 			$res = (new UserModel())->login(input('post.'));
  			if($res['valid'])
 			{
