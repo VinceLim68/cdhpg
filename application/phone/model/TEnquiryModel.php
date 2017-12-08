@@ -14,12 +14,6 @@ class TEnquiryModel extends Model {
 // 	protected $autoWriteTimestamp = true;		//自动转化时间戳
 	protected $updateTime = false;
 	
-	public function setPAYearbuiltAttr($value){
-	    
-	            return date ( 'Y-m-d', strtotime ( $value));
-	}
 
-	
-	
 	
 }

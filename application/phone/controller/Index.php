@@ -9,6 +9,7 @@ use app\evalu\model\ErrorCommModel;
 use app\phone\model\QueryRecordsModel;
 use app\evalu\model\SalesModel;
 use app\phone\model\TEnquiryModel;
+use app\phone\model\TCaseCfgModel;
 
 class Index extends Common {
     
@@ -37,7 +38,8 @@ class Index extends Common {
                 $this->error ( $result );
                 exit ();
             } else {
-                //1查询数据
+                //1查询数据,把comm存入session中
+                session('user.comm',input('comm'));
                 $commnames = MatchLogic::matchSearch(input('param.comm'));
                 if(!$commnames){
                     //2如果没有查到，记录到miss_comm表中去
@@ -199,7 +201,22 @@ class Index extends Common {
         }else{
             return ['status'=>'重复数据','msg'=> '您在过去的一个月中已经对同一小区、同一用途作过报价，不再重复记录、'];
         }
-//         halt($insertEnguery);
     }
-    
+
+    public function getHistory(){
+        /*
+         * 得到历史的询价记录和案例
+         */
+        if(!isset($enq)){
+            $enq = new TEnquiryModel();
+        }
+        $historyEnquery = $enq->field('Enquiry_CellName,Enquiry_Date,Apprsal_Use,OfferPeople,Apprsal_Up,Remark,Enquiry_PmName')
+                                ->where('Enquiry_CellName','like','%'.session('user.comm').'%')
+                                ->where('Enquiry_Date','> time',date('Y-m-d',strtotime('-'.config('historyDays').' day')))
+                                ->select()->toArray();
+        if(!isset($case)){
+            $case = new TCaseCfgModel();
+        }
+        
+    }
 }
