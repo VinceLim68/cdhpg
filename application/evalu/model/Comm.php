@@ -31,7 +31,8 @@ class Comm extends Model {
 		/**
 		 * 把小区名按关键字拆分后，按级别形成小区和道路两个数组
 		 */
-		$comms = self::field ( "comm_id,pri_level,keywords" )->select ()->toArray();
+// 		$comms = self::field ( "comm_id,pri_level,keywords" )->select ()->toArray();
+		$comms = self::field ( "comm_id,pri_level,keywords,comm_name" )->select ()->toArray();
 		$comms_arr = array();
 		$roads_arr = array();
 		foreach ( $comms as $comm ) {
@@ -40,6 +41,7 @@ class Comm extends Model {
 				$temp = array ();
 				$temp ['id'] = $comm ['comm_id'];
 				$temp ['keyword'] = $kw;
+				$temp ['comm_name'] = $comm['comm_name'];
 				if ($comm['pri_level'] == '小区级') {
 					$comms_arr [] = $temp;
 				}else{

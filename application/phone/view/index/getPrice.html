@@ -56,10 +56,7 @@
 							{$B['priceByDeal'] > 0?	'二手房评估':'抵押评估价'}
 							</span>
 							<h1 style="text-align: center; font-weight: 700;{if condition="$B['std_r'] > 12 "}opacity:0.5;{/if}">
-							{if condition="$B['priceByDeal'] > 0 "}
-							{$B['priceByDeal']}
-							{else /} {$B['mortgagePrice']}
-							{/if}
+							{$B['priceByDeal'] > 0 ?$B['priceByDeal']:$B['mortgagePrice']}
 								元 <small>/平方米</small>
 							</h1>
 							{if condition="$B['std_r'] > 12 "}
@@ -153,30 +150,30 @@
 						<div class="list-group"	>
 							<table class="table">
 								<tr>
-									<td class="col-md-6 col-xs-6 left " >面积（平方米）</td>
-									<td class="col-md-6 col-xs-6 right ">
+									<td class="col-md-6 col-sm-6 col-xs-6 left font-small" >面积（平方米）</td>
+									<td class="col-md-6 col-sm-6 col-xs-6 right font-small">
 										<input type="text" placeholder="输入面积数计算..." id='areafee'>
 									</td>
 								</tr>								<tr>
-									<td class="col-md-6 col-xs-6 left " >评估总价（万元）</td>
-									<td class="col-md-6 col-xs-6 right inputaction">
+									<td class="col-md-6 col-sm-6 col-xs-6 left font-small" >评估总价（万元）</td>
+									<td class="col-md-6 col-sm-6 col-xs-6 right inputaction font-small">
 										<input type="text" placeholder="直接输入评估总价..." id='totalprice'>
 									</td>
 								</tr>
 								<tr>
-									<td class="col-md-6 col-xs-6 left " >发票金额（元）</td>
-									<td class="col-md-6 col-xs-6 right" id='getfee'>
+									<td class="col-md-6 col-sm-6 col-xs-6 left font-small" >发票金额（元）</td>
+									<td class="col-md-6 col-sm-6 col-xs-6 right font-small" id='getfee'>
 									</td>
 								</tr>
 								<tr>
-									<td class="col-md-6 col-xs-6 left " >折扣（%）</td>
-									<td class="col-md-6 col-xs-6 right inputaction">
+									<td class="col-md-6 col-sm-6 col-xs-6 left font-small" >折扣（%）</td>
+									<td class="col-md-6 col-sm-6 col-xs-6 right inputaction font-small">
 										<input type="text" name="Enquiry_CellName" value="100" id='discount'>
 									</td>
 								</tr>
 								<tr>
-									<td class="col-md-6 col-xs-6 left " >收费（元）</td>
-									<td class="col-md-6 col-xs-6 right" id='realfee'>
+									<td class="col-md-6 col-sm-6 col-xs-6 left font-small" >收费（元）</td>
+									<td class="col-md-6 col-sm-6 col-xs-6 right font-small" id='realfee'>
 									
 									</td>
 								</tr>

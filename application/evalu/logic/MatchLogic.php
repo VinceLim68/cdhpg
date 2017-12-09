@@ -52,7 +52,7 @@ class MatchLogic {
 	
 	static public function getId($commName,$title='',$type = 'comms'){
 		//匹配单个小区的方法，这里可能匹配出多个id
-
+        //先把小区名称中的各种.清除掉
 		$find = array(".","。","．");
 		$replace = array("");
 		$commName = strtoupper(str_replace($find,$replace,$commName));
@@ -60,9 +60,13 @@ class MatchLogic {
 		// 		 储存匹配出来的id列表，可能不止匹配一个id值，每个元素包含（开始位置，关键字，id)
 		$matchId = array();		
 		self::getComms();
-		//foreach ($comms[$type] as $commItem){
 		foreach (self::$comms[$type] as $commItem){
-
+// 		    $start = strpos($commItem['comm_name'], $commName);
+// 		    if (false !== $start) {
+// 		        $t = array($start,$commItem['comm_name'],$commItem['id']);
+// 	            $matchId[] = $t;
+// 	            continue;
+// 	        }
 			// 			$commItem['keyword']中可能通过'/'带着辅助字，先拆分开来，真正的key是它的第一个元素
 			$key = explode ( "/", $commItem ['keyword'] );
 
@@ -86,11 +90,49 @@ class MatchLogic {
 				}
 			}
 		}
-		return $matchId;
+		return $matchId;//返回列表（开始位置，关键字，id)
 		
 	}
 	
+	static private function matching($data){
+	    //这个改动不成功，要删
+        // 	    把返回改成数组形式，匹配多个时即可返回所有的匹配id
+	    $getid = self::getId($data['community_name'],$data['title'],"comms");
+// 	    halt($getid);
+	    $id = [];
+	    if(count($getid) == 1) {
+	        #如果匹配到唯一id
+	        $id[] = $getid[0][2];
+	    }elseif(count($getid) == 0) {
+	        #如果没匹配到comm，就看看按road是否能匹配
+	        $getroad = self::getId($data['community_name'],$data['title'],"roads");
+	        if(count($getroad)==1){
+	            #匹配到唯一road
+	            $id[] = $getroad[0][2];
+	        }elseif (count($getroad)==0){
+	            #如果连road也没匹配成功，空在那里
+	            $id[] = 0;
+	        }elseif (count($getroad) > 1){
+	            #如果匹配到不止一个road,进行处理
+	            $id = array_merge ( $id, self::mul_handle($getroad) );
+	        }
+	    }elseif (count($getid) > 1){
+	        #如果comm匹配到不止一个，进行处理
+	        $id = array_merge ( $id, self::mul_handle($getid) );
+	    }
+	    return $id; 			//这里可能有三种情况，1、成功匹配：返回id；2、多个区配：返回匹配的个数;3、匹配失败：0
+	}
+	
 	static public function matchID($data){
+// 	    $matchid = self::matching($data);
+// 	    $num = count($matchid);
+// 	    if($num == 1){
+// 	        return $matchid[0];
+// 	    }elseif ($num > 1){
+// 	        return $num;
+// 	    }else{
+// 	        return 0;
+// 	    }
 		//这是最后匹配id的控制器，前面getid可能匹配出多个id,或者没有匹配出id,在这里进行进一步的处理
 		$getid = self::getId($data['community_name'],$data['title'],"comms");
 		$id = 0;
@@ -122,7 +164,8 @@ class MatchLogic {
 		//处理的原则是以起始字段在前的为准，如果起始字段相同，则以字符串长的为准， 如果起始与字串长度都一样，则人工判断
         $flag = False;                            #标志位，如果能解析出唯一id,则标志位设成ture
         
-        // $ids[0]起始位置，$ids[1]匹配成功的关键字，$ids[2]comm_id，先按照$ids[0]排序
+        // $ids[0]起始位置，$ids[1]匹配成功的关键字，$ids[2]comm_id，
+        // 先按照$ids[0]起始位置排序
         $sortby = array();
         foreach ($ids as $iditem) {
         	$sortby[] = $iditem[0];
@@ -155,11 +198,24 @@ class MatchLogic {
 				}
 			}
 		}
+		//=====================这是保存的以前的代码=================================
 		if($flag){
 			return $total;			//返回匹配了几个小区的数量
 		}else{
 			return $first[2];		//返回匹配成功的id
 		}
+		//=======================这是新修正的代码，目的是有多个匹配时，都返回============
+// 		$newid = [];
+// 		if($flag){
+// 		    foreach ($ids as $iditem){
+// 		       if(!in_array($iditem[2],$newid,false)){
+// 		           $newid[] = $iditem[2];
+// 		       }
+// 		    }
+// 		}else{
+// 		    $newid[] = $first[2];
+// 		}
+// 		return $newid;
 
 	}
 	
@@ -184,13 +240,20 @@ class MatchLogic {
 	     * 在搜索框中输入一个小区名，从comm表中匹配出相应的记录
 	     * $search:搜索框中输入的字符串
 	     */
+	    //==================以下是保存代码====================================
 	    $pickitem = array ();      //存放匹配成功的记录
 	    $list = Comm::getAll();    //取出小区记录：comm_id,comm_name,pri_level,keywords
 	    foreach ( $list as $item ) {
+	        //如果是区块的，就跳过
+	        if($item['pri_level'] == '区块级'){
+	            continue;
+	        }
+	        $find = array(".","。","．");
+	        $replace = array("");
+	        $commName = strtoupper(str_replace($find,$replace,$item['comm_name']));
 	        //如果在comm_name中找到输入的$search,就算满足条件，退出
-	        $item['comm_name'] = str_replace("·","",$item['comm_name']);//把小区名中的.去除
 	        if (strpos($item['comm_name'], $search)!== false) {
-	             $pickitem [] = $item;;
+	             $pickitem [] = $item;
 	        }else{
     	        // 先把关键字按,分开
     	        $keywords = explode ( ",", $item ['keywords'] );
@@ -220,10 +283,57 @@ class MatchLogic {
     	                }
     	            }
     	        }
+    	        
+	        }
+	    };
+	    //如果刚好找到一个小区，下面就不用执行了。
+	    //如果没找到，或者已经找到不止一个小区了，就再按区块搜索一遍
+	    if(!$pickitem or count($pickitem)> 1){     
+	        foreach ( $list as $item ) {
+	            if($item['pri_level']=='小区级'){
+	                continue;
+	            }
+    	        $find = array(".","。","．");
+    	        $replace = array("");
+    	        $commName = strtoupper(str_replace($find,$replace,$item['comm_name']));
+	            //如果在comm_name中找到输入的$search,就算满足条件，退出
+	            if (strpos($item['comm_name'], $search)!== false) {
+	                $pickitem [] = $item;
+
+	            }else{
+	                // 先把关键字按,分开
+	                $keywords = explode ( ",", $item ['keywords'] );
+	                $is_break = false;                                     // 跳出关键字判断循环，进入下一条记录的标志位
+	                foreach ( $keywords as $kw ) {
+	                    if($is_break){
+	                        break;
+	                    }
+	                    // 如果有辅助字的，先需要拆分开来，k[o]是关键字，其他是辅助字
+	                    $k = explode ( "/", $kw );
+	                    $pos = stripos($search,$k[0]);
+	                    if ($pos !== false) {
+	                        //如果找到，看看需要判断辅助字吗
+	                        $len = count($k);
+	                        if($len>1){
+	                            for( $j = 1; $j < $len; $j++ ) {
+	                                if (false !== stripos($search,$k[$j])) {
+	                                    //关键字也找到，push进pickitem，后面同一个记录的关键字不需要再判断了
+	                                    $pickitem [] = $item;
+	                                    $is_break = true;
+	                                    break;
+	                                }
+	                            }
+	                        }else{
+	                            $pickitem [] = $item;           //没有关键字，直接push
+	                            break;
+	                        }
+	                    }
+	                }
+	            }
 	        }
 	    }
-	    //dump($pickitem); 
 	    return $pickitem;
+
 	}
 
 }

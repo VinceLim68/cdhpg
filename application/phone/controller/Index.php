@@ -41,6 +41,7 @@ class Index extends Common {
                 //1查询数据,把comm存入session中
                 session('user.comm',input('comm'));
                 $commnames = MatchLogic::matchSearch(input('param.comm'));
+//                 halt($commnames);
                 if(!$commnames){
                     //2如果没有查到，记录到miss_comm表中去
                     try{
@@ -153,7 +154,10 @@ class Index extends Common {
 //         $enquiry = new TEnquiryModel();
 //         $result = $enquiry->limit(10)->select();
 //         halt($result);
-        echo date ('Y', strtotime('2006'));
+//         echo date ('Y', strtotime('2006'));
+            $test[] = array('comm_id'=>1);
+            $test[] = array('comm_id'=>2);
+            dump($test);
         
 //         $request = Request::instance();
 //         echo "当前模块名称是" . $request->module();

@@ -186,6 +186,9 @@ table {
  
 /*媒体查询 */
 @media (min-width:640px){
+	.font-small{
+		font-size:16px;
+	}
 	.table>tbody>tr>td.left,.table>tbody>tr>td.right,.nav>li>a{
 	 	font-size: 18px;
 	
@@ -201,6 +204,9 @@ table {
 	.hide-xs{
         display: inline-block!important;
     }
+.font-small{
+		font-size:14px;
+	}
 
 }
 
@@ -212,5 +218,8 @@ table {
     .list-group,.table>tbody>tr>td.left,.table>tbody>tr>td.right,.nav>li>a {
 		font-size: 14px;
     }
+	.font-small{
+		font-size:10px;
+	}
 
 }
