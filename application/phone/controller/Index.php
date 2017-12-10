@@ -10,6 +10,7 @@ use app\phone\model\QueryRecordsModel;
 use app\evalu\model\SalesModel;
 use app\phone\model\TEnquiryModel;
 use app\phone\model\TCaseCfgModel;
+use app\evalu\logic\CreatExcelLogic;
 
 class Index extends Common {
     
@@ -222,5 +223,9 @@ class Index extends Common {
             $case = new TCaseCfgModel();
         }
         
+    }
+    public function creatExcel(){
+        //生成excel文件
+        return CreatExcelLogic::creatExcel();
     }
 }
