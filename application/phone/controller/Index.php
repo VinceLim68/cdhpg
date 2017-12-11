@@ -215,13 +215,19 @@ class Index extends Common {
         if(!isset($enq)){
             $enq = new TEnquiryModel();
         }
-        $historyEnquery = $enq->field('Enquiry_CellName,Enquiry_Date,Apprsal_Use,OfferPeople,Apprsal_Up,Remark,Enquiry_PmName')
-                                ->where('Enquiry_CellName','like','%'.session('user.comm').'%')
-                                ->where('Enquiry_Date','> time',date('Y-m-d',strtotime('-'.config('historyDays').' day')))
-                                ->select()->toArray();
+        $historyEnquery = $enq->getEnqueryByNameAndDate();
+        return $historyEnquery;
+//         halt($historyEnquery);
+
+        
+    }
+    
+    public function getCase(){
         if(!isset($case)){
             $case = new TCaseCfgModel();
         }
+        $cases = $case->getCaseByNameAndDate();
+        return $cases;
         
     }
     public function creatExcel(){

@@ -14,6 +14,20 @@ class TEnquiryModel extends Model {
 // 	protected $autoWriteTimestamp = true;		//自动转化时间戳
 	protected $updateTime = false;
 	
-
+    public function getEnqueryByNameAndDate(){
+        $records = $this->field('Enquiry_CellName,Enquiry_Date,Apprsal_Use,OfferPeople,Apprsal_Up,Remark,Enquiry_PmName')
+                ->where('Enquiry_CellName','like','%'.session('user.comm').'%')
+                ->order('Enquiry_Date desc')
+                ->where('Enquiry_Date','> time',date('Y-m-d',strtotime('-'.config('historyDays').' day')))
+                ->select()->toArray();
+        $html = '';
+        foreach ($records as $rec){
+            $html .= '<tr><td class="font-small">'.$rec['Enquiry_PmName'].'('.date ( 'Y-m-d', strtotime ( $rec['Enquiry_Date']) ).')';
+            $html .= '------'.$rec['Enquiry_CellName'].'-'.$rec['Apprsal_Use'];
+            $html .= '</br>'.$rec['OfferPeople'].'------'.$rec['Apprsal_Up'].',备注:'.$rec['Remark'].'</td></tr>';
+        }
+//         halt($html);
+        return $html;
+    }
 	
 }

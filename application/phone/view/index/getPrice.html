@@ -37,8 +37,9 @@
 				    </a>
 				    <ul class="dropdown-menu">
 				    	<li ><a href="#box1" aria-controls="box1" role="tab" data-toggle="tab" >参数</a></li>
+						<li ><a href="#casetab" aria-controls="casetab" role="tab" data-toggle="tab" id="case">成交案例</a></li>
 		 				{if condition="$Think.session.user.user_name == 'admin'"}
-						<li ><a href="#historytab" aria-controls="historytab" role="tab" data-toggle="tab" id="history">历史</a></li>
+						<li ><a href="#historytab" aria-controls="historytab" role="tab" data-toggle="tab" id="history">历史询价记录</a></li>
 		 				<li ><a href="#query_record" aria-controls="query_record" role="tab" data-toggle="tab" >登记询价记录</a></li> 
 					    {/if}
 					    <li ><a href="{:url('creatExcel',array('comm_id'=>$B['comm']['comm_id'],'comm_name'=>$B['comm']['comm_name']))}"  >导出Excel</a></li>
@@ -126,18 +127,15 @@
 						</div>
 					</div>
 			    </div>
-				<!-- 历史记录 -->
+				<!-- 历史询价记录 -->
 				<div role="tabpanel" class="tab-pane " id="historytab">
-					<table class="table">
-						<tr>
-							<td >小区</td>
-						</tr>
-						<tr>
-							<td >小区</td>
-						</tr>
-						<tr>
-							<td >小区</td>
-						</tr>
+					<table class="table" id="historytable">
+					</table>
+				</div>
+				
+				<!-- 案例记录 -->
+				<div role="tabpanel" class="tab-pane " id="casetab">
+					<table class="table" id="casetable">
 					</table>
 				</div>
 				
@@ -458,9 +456,18 @@
 			$.ajax({
 				url:'{:url('getHistory')}',
 				type:'POST',
-				
 				success: function(msg){
-        			
+        			$('#historytable').html(msg);
+       		   	},	
+			});
+		} );
+		
+		jQuery("#case").on('click',function (){
+			$.ajax({
+				url:'{:url('getCase')}',
+				type:'POST',
+				success: function(msg){
+        			$('#casetable').html(msg);
        		   	},	
 			});
 		} );
