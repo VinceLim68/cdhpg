@@ -182,27 +182,29 @@ class Index extends Common {
         }
         //不同估价师，同一小区，同一用途，在一段时间内不允许报相同的价;但管理员不受此限
         if(session('user.user_name') != 'admin'){
-            $findResult2 = $enq->where('Enquiry_CellName',$data['Enquiry_CellName'])
-                        ->where('Apprsal_Use',$data['Apprsal_Use'])
-                        ->where('Enquiry_Date','> time',date ( "Y-m-d", strtotime ( "-30 day" ) ))
-                        ->where('Apprsal_Up',$data['Apprsal_Up'])
-                        ->find();
-            if($findResult2){
+//             $findResult2 = $enq->where('Enquiry_CellName',$data['Enquiry_CellName'])
+//                         ->where('Apprsal_Use',$data['Apprsal_Use'])
+//                         ->where('Enquiry_Date','> time',date ( "Y-m-d", strtotime ( "-30 day" ) ))
+//                         ->where('Apprsal_Up',$data['Apprsal_Up'])
+//                         ->find();
+//             $findResult2 = $enq->findEnqueryByCommAndDate($data);
+            if($enq->findEnqueryByCommAndDate($data)){
                 return ['status'=>'报价雷同','msg'=> '在过去的一个月中已经有估价师对同一小区、同一用途作过相同报价，不再重复记录、'];
             }
             
         }
         //同一估价师，同一小区，同一用途，在一段时间内不允许重复报价
-        $findResult = $enq->where('OfferPeople',$data['OfferPeople'])
-                    ->where('Enquiry_CellName',$data['Enquiry_CellName'])
-                    ->where('Apprsal_Use',$data['Apprsal_Use'])
-                    ->where('Enquiry_Date','> time',date ( "Y-m-d", strtotime ( "-30 day" ) ))
-                    ->find();
+//         $findResult = $enq->where('OfferPeople',$data['OfferPeople'])
+//                     ->where('Enquiry_CellName',$data['Enquiry_CellName'])
+//                     ->where('Apprsal_Use',$data['Apprsal_Use'])
+//                     ->where('Enquiry_Date','> time',date ( "Y-m-d", strtotime ( "-30 day" ) ))
+//                     ->find();
         //插入记录
-        if(!$findResult){
-            
+//         if(!$findResult){
+        if(!$enq->findEnqueryByOfferAndDateAndComm($data)){
             $insertEnguery = $enq->data($data)->save();
-            return ['status'=>'登记成功','msg'=> '已将询价记录成功记入数据库中'];
+            $num = $enq->getCount($data);
+            return ['status'=>'登记成功','msg'=> '已将询价记录成功记入数据库中,本月'.$data['OfferPeople'].'已报价'.$num.'条'];
         }else{
             return ['status'=>'重复数据','msg'=> '您在过去的一个月中已经对同一小区、同一用途作过报价，不再重复记录、'];
         }
@@ -215,7 +217,7 @@ class Index extends Common {
         if(!isset($enq)){
             $enq = new TEnquiryModel();
         }
-        $historyEnquery = $enq->getEnqueryByNameAndDate();
+        $historyEnquery = $enq->getEnqueryByCommAndDate();
         return $historyEnquery;
 //         halt($historyEnquery);
 

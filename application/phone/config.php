@@ -48,5 +48,6 @@ return [
 	    'debug'       => true,
     ],
     'historyDays'     =>  180,                          //查询历史报价和案例的天数
+    'no_enquery_again'  =>  30,                         //30天内不允许重复报价
     
 ];
