@@ -23,10 +23,15 @@ class TCaseCfgModel extends Model {
     	    ->select()->toArray();
 // 	    halt($records);
 	    $html = '';
-	    foreach ($records as $rec){
-	        $html .= '<tr><td class="font-small">'.$rec['Case_Name'].'-'.$rec['Case_Type'].':';
-	        $html .= '------'.$rec['Case_Located'].'(建成：'.date ( 'Y', strtotime ( $rec['Case_Cmpl_Years']) ).'年)';
-	        $html .= '</br>成交价:'.round($rec['Case_TrxPrice']).'(成交日期:'.date ( 'Y-m-d', strtotime ( $rec['Case_TrxDate']) ).')------'.$rec['Opertor'].'</td></tr>';
+	    if(count($records)==0){
+	        $html .= '<tr><td class="font-small">'.config('historyDays').'天内没有'.session('user.comm').'的成交案例</td></tr>';
+	    }else{
+	        
+    	    foreach ($records as $rec){
+    	        $html .= '<tr><td class="font-small">'.$rec['Case_Name'].'-'.$rec['Case_Type'].':';
+    	        $html .= '------'.$rec['Case_Located'].'(建成：'.date ( 'Y', strtotime ( $rec['Case_Cmpl_Years']) ).'年)';
+    	        $html .= '</br>成交价:'.round($rec['Case_TrxPrice']).'(成交日期:'.date ( 'Y-m-d', strtotime ( $rec['Case_TrxDate']) ).')------'.$rec['Opertor'].'</td></tr>';
+    	    }
 	    }
 	    //         halt($html);
 	    return $html;

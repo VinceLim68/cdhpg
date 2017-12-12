@@ -7,13 +7,15 @@ use app\evalu\model\SalesModel;
 class CreatExcelLogic{
     
     static public function creatExcel(){
+//         halt(input());
         import('phpexcel.PHPExcel',EXTEND_PATH);
-        header ( "Content-type:text/html;charset=utf-8" );
+        header("Content-type:text/html;charset=utf-8");
         
         $objPHPExcel = new \PHPExcel(); // 实例化PHPExcel类
         $objSheet = $objPHPExcel->getActiveSheet (); // 获取活动sheet
-        $objSheet->setTitle ( input('comm_name') ); // 设置sheet名称
-        $data = SalesModel::getForExcel(input('comm_id'));
+//         halt(input());
+        $objSheet->setTitle (session('comm.comm_name') ); // 设置sheet名称
+        $data = SalesModel::getForExcel(session('comm.comm_id'));
         $objSheet->setCellValue ( "A1", "摘要" )->setCellValue ( "B1", "小区" )->setCellValue ( "C1", "单价" )->setCellValue ( "D1", "面积" )->setCellValue ( "E1", "总价" )->setCellValue ( "F1", "户型" )->setCellValue ( "G1", "楼层" )->setCellValue ( "H1", "总层" )->setCellValue ( "I1", "建成" )->setCellValue ( "J1", "优势" )->setCellValue ( "K1", "链接" ); // 设置标题
         
         $objSheet->getDefaultStyle ()->getFont ()->setName ( "楷体" )->setSize ( 11 ); // 设置默认格式：10号楷体
@@ -64,7 +66,7 @@ class CreatExcelLogic{
         $bodyBorderStyle = self::getBorderSytle ( '4C6284' ); // 取得报表主体的边框样式
         $objSheet->getStyle ( "A2:K" . ($j - 1) )->applyFromArray ( $bodyBorderStyle );
         $objWriter = \PHPExcel_IOFactory::createWriter ( $objPHPExcel, "Excel2007" ); // 指定格式生成excel
-        $filename = input('comm_name') . date ( 'YmdHis', time () ) . '.xlsx'; // 拼成文件名
+        $filename = session('comm.comm_name') . date ( 'YmdHis', time () ) . '.xlsx'; // 拼成文件名
         self::browser_export ( 'Excel2007', $filename );
         $objWriter->save ( 'php://output' );
     }

@@ -18,7 +18,7 @@ class Common extends Controller
 		    $this->redirect('evalu/login/login',['modulestr' => $request->module()]);
 		}
 		//对功能模块进行限制，小区和挂牌数据列表非管理员不让看
-		if(session('user.user_name') != 'admin' or session('user.user_name') != '林晓' ){
+		if(session('user.user_name') != 'admin'){
 		    if($request->module()=='evalu'){
 		        if($request->controller()=='Sales' or $request->controller()=='Comms'){
 		            $this->error(session('user.user_name').'你没有操作权限');

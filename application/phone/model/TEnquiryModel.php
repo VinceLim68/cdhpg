@@ -21,10 +21,14 @@ class TEnquiryModel extends Model {
                 ->where('Enquiry_CellName','like','%'.session('user.comm').'%')
                 ->select()->toArray();
         $html = '';
-        foreach ($records as $rec){
-            $html .= '<tr><td class="font-small">'.$rec['Enquiry_PmName'].'('.date ( 'Y-m-d', strtotime ( $rec['Enquiry_Date']) ).')';
-            $html .= '------'.$rec['Enquiry_CellName'].'-'.$rec['Apprsal_Use'];
-            $html .= '</br>'.$rec['OfferPeople'].'------'.$rec['Apprsal_Up'].',备注:'.$rec['Remark'].'</td></tr>';
+        if(count($records)==0){
+            $html .= '<tr><td class="font-small">'.config('historyDays').'天内没有'.session('user.comm').'的询价记录</td></tr>';
+        }else{
+            foreach ($records as $rec){
+                $html .= '<tr><td class="font-small">'.$rec['Enquiry_PmName'].'('.date ( 'Y-m-d', strtotime ( $rec['Enquiry_Date']) ).')';
+                $html .= '------'.$rec['Enquiry_CellName'].'-'.$rec['Apprsal_Use'];
+                $html .= '</br>'.$rec['OfferPeople'].'------'.$rec['Apprsal_Up'].',备注:'.$rec['Remark'].'</td></tr>';
+            }
         }
         return $html;
     }

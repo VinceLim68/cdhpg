@@ -87,8 +87,11 @@ class Index extends Common {
         if(input('comm_id')){
             $comm_id = input('comm_id');
         }
+//         halt($comm_id);
         $result = SalesModel::getRecordsByCommid($comm_id);
         $getComm = Db::table('comm')->where('comm_id',$comm_id)->find();
+        session('comm.comm_id',$comm_id);
+        session('comm.comm_name',$getComm['comm_name']);
         if(count($result[1])>0){
             $PL = new PriceLogic($result);
             $getPrice_result = $PL->getStatic($getComm,$price);
@@ -234,6 +237,7 @@ class Index extends Common {
     }
     public function creatExcel(){
         //生成excel文件
+//         halt(input());
         return CreatExcelLogic::creatExcel();
     }
 }

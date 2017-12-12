@@ -38,11 +38,12 @@
 				    <ul class="dropdown-menu">
 				    	<li ><a href="#box1" aria-controls="box1" role="tab" data-toggle="tab" >参数</a></li>
 						<li ><a href="#casetab" aria-controls="casetab" role="tab" data-toggle="tab" id="case">成交案例</a></li>
-		 				{if condition="$Think.session.user.user_name == 'admin'"}
 						<li ><a href="#historytab" aria-controls="historytab" role="tab" data-toggle="tab" id="history">历史询价记录</a></li>
+		 				{if condition="$Think.session.user.user_name == 'admin'"}
 		 				<li ><a href="#query_record" aria-controls="query_record" role="tab" data-toggle="tab" >登记询价记录</a></li> 
 					    {/if}
-					    <li ><a href="{:url('creatExcel',array('comm_id'=>$B['comm']['comm_id'],'comm_name'=>$B['comm']['comm_name']))}"  >导出Excel</a></li>
+					    <!-- <li ><a href="{:url('creatExcel',array('comm_id'=>$B['comm']['comm_id'],'comm_name'=>$B['comm']['comm_name']))}"  >导出Excel</a></li> -->
+					    <li ><a href="{:url('creatExcel')}"  >导出Excel</a></li>
 					    <li ><a href="{:url('evalu/login/logout')}" >注销</a></li>
 					</ul>
 			  	</li>
