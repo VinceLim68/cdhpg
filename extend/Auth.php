@@ -10,12 +10,11 @@
 // +----------------------------------------------------------------------
 // | 修改者: anuo (本权限类在原3.2.3的基础上修改过来的)
 // +----------------------------------------------------------------------
-namespace think;
 use think\Db;
 use think\Config;
 use think\Session;
 use think\Request;
-use think\Loader;
+// use think\Loader;
 /**
  * 权限认证类
  * 功能特性：
@@ -86,10 +85,10 @@ class Auth
     protected $config = [
         'auth_on'           => 1, // 权限开关
         'auth_type'         => 1, // 认证方式，1为实时认证；2为登录认证。
-        'auth_group'        => 'auth_group', // 用户组数据表名
-        'auth_group_access' => 'auth_group_access', // 用户-用户组关系表
-        'auth_rule'         => 'auth_rule', // 权限规则表
-        'auth_user'         => 'member', // 用户信息表
+        'auth_group'        => 'group', // 用户组数据表名
+        'auth_group_access' => 'group_access', // 用户-用户组关系表
+        'auth_rule'         => 'rule', // 权限规则表
+        'auth_user'         => 'user', // 用户信息表
     ];
     /**
      * 类架构函数
@@ -131,8 +130,7 @@ class Auth
         if (!$this->config['auth_on']) {
             return true;
         }
-        // 获取用户需要验证的所有有效规则列表
-        $authList = $this->getAuthList($uid, $type);
+        $allRules = Db::name($this->config['auth_rule'])->column('name');
         if (is_string($name)) {
             $name = strtolower($name);
             if (strpos($name, ',') !== false) {
@@ -141,12 +139,20 @@ class Auth
                 $name = [$name];
             }
         }
+        //如果模块操作没有在权限列表内，默认不控制
+        if (!in_array($allRules, $name)) {
+            return true;
+        }
+        $authList = $this->getAuthList($uid, $type);
         $list = []; //保存验证通过的规则名
         if ('url' == $mode) {
             $REQUEST = unserialize(strtolower(serialize($this->request->param())));
         }
         foreach ($authList as $auth) {
             $query = preg_replace('/^.+\?/U', '', $auth);
+//             echo $query.','.$auth.'</br>';
+//             echo 'name:'.$name.'</br>';
+//             dump($name);
             if ('url' == $mode && $query != $auth) {
                 parse_str($query, $param); //解析规则中的param
                 $intersect = array_intersect_assoc($REQUEST, $param);
@@ -156,11 +162,13 @@ class Auth
                     $list[] = $auth;
                 }
             } else {
+//                 dump($name);
                 if (in_array($auth, $name)) {
                     $list[] = $auth;
                 }
             }
         }
+//         halt($list);
         if ('or' == $relation && !empty($list)) {
             return true;
         }
@@ -184,13 +192,17 @@ class Auth
             return $groups[$uid];
         }
         // 转换表名
-        $auth_group_access = Loader::parseName($this->config['auth_group_access'], 1);
-        $auth_group        = Loader::parseName($this->config['auth_group'], 1);
+//         $auth_group_access = Loader::parseName($this->config['auth_group_access'], 1);
+//         $auth_group        = Loader::parseName($this->config['auth_group'], 1);
+        $auth_group_access = $this->config['auth_group_access'];
+        $auth_group        = $this->config['auth_group'];
+//         halt($auth_group);
         // 执行查询
         $user_groups  = Db::view($auth_group_access, 'uid,group_id')
         ->view($auth_group, 'title,rules', "{$auth_group_access}.group_id={$auth_group}.id", 'LEFT')
         ->where("{$auth_group_access}.uid='{$uid}' and {$auth_group}.status='1'")
         ->select();
+//         halt($user_groups);
         $groups[$uid] = $user_groups ?: [];
         return $groups[$uid];
     }
@@ -212,6 +224,7 @@ class Auth
         }
         //读取用户所属用户组
         $groups = $this->getGroups($uid);
+//         halt($groups);
         $ids    = []; //保存用户所属用户组设置的所有权限规则id
         foreach ($groups as $g) {
             $ids = array_merge($ids, explode(',', trim($g['rules'], ',')));
@@ -221,12 +234,15 @@ class Auth
             $_authList[$uid . $t] = [];
             return [];
         }
+//         halt($ids);
         $map = [
             'id'   => ['in', $ids],
-            'type' => $type
+//             'type' => $type          //这个type用途不明
         ];
+//         halt($map);
         //读取用户组所有权限规则
         $rules = Db::name($this->config['auth_rule'])->where($map)->field('condition,name')->select();
+//         halt($rules);
         //循环规则，判断结果。
         $authList = []; //
         foreach ($rules as $rule) {

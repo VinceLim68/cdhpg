@@ -57,12 +57,15 @@
 							<span class="badge" style="font-size: 16px">
 							{$B['priceByDeal'] > 0?	'二手房评估':'抵押评估价'}
 							</span>
-							<h1 style="text-align: center; font-weight: 700;{if condition="$B['std_r'] > 12 "}opacity:0.5;{/if}">
+							<h1 style="text-align: center; font-weight: 700;{if condition="$B['std_r'] > $Think.config.std_r_limit or  $B['ori_len'] < $Think.config.min_base_records"}opacity:0.5;{/if}">
 							{$B['priceByDeal'] > 0 ?$B['priceByDeal']:$B['mortgagePrice']}
 								元 <small>/平方米</small>
 							</h1>
-							{if condition="$B['std_r'] > 12 "}
+							{if condition="$B['std_r'] > $Think.config.std_r_limit "}
 							<p  style="text-align:center;color:#DD5A43;">数据离散性过大，本报价需要估价师确认</p>
+							{/if}
+							{if condition="$B['ori_len'] < $Think.config.min_base_records "}
+							<p  style="text-align:center;color:#DD5A43;">可供分析的数据偏少，本报价需要估价师确认</p>
 							{/if}
 		
 						</div>

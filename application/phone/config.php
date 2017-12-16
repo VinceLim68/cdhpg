@@ -1,6 +1,7 @@
 <?php
 //这是给手机端的询价配置参数，计算询价，放在这里不合适，试验一下模块配置
 return [
+    
     'min_base_records'              =>  100,            //单次查询最少的挂牌记录,才能做询价分析
     'how_long_before_to_start_query'=>  6,              //从几个月前开始查询
     'select_records_per_time'       =>  300000,         //每次查询，以30万为单位递增

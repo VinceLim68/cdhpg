@@ -16,7 +16,17 @@ class UserModel extends Model
 	protected $updateTime = 'last_login';
 	protected $resultSetType = 'collection';
 	
-	 
+	public function getStatusAttr($value)
+	{
+	    $status = [0=>'禁用',1=>'正常'];
+	    return $status[$value];
+	}
+	
+	public function getPassAttr($value)
+	{
+	    return md5($value);
+	}
+	
 	/*
 	 * 登录
 	 */

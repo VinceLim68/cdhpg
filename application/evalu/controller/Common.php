@@ -3,7 +3,7 @@ namespace app\evalu\controller;
 
 use think\Controller;
 use think\Request;
-use think\Auth;
+// use think\Auth;
 
 class Common extends Controller
 {
@@ -11,12 +11,19 @@ class Common extends Controller
 	{
 		parent::__construct($request);
 		//执行登录验证
-		$auth = new Auth();
 		if(!session('user.user_id'))
 		{
-// 			注意这里传递了参数，但是用url方式，接收时要使用$_GET
+        // 			注意这里传递了参数，但是用url方式，接收时要使用$_GET
 		    $this->redirect('evalu/login/login',['modulestr' => $request->module()]);
 		}
+		$controller = request()->controller();
+		$action = request()->action();
+		$module = $request->module();
+		$act = strtolower($module.'/'.$controller.'/'.$action);       //$controller . '/' . $action
+		$auth = new \Auth();
+ 		if(!$auth->check($act,session('user.user_id'))){
+		    $this->error(session('user.user_name') .':'.$act.'你没有权限访问');
+		} 
 		//对功能模块进行限制，小区和挂牌数据列表非管理员不让看
 		if(session('user.user_name') != 'admin'){
 		    if($request->module()=='evalu'){

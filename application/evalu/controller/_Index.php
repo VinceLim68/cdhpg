@@ -8,7 +8,7 @@ use think\Loader;
 use app\evalu\logic\CommL;
 use app\evalu\model\SalesModel;
 
-class Index extends Controller {
+class _Index extends Controller {
 	protected $db;
 	protected function _initialize() {
 		parent::_initialize ();
