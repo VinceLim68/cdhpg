@@ -20,18 +20,20 @@ class Common extends Controller
 		$action = request()->action();
 		$module = $request->module();
 		$act = strtolower($module.'/'.$controller.'/'.$action);       //$controller . '/' . $action
+// 		halt($act);
 		$auth = new \Auth();
  		if(!$auth->check($act,session('user.user_id'))){
-		    $this->error(session('user.user_name') .':'.$act.'你没有权限访问');
+//     		halt($act);
+		    $this->error(session('user.user_name').':'.$act.'你没有权限访问');
 		} 
 		//对功能模块进行限制，小区和挂牌数据列表非管理员不让看
-		if(session('user.user_name') != 'admin'){
-		    if($request->module()=='evalu'){
-		        if($request->controller()=='Sales' or $request->controller()=='Comms'){
-		            $this->error(session('user.user_name').'你没有操作权限');
-		        }
-		    }
-		}
+// 		if(session('user.user_name') != 'admin'){
+// 		    if($request->module()=='evalu'){
+// 		        if($request->controller()=='Sales' or $request->controller()=='Comms'){
+// 		            $this->error(session('user.user_name').':'.$act.'你没有操作权限');
+// 		        }
+// 		    }
+// 		}
 
 	}
 	

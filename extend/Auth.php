@@ -140,7 +140,8 @@ class Auth
             }
         }
         //如果模块操作没有在权限列表内，默认不控制
-        if (!in_array($allRules, $name)) {
+        if (!in_array($name[0],$allRules)) {
+//             halt($allRules);
             return true;
         }
         $authList = $this->getAuthList($uid, $type);

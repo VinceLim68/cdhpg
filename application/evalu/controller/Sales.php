@@ -20,6 +20,14 @@ class Sales extends Common {
 		//$this->matchObj->getCommsArr();
 		//echo count($this->s);
 		//echo '靠，这个也会每次都执行？';
+		$controller = request()->controller();
+		$module = request()->module();
+		$act = strtolower($module.'/'.$controller);       //使用模块+控制器来验证
+		$auth = new \Auth();
+		// 		halt($act);
+		if(!$auth->check($act,session('user.user_id'))){
+		    $this->error(session('user.user_name').':'.$act.'你不能对挂牌数据进行操作');
+		}
 		
 	}
 	
