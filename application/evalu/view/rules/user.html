@@ -24,26 +24,26 @@
 				<tr>
 					<th >序号</th>
 					<th >用户名</th>
-					<th>密码</th>
 					<th>注册日期</th>
 					<th>最后登录</th>
 					<th>邮箱</th>
 					<th>登录IP</th>
 					<th>登录次数</th>
 					<th>状态</th>
+					<th>角色</th>
 					<th>操作</th>
 				</tr>
 				{foreach name="data" item="v"}
 				<tr>
 					<td>{$v['user_id']}</td>
 					<td>{$v['user_name']}</td>
-					<td>{$v['pass']}</td>
 					<td>{$v['register_date']}</td>
 					<td>{$v['last_login']}</td>
 					<td>{$v['email']}</td>
 					<td>{$v['last_ip']}</td>
 					<td>{$v['login_times']}</td>
 					<td>{$v['status']}</td>
+					<td>{$v['title']}</td>
 					<td><a
 						href="{:url('edit_user',array('user_id'=>$v['user_id']))}">修改</a></td>
 				</tr>

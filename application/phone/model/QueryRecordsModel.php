@@ -12,6 +12,12 @@ class QueryRecordsModel extends Model {
 	protected $autoWriteTimestamp = true;		//自动转化时间戳
 	protected $updateTime = false;
 	
+	public function getPriceTypeAttr($value)
+	{
+	    $status = [1=>'抵押',2=>'二手'];
+	    return $status[$value];
+	}
+	
 	static public function insert_record($getPrice_result){
 	    /*
 	     * 添加记录，增加了判断重复的功能：同一个用户，同一个小区，2小时内不再记录

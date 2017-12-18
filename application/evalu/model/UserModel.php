@@ -27,6 +27,11 @@ class UserModel extends Model
 	    return md5($value);
 	}
 	
+	//与角色表多对多关联,不成功
+	public function group(){
+	    return $this->belongsToMany('GroupModel','group_access','uid','user_id');
+	}
+	
 	/*
 	 * 登录
 	 */

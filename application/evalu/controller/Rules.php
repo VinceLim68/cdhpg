@@ -7,6 +7,7 @@ use app\evalu\model\GroupAccessModel;
 use app\evalu\model\GroupModel;
 use app\evalu\model\RuleModel;
 use app\evalu\model\UserModel;
+use app\phone\model\QueryRecordsModel;
 
 class Rules extends Common {
 	protected $db;
@@ -18,7 +19,32 @@ class Rules extends Common {
 	 * 用户列表
 	 */
 	public function user(){
+// 	    $data=(new UserModel())
+// 	    ->field('u.user_id,u.user_name,u.email,u.register_date,u.last_login,u.login_times,u.last_ip,u.status,g.title')
+// 	    ->alias('u')
+// 	    ->join('group_access ga','ga.uid=u.user_id','LEFT')
+// 	    ->join('group g' ,'ga.group_id=g.id','RIGHT')
+// // 	    ->select()->toArray();
+//         ->paginate(20);
+// 	    halt($data);
 	    $data=(new UserModel())->paginate(20);
+	    $group = new GroupAccessModel();
+	    foreach ($data as $d){
+	        $ga = $group->alias('ga')
+	               ->join('group g' ,'ga.group_id=g.id','left')
+	               ->where('uid',$d['user_id'])->select()->toArray();
+	        $temp = '';
+	        foreach ($ga as $t){
+	            if(!strpos($temp, $t['title'])){
+	                $temp .= $t['title'].',';
+	            }
+	        }
+	        if(strlen($temp)>0){
+	            $temp = rtrim($temp, ",");
+	        }
+	        $d['title'] = $temp;
+	    }
+//         halt($data);
 	    $assign=array(
 	        'data'=>$data
 	    );
@@ -69,10 +95,8 @@ class Rules extends Common {
 	        }
 	    }else{
 	        $id=input('user_id');
-// 	        halt($id);
 	        // 获取用户数据
 	        $user_data=(new UserModel())->find($id);
-// 	        halt($user_data);
 	        // 获取已加入用户组
 	        $group_data=(new GroupAccessModel())
 	        ->where(array('uid'=>$id))
@@ -259,6 +283,62 @@ class Rules extends Common {
             return $this->fetch();
         }
     
+    }
+    
+    public function enquery_list(){
+        return $this->fetch();
+    }
+    
+    public function get_enquery_records(){
+        //获取询价数据
+        $page = input ( 'page' ); // 第几页
+        $limit = input ( 'rows' ); // 每页几条记录
+        $sidx = input ( 'sidx' ); // 排序字段
+        $sord = input ( 'sord' ); // 正序还是倒序
+        
+        if (! $sidx)
+            $sidx = 1;
+            $outputs = array ();
+        
+            $where = '1=1';
+        
+            if (input ( 'keywords' )) {
+                $keywords = input ( 'keywords' );
+                $where .= " and (keywords like '%" . $keywords . "%' or comm_name like '%" . $keywords . "%')";
+            }
+            ;
+            if (input ( 'region' )) {
+                $region = input ( 'region' );
+                $where .= " and region like '%" . $region . "%'";
+            }
+            ;
+            if (input ( 'block' )) {
+                $block = input ( 'block' );
+                $where .= " and block like '%" . $block . "%'";
+            }
+            ;
+            if (input ( 'address' )) {
+                $address = input ( 'address' );
+                $where .= " and comm_addr like '%" . $address . "%'";
+            }
+            ;
+        
+//             $sql_count = "SELECT COUNT(*) AS count FROM comm where " . $where;
+//             $records = $this->db->query ( $sql_count );
+            $mydb = new QueryRecordsModel();
+            $rec_nums = $mydb->where($where)->count('id');
+            $total = ceil ( $rec_nums/ $limit );
+            $list = $mydb->limit ( $limit )->page ( $page )->where ( $where )->order($sidx.' '.$sord)->select ()->toArray ();
+            /*
+             * 返回值：total总页数,page当前页码,records总记录数,
+             * rows数据集,id每条记录的唯一id,cell具体每条记录的内容
+             */
+            $outputs ['total'] = $total;
+            $outputs ['page'] = $page;
+            $outputs ['records'] = $rec_nums;
+            $outputs ['rows'] = $list;
+        
+            return $outputs;
     }
 
 }
