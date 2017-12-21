@@ -186,13 +186,13 @@ class Index extends Common {
 //         $usename = 'sa';
 //         $pass = 'sa';
 //         $dbDB = new \PDO("sqlsrv:Server=$hostname;Database=$dbname",$usename,$pass);
-//             phpinfo();
+            phpinfo();
         $reportid = input('id');
         $dbDB = new CPGRecordModel();
         $resu = $dbDB->field('RName,RAddress,RMoney,ZID')->where('ZID',$reportid)->find();
 //         halt($resu); 
-        $this->assign('res',$resu);
-        return $this->fetch();
+//         $this->assign('res',$resu);
+//         return $this->fetch();
     }
     
     public function insertquery(){
