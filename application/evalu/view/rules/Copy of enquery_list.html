@@ -1,0 +1,50 @@
+{extend name="mainbase" /} {block name="pg_cs"}
+<!-- 以下三个是本页加的CSS -->
+<link rel="stylesheet" href="__CSS__/jquery-ui.min.css" />
+<link rel="stylesheet" href="__CSS__/bootstrap-datepicker3.min.css" />
+<!--    这个是弹出的编辑窗口   -->
+<link rel="stylesheet" href="__CSS__/ui.jqgrid.min.css" />
+{/block} {block name="breadcrumb"}
+<ul class="breadcrumb">
+    <li>
+        <i class="ace-icon fa fa-home home-icon"></i>
+        <a href="#">大叔评估后台</a>
+    </li>
+    <li>
+        <a href="#" >用户及权限管理</a>
+    </li>
+    <li>
+        <a href="#" >查询记录</a>
+    </li>
+
+</ul>
+{/block} {block name="main"}
+
+<div class="widget-box">
+    <div class="widget-header" id='search_div' style='padding-top: 5px; background: #5AA7D6;'>
+        <form class="form-inline" style="float: right;" id="comms-serch">
+            <input class="input-small" id="search_keywords" placeholder="小区名..." type="text">
+            <select class="form-control " id="search_region" style="width: 90px; margin-bottom: 2px;"></select>
+            <input class="input-small" id="s_block" placeholder="版块..." type="text" list="search_block">
+            <datalist id="search_block" style="font-family: inherit; font-size: 14px; padding: 5px 4px 6px;"></datalist>
+            <input class="input" id="search_address" placeholder="地址..." type="text">
+            <button type="button" id="find_btn" class="btn btn-sm btn-info" style="margin-right: 20px; border-radius: 20px; margin-bottom: 3px;">
+                <span class="ace-icon fa fa-search icon-on-right bigger-110"></span>
+                查询
+            </button>
+        </form>
+    </div>
+    <div class="widget-body">
+        <div class="widget-main" style='padding: 0;'>
+            <table id="gridtable"></table>
+            <div id="gridtable_pager"></div>
+        </div>
+    </div>
+</div>
+{/block} {block name="pg_js"}
+<script src="__JS__/bootstrap-datepicker.min.js"></script>
+<script src="__JS__/jquery.jqgrid.js"></script>
+<script src="__JS__/grid.locale-en.js"></script>
+{/block}{block name="pg_inline_js"}
+<script src="__JS__/rules/enquery_list.js"></script>
+{/block}

@@ -64,7 +64,7 @@ class PriceLogic
                     
                     //这里是处理有输入成交价时
                     if($price > 0){
-                        if($price > $result['max'] or $price < $result['min']){
+                        if($price > $result['max'] or $price < $result['min']*0.9){
                             $result['priceByDeal'] = -1;           //-1表示异常，0表示没有提供成交价
                         }else{
                             $result['priceByDeal'] = $this->dealPrice($price, $result);

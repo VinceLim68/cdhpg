@@ -19,26 +19,24 @@ class Rules extends Common {
 	 * 用户列表
 	 */
 	public function user(){
-// 	    $data=(new UserModel())
-// 	    ->field('u.user_id,u.user_name,u.email,u.register_date,u.last_login,u.login_times,u.last_ip,u.status,g.title')
-// 	    ->alias('u')
-// 	    ->join('group_access ga','ga.uid=u.user_id','LEFT')
-// 	    ->join('group g' ,'ga.group_id=g.id','RIGHT')
-// // 	    ->select()->toArray();
-//         ->paginate(20);
-// 	    halt($data);
-	    $data=(new UserModel())->paginate(20);
+
+	    $data=(new UserModel())->order('register_date desc')->paginate(20);
 	    $group = new GroupAccessModel();
+	    //关联角色
 	    foreach ($data as $d){
+            //找出用户所有的角色
 	        $ga = $group->alias('ga')
 	               ->join('group g' ,'ga.group_id=g.id','left')
 	               ->where('uid',$d['user_id'])->select()->toArray();
-	        $temp = '';
+	        //多个角色生成一个string
+            $temp = '';
 	        foreach ($ga as $t){
+	            //重复的角色过滤掉
 	            if(!strpos($temp, $t['title'])){
 	                $temp .= $t['title'].',';
 	            }
 	        }
+	        //把最后一个,去掉
 	        if(strlen($temp)>0){
 	            $temp = rtrim($temp, ",");
 	        }
@@ -286,6 +284,24 @@ class Rules extends Common {
     }
     
     public function enquery_list(){
+        $mydb = new QueryRecordsModel();
+        $where = '1=1';
+//         if(request()->isPost()){
+//             if(input('search_days')){
+//                 where("create_time", ">= time", strtotime('-'.search_days.' day'))
+//             }
+//             if(input('search_type')){
+//                 if(input('search_type')=='user'){
+//                     //按询价人分类统计
+//                     $where .= ' and '
+//                 }
+//             }
+//         }
+        $list = $mydb->order('create_time desc')->where("create_time", ">= time", strtotime('-'.input('search_days').' day'))->paginate(50);
+        $title = ['序号','查询人','小区','片区','查询结果','价格类型','成交价格','查询时间','争议价格'];
+        $this->assign('title',$title);
+        $this->assign('list',$list);
+//         halt($list);
         return $this->fetch();
     }
     

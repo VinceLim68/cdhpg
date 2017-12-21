@@ -11,6 +11,7 @@ use app\evalu\model\SalesModel;
 use app\phone\model\TEnquiryModel;
 use app\phone\model\TCaseCfgModel;
 use app\evalu\logic\CreatExcelLogic;
+use app\phone\model\CPGRecordModel;
 
 class Index extends Common {
     
@@ -22,6 +23,7 @@ class Index extends Common {
     public function getCommName(){
         //把输入的小区名称转化成相应的小区编号
         if (request()->isPost()) {
+//             halt(input());
             $result = $this->validate ( input ( 'param.' ), [
                 'comm' => 'require|max:25|min:2',
                 'price'=>   'number|between:100,12000000',
@@ -87,6 +89,7 @@ class Index extends Common {
         if(input('comm_id')){
             $comm_id = input('comm_id');
         }
+//         halt(input());
 //         halt($comm_id);
         $result = SalesModel::getRecordsByCommid($comm_id);
         $getComm = Db::table('comm')->where('comm_id',$comm_id)->find();
@@ -101,7 +104,6 @@ class Index extends Common {
             $getPrice_result['structuer'] = config('structuer');
             
             $this->assign('B',$getPrice_result);
-
             //===================把离散值过大的数据记录error_comm,以备改进=================================
             if($getPrice_result['std_r'] > config('std_r_limit')){
                 if($getPrice_result['comm']['comm_name']){
@@ -155,18 +157,42 @@ class Index extends Common {
     }
     
     public function test(){
-//         $enquiry = new TEnquiryModel();
-//         $result = $enquiry->limit(10)->select();
-//         halt($result);
-//         echo date ('Y', strtotime('2006'));
-            $test[] = array('comm_id'=>1);
-            $test[] = array('comm_id'=>2);
-            dump($test);
+//         try {
+//             $hostname='192.168.1.3';
+//             $port=1433;//端口
+//             $dbname="Evalue";//库名
+//             $username="sa";//用户
+//             $pw="sa";//密码
+//             $dbDB = new CPGRecordModel();
+//             $dbDB = new \PDO("sqlsrv:Server=$hostname;Database=$dbname",$username,$pw);
+//             $dbh= new \PDO("dblib:host=$hostname:$port;dbname=$dbname","$username","$pw");
+//         } catch (PDOException $e) {
+//             echo"Failed to get DB handle: ".$e->getMessage() ."n";
+//             exit;
+//         }
+//         echo'connent MSSQL succeed';
+//         $resu = $dbh->where('Rid',17121880)->find();
+//         $stmt = $dbh->prepare("select * from users");
+//         $stmt->execute();
         
-//         $request = Request::instance();
-//         echo "当前模块名称是" . $request->module();
-//         返回控制器名
-//         return $this->fetch();
+//         while ($row = $stmt->fetch()) {
+//             print_r($row);
+//         }
+        
+//         unset($dbh);
+//         unset($stmt);
+//         $hostname = '192.168.1.3';
+//         $dbname = 'Evalue';
+//         $usename = 'sa';
+//         $pass = 'sa';
+//         $dbDB = new \PDO("sqlsrv:Server=$hostname;Database=$dbname",$usename,$pass);
+//             phpinfo();
+        $reportid = input('id');
+        $dbDB = new CPGRecordModel();
+        $resu = $dbDB->field('RName,RAddress,RMoney,ZID')->where('ZID',$reportid)->find();
+//         halt($resu); 
+        $this->assign('res',$resu);
+        return $this->fetch();
     }
     
     public function insertquery(){

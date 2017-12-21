@@ -12,15 +12,30 @@
 <link rel="stylesheet" type="text/css" href="__CSS__/comms/enquiry.css">
 </head>
 <body>
-<?xml version="1.0" standalone="no"?>
-<!DOCTYPE svg PUBLIC "-//W3C//DTD SVG 1.1//EN" 
-"http://www.w3.org/Graphics/SVG/1.1/DTD/svg11.dtd">
+<div class="list-group"	>
+	<li class="list-group-item" >诚德行评估报告查询结果</li>
+	<table class="table">
+		<tr>
+			<td class="col-md-3 col-xs-3 left" >报告编号</td>
+			<td class="col-md-9 col-xs-9 right">厦诚德行房估字第{$res['ZID']}号</td>
 
-<svg width="100%" height="500px" version="1.1" xmlns="http://www.w3.org/2000/svg" style="border:1px solid #F00">
+		</tr>
+		<tr>
+			<td class="col-md-3 col-xs-3 left" >项目</td>
+			<td class="col-md-9 col-xs-9 right">{$res['RAddress']}</td>
 
-<circle cx="30%" cy="90%" r="2" stroke-width="1" fill="red"/>
+		</tr>
+		<tr>
+			<td class="col-md-3 col-xs-3 left" >评估总价</td>
+			<td class="col-md-9 col-xs-9 right">{$res['RMoney']}元</td>
 
-</svg>
+		</tr>
+		<tr>
+			<td class="col-md-3 col-xs-3 left" >委托人</td>
+			<td class="col-md-9 col-xs-9 right">{$res['RName']}</td>
+		</tr>
+	</table>
+</div>
 
 
  	<script src="__JS__/jquery-2.1.4.min.js"></script>
