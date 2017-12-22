@@ -28,6 +28,7 @@ return [
 								'method' => 'post' 
 						] 
 				] 
-		] 
+		],
+    'bg/:id'    =>'phone/antifake/index',
 ]
 ;
