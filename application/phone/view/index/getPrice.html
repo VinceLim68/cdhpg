@@ -224,7 +224,8 @@
 										<td class="col-md-4 col-xs-4 left" >小区</td>
 										<td class="col-md-8 col-xs-8 right">
 											<input type="text" name="Enquiry_CellName" value="{$B['comm']['comm_name']}">
-											<input type="hidden" name="OfferPeople" value="{$Think.session.user.user_name}">
+											<input type="hidden" name="OfferPeople" 
+											value="{$auth['admin'] ? '林晓' : $Think.session.user.user_name}">
 										</td>
 									</tr>
 									<tr>
