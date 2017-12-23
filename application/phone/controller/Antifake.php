@@ -10,7 +10,9 @@ class Antifake extends Controller {
         $reportid = input('id');
 //         halt($reportid);
         $dbDB = new CPGRecordModel();
-        $resu = $dbDB->field('RName,RAddress,RMoney,ZID')->where('ZID',$reportid)->find();
+        $resu = $dbDB->field('customer,RAddress,RMoney,ZID')->where('ZID',$reportid)->find();
+//          $resu = $dbDB->where('ZID',$reportid)->find(); 
+//          halt($resu);
         $this->assign('res',$resu);
         return $this->fetch();
     }

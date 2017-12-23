@@ -66,15 +66,20 @@ class UserModel extends Model
 		return ['valid'=>1,'msg'=>'登录成功'];
 	}
 	
+	//注册
 	public function signup($data)
 	{
+// 	    halt($data);
 		$validate = Loader::validate('UserSignupValidate');
 		// 		如果验证不通过
 		if(!$validate->check($data)){
 			return ['valid'=>0,'msg'=>$validate->getError()];
 		}
+		
 		try{
+		    
 			$res = $this->data($data)->allowField(true)->save();
+// 			halt($data);
 		}catch(\Exception $e){
 			//	插入失败，错误代码是10501时，表示用户名重复
 			if($e->getCode()==10501)
@@ -85,6 +90,8 @@ class UserModel extends Model
 			}
 		}
 // 			直接执行登录了
+//         halt($res);
+//         halt($this->user_id);
 		session('user.user_id',$this->user_id);
 		session('user.user_name',$data['user_name']);
 		$ip = LoginLogic::getIP();
@@ -96,6 +103,12 @@ class UserModel extends Model
 		    'login_times'  => 1,
 		    'last_ip' => $ip,
 		],['user_id' => $this->user_id]);
+		//新注册用户默认权限是普通会员
+		$group=array(
+		    'uid'=>$this->user_id,
+		    'group_id'=>4
+		);
+		(new GroupAccessModel()) ->insert($group);
 		return ['valid'=>1,'msg'=>'注册成功，请登录'];
 			
 	}
