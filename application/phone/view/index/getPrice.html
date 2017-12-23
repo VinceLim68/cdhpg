@@ -64,7 +64,7 @@
 			  	<!-- 基本报价 -->
 			    <div role="tabpanel" class="tab-pane active" id="base">
 	   				<div class="panel panel-success">
-						<div class="panel-heading">
+						<div class="panel-heading" style="padding-bottom: 30px;"> 
 							<span class="badge" style="font-size: 16px">
 							{$B['priceByDeal'] > 0?	'二手房评估':'抵押评估价'}
 							</span>
@@ -79,6 +79,7 @@
 							{if condition="$B['ori_len'] < $Think.config.min_base_records "}
 							<p  style="text-align:center;color:#DD5A43;">可供分析的数据偏少，本报价需要估价师确认</p>
 							{/if}
+							<p>
 							<span class="badge font-small" style="float:right;">
 							{$B['avg_area']}平方米
 							</span>
@@ -88,7 +89,8 @@
 							<span class="badge font-small" style="float:right;">
 							{$B['avg_builded_year']}年
 							</span>
-						</div>
+							</p>
+						</div> 
 <!-- 						<div class="list-group"	>
 							<li class="list-group-item" >基价内涵</li>
 							<table class="table">
