@@ -130,7 +130,13 @@ class Auth
         if (!$this->config['auth_on']) {
             return true;
         }
+        
+        //读取全部权限
         $allRules = Db::name($this->config['auth_rule'])->column('name');
+        //         转换成小写
+        foreach ($allRules as $item){
+            $all[] = strtolower($item);
+        }
         if (is_string($name)) {
             $name = strtolower($name);
             if (strpos($name, ',') !== false) {
@@ -139,12 +145,17 @@ class Auth
                 $name = [$name];
             }
         }
+
         //如果模块操作没有在权限列表内，默认不控制
-        if (!in_array($name[0],$allRules)) {
-//             halt($allRules);
+        if (!in_array($name[0],$all)) {
             return true;
         }
+        
+//         dump($name[0]);
         $authList = $this->getAuthList($uid, $type);
+//         dump($all);
+//         dump($name[0]);
+//         dump($authList);
         $list = []; //保存验证通过的规则名
         if ('url' == $mode) {
             $REQUEST = unserialize(strtolower(serialize($this->request->param())));
@@ -213,7 +224,7 @@ class Auth
      * @param integer $type
      * @return array
      */
-    protected function getAuthList($uid, $type)
+    public function getAuthList($uid, $type)
     {
         static $_authList = []; //保存用户验证通过的权限列表
         $t = implode(',', (array)$type);

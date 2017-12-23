@@ -36,14 +36,25 @@
 				      {$Think.session.user.user_name} <span class="caret"></span>
 				    </a>
 				    <ul class="dropdown-menu">
+				    	{if condition="$auth['look']"}
 				    	<li ><a href="#box1" aria-controls="box1" role="tab" data-toggle="tab" >参数</a></li>
+				    	{/if}
+				    	{if condition="$auth['case']"}
 						<li ><a href="#casetab" aria-controls="casetab" role="tab" data-toggle="tab" id="case">成交案例</a></li>
+						{/if}
+						{if condition="$auth['history']"}
 						<li ><a href="#historytab" aria-controls="historytab" role="tab" data-toggle="tab" id="history">历史询价记录</a></li>
-		 				{if condition="$Think.session.user.user_name == 'admin'"}
+		 				{/if}
+						{if condition="$auth['insert']"}
 		 				<li ><a href="#query_record" aria-controls="query_record" role="tab" data-toggle="tab" >登记询价记录</a></li> 
-					    {/if}
+		 				{/if}
+		 				<!-- {if condition="$Think.session.user.user_name == 'admin'"}
+		 				<li ><a href="#query_record" aria-controls="query_record" role="tab" data-toggle="tab" >登记询价记录</a></li> 
+					    {/if} -->
 					    <!-- <li ><a href="{:url('creatExcel',array('comm_id'=>$B['comm']['comm_id'],'comm_name'=>$B['comm']['comm_name']))}"  >导出Excel</a></li> -->
+					    {if condition="$auth['excel']"}
 					    <li ><a href="{:url('creatExcel')}"  >导出Excel</a></li>
+					    {/if}
 					    <li ><a href="{:url('evalu/login/logout')}" >注销</a></li>
 					</ul>
 			  	</li>
@@ -88,8 +99,13 @@
 								</tr>
 							</table>
 						</div>
+						<div class="list-group">
+							<table class="table" id="historytable">
+							</table>
+						</div>
 					</div>
 				</div>
+				
 				<!-- 盒须图 -->
 			    <div role="tabpanel" class="tab-pane" id="box">
 				    <div class="panel panel-success">
@@ -132,10 +148,10 @@
 					</div>
 			    </div>
 				<!-- 历史询价记录 -->
-				<div role="tabpanel" class="tab-pane " id="historytab">
+<!-- 				<div role="tabpanel" class="tab-pane " id="historytab">
 					<table class="table" id="historytable">
 					</table>
-				</div>
+				</div> -->
 				
 				<!-- 案例记录 -->
 				<div role="tabpanel" class="tab-pane " id="casetab">
@@ -184,7 +200,7 @@
 					</div>
 				</div>
 				<!-- 登记询价记录 -->
-			{if condition="$Think.session.user.user_name == 'admin'"}
+				{if condition="$auth['insert']"}
 				<div role="tabpanel" class="tab-pane " id="query_record">
 	   				<div class="panel panel-success">
 						<div class="panel-heading">
@@ -286,9 +302,10 @@
 						</div>
 					</div>
 				</div>
-			{/if}
+				{/if}
 
 			    <!-- 参数 -->
+			    {if condition="$auth['look']"}
 			    <div role="tabpanel" class="tab-pane" id="box1">
 			    	<div class="list-group"	>
 						<li class="list-group-item" >数据参数</li>
@@ -329,7 +346,7 @@
 							</table>
 					</div>
 			    </div>
-			    
+			    {/if}
 			    <!-- 面积楼价散点图 -->
 			    <div role="tabpanel" class="tab-pane" id="scatter_area_price">
    				    <div class="panel panel-success">
@@ -379,17 +396,18 @@
 						</div>
 			    	</div>
 
-				</div>
-			    <div role="tabpanel" class="tab-pane" id="box2">44</div>
-			  </div>
+					</div>
+			  	</div>
 			
 			<a class="btn btn-success btn-block btn-lg" href="{:url('index')}">返回</a>
+			{if condition="$auth['dispute']"}
 			<div class="input-group input-group-lg" style="margin-top:10px;">
 		      <input type="text" class="form-control" placeholder="输入您认为合适的评估价..." id="myprice">
 		      <span class="input-group-btn ">
 		        <button class="btn btn-success " id="dispute" type="button">我有异议 !</button>
 		      </span>
 		    </div>
+			{/if}
 		</div>
 	</div>
 	
@@ -417,7 +435,7 @@
 <!-- 	<script src="__JS__/comms/phoneGetPrice.js"></script>  -->
 	<script type="text/JavaScript">
 	jQuery(function($) {
-		
+		{if condition="$auth['dispute']"}
 		jQuery("#dispute").on('click',function (){
 			$.ajax({
 				url:'{:url('dispute')}',
@@ -437,7 +455,8 @@
 				
 			});
 		} );
-		
+		{/if}
+		{if condition="$auth['insert']"}
 		jQuery("#insertQuery").on('click',function (){
 			var date = new Date();
 			/* var data = $.param({'state': '123'}) + '&' + $('#insertQueryForm').serialize(); */
@@ -455,8 +474,11 @@
 			});
 
 		} );
+		{/if}
+		{if condition="$auth['history']"}
+		jQuery("#history").on('click',hist);
 		
-		jQuery("#history").on('click',function (){
+		function hist(){
 			$.ajax({
 				url:'{:url('getHistory')}',
 				type:'POST',
@@ -464,8 +486,10 @@
         			$('#historytable').html(msg);
        		   	},	
 			});
-		} );
-		
+		};
+		hist();
+		{/if}
+		{if condition="$auth['case']"}
 		jQuery("#case").on('click',function (){
 			$.ajax({
 				url:'{:url('getCase')}',
@@ -475,7 +499,7 @@
        		   	},	
 			});
 		} );
-		
+		{/if}
 		jQuery(".table td.inputaction input").on('keyup',countfee);
 		
 		jQuery("#areafee").on('keyup',function(){

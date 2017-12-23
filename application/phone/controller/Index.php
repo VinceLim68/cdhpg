@@ -120,6 +120,17 @@ class Index extends Common {
             }
             //===================登记查询记录===============================================
             QueryRecordsModel::insert_record($getPrice_result);
+            //===================还要分配一下权限===============================================
+            //得到用户的权限
+            $userrules = (new \Auth())->getAuthList(session('user.user_id'),1);
+            $auth['history'] = in_array('phone/index/gethistory',$userrules)?true:false;
+            $auth['case'] = in_array('phone/index/getcase',$userrules)?true:false;
+            $auth['insert'] = in_array('phone/index/insertquery',$userrules)?true:false;
+            $auth['excel'] = in_array('phone/index/createxcel',$userrules)?true:false;
+            $auth['look'] = in_array('phone/index/look',$userrules)?true:false;
+            $auth['dispute'] = in_array('phone/index/dispute',$userrules)?true:false;
+
+            $this->assign('auth',$auth);
         }else{
             $errorcomm = ErrorCommModel::create([
                 'memo'          =>  '没数据',
@@ -157,42 +168,13 @@ class Index extends Common {
     }
     
     public function test(){
-//         try {
-//             $hostname='192.168.1.3';
-//             $port=1433;//端口
-//             $dbname="Evalue";//库名
-//             $username="sa";//用户
-//             $pw="sa";//密码
-//             $dbDB = new CPGRecordModel();
-//             $dbDB = new \PDO("sqlsrv:Server=$hostname;Database=$dbname",$username,$pw);
-//             $dbh= new \PDO("dblib:host=$hostname:$port;dbname=$dbname","$username","$pw");
-//         } catch (PDOException $e) {
-//             echo"Failed to get DB handle: ".$e->getMessage() ."n";
-//             exit;
-//         }
-//         echo'connent MSSQL succeed';
-//         $resu = $dbh->where('Rid',17121880)->find();
-//         $stmt = $dbh->prepare("select * from users");
-//         $stmt->execute();
-        
-//         while ($row = $stmt->fetch()) {
-//             print_r($row);
-//         }
-        
-//         unset($dbh);
-//         unset($stmt);
-//         $hostname = '192.168.1.3';
-//         $dbname = 'Evalue';
-//         $usename = 'sa';
-//         $pass = 'sa';
-//         $dbDB = new \PDO("sqlsrv:Server=$hostname;Database=$dbname",$usename,$pass);
-//             phpinfo();
-        $reportid = input('id');
-        $dbDB = new CPGRecordModel();
-        $resu = $dbDB->field('RName,RAddress,RMoney,ZID')->where('ZID',$reportid)->find();
-//         halt($resu); 
-        $this->assign('res',$resu);
-        return $this->fetch();
+        return 1;
+//         $reportid = input('id');
+//         $dbDB = new CPGRecordModel();
+//         $resu = $dbDB->field('RName,RAddress,RMoney,ZID')->where('ZID',$reportid)->find();
+// //         halt($resu); 
+//         $this->assign('res',$resu);
+//         return $this->fetch();
     }
     
     public function insertquery(){

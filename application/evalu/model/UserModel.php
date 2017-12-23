@@ -44,6 +44,7 @@ class UserModel extends Model
 			return ['valid'=>0,'msg'=>$validate->getError()];
 		}
 		// 		2.比对用户名和密码
+// 		halt($data);
 		$userInfo = $this->where('user_name',$data['user_name'])->where('pass',$data['pass'])->find();
 		if(!$userInfo)
 		{
@@ -90,8 +91,6 @@ class UserModel extends Model
 			}
 		}
 // 			直接执行登录了
-//         halt($res);
-//         halt($this->user_id);
 		session('user.user_id',$this->user_id);
 		session('user.user_name',$data['user_name']);
 		$ip = LoginLogic::getIP();
