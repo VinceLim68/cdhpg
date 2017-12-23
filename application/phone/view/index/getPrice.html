@@ -224,24 +224,20 @@
 										<td class="col-md-4 col-xs-4 left" >小区</td>
 										<td class="col-md-8 col-xs-8 right">
 											<input type="text" name="Enquiry_CellName" value="{$B['comm']['comm_name']}">
+											<input type="hidden" name="OfferPeople" value="{$Think.session.user.user_name}">
 										</td>
 									</tr>
 									<tr>
 										<td class="col-md-4 col-xs-4 left" >报价</td>
 										<td class="col-md-8 col-xs-8 right">
-											<input type="text" name="Apprsal_Up" value="{$B['mortgagePrice']}">
+											<input type="text" name="Apprsal_Up" 
+											{if condition="$auth['admin']"}value="{$B['mortgagePrice']}"{/if}>
 										</td>
 									</tr>
 									<tr>
-										<td class="col-md-4 col-xs-4 left" >备注</td>
+										<td class="col-md-4 col-xs-4 left" >询价人</td>
 										<td class="col-md-8 col-xs-8 right">
-											<input type="text" name="Remark" value="{$B['len']}个数据，挂牌价格{$B['min']}-{$B['max']}元/平方米">
-										</td>
-									</tr>
-									<tr>
-										<td class="col-md-4 col-xs-4 left" >询价</td>
-										<td class="col-md-8 col-xs-8 right">
-											<input type="text" name="Enquiry_PmName" value="公司外部" list="emplorers">
+											<input type="text" name="Enquiry_PmName" {if condition="$auth['admin']"}value="公司外部"{/if} list="emplorers">
 											<datalist id="emplorers">
 											  	{volist name="B['emplorers']" id="vo"  }
 												  <option value="{$vo}">
@@ -250,9 +246,31 @@
 										</td>
 									</tr>
 									<tr>
+										<td class="col-md-4 col-xs-4 left" >备注</td>
+										<td class="col-md-8 col-xs-8 right">
+											<input type="text" name="Remark" 
+											{if condition="$auth['admin']"}
+											value="{$B['len']}个数据，挂牌价格{$B['min']}-{$B['max']}元/平方米"
+											{/if}>
+										</td>
+									</tr>
+									<tr>
 										<td class="col-md-4 col-xs-4 left" >地址</td>
 										<td class="col-md-8 col-xs-8 right">
-											<input type="text" name="PA_Located" value="二手房可以评估{$B['dealPrice']}">
+											<input type="text" name="PA_Located" 
+											{if condition="$auth['admin']"}value="二手房可以评估{$B['dealPrice']}"{/if}>
+										</td>
+									</tr>
+									<tr>
+										<td class="col-md-4 col-xs-4 left" >层次</td>
+										<td class="col-md-8 col-xs-8 right">
+											<input type="text" name="PA_Level" value="{$B['avg_floor_index']}">
+										</td>
+									</tr>
+									<tr>
+										<td class="col-md-4 col-xs-4 left" >总层</td>
+										<td class="col-md-8 col-xs-8 right">
+											<input type="text" name="Enquiry_Layout" value="{$B['avg_total_floor']}">
 										</td>
 									</tr>
 									<tr>
@@ -294,18 +312,6 @@
 												  <option value="{$vo}">
 												{/volist}
 											</datalist>
-										</td>
-									</tr>
-									<tr>
-										<td class="col-md-4 col-xs-4 left" >层次</td>
-										<td class="col-md-8 col-xs-8 right">
-											<input type="text" name="PA_Level" value="{$B['avg_floor_index']}">
-										</td>
-									</tr>
-									<tr>
-										<td class="col-md-4 col-xs-4 left" >总层</td>
-										<td class="col-md-8 col-xs-8 right">
-											<input type="text" name="Enquiry_Layout" value="{$B['avg_total_floor']}">
 										</td>
 									</tr>
 								</table>
@@ -474,9 +480,10 @@
 			$.ajax({
 				url:'{:url('insertquery')}',
 				type:'POST',
-				data:$('#insertQueryForm').serialize()+ '&' +$.param({
+/* 				data:$('#insertQueryForm').serialize()+ '&' +$.param({
 					'OfferPeople':'林晓',
-					}),
+					}), */
+				data:$('#insertQueryForm').serialize(),
 				success: function(msg){
         			$('#mymodal_header').html(msg['status']);
     				$('#mymodal-body').html('<p>'+ msg['msg'] + '</p>');

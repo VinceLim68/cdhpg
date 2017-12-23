@@ -128,6 +128,7 @@ class Index extends Common {
             $auth['insert'] = in_array('phone/index/insertquery',$userrules)?true:false;
             $auth['excel'] = in_array('phone/index/createxcel',$userrules)?true:false;
             $auth['look'] = in_array('phone/index/look',$userrules)?true:false;
+            $auth['admin'] = in_array('isadmin',$userrules)?true:false;
             $auth['dispute'] = in_array('phone/index/dispute',$userrules)?true:false;
 
             $this->assign('auth',$auth);
@@ -168,7 +169,10 @@ class Index extends Common {
     }
     
     public function test(){
-        return 1;
+        $a='30456~35000';
+//         $b = preg_match('/\d+/',$a,$arr);
+        preg_match_all('/\d+/',$a,$arr);
+        dump($arr[0][0]);
 //         $reportid = input('id');
 //         $dbDB = new CPGRecordModel();
 //         $resu = $dbDB->field('RName,RAddress,RMoney,ZID')->where('ZID',$reportid)->find();
@@ -179,12 +183,13 @@ class Index extends Common {
     
     public function insertquery(){
         //插入询价记录
-        $result = $this->validate(input(),'InsertQueryValidate');
+        $data = input();
+//         halt($data);
+        $result = $this->validate($data,'InsertQueryValidate');
         if(true !== $result){
             // 验证失败 输出错误信息
             return ['status'=>'输入不规范','msg'=> $result];
         };
-        $data = input();
         $data['Enquiry_Source'] = '估价师报价';
         $data['Enquiry_Date'] = date ( "Y-m-d");
         $data['PA_YearBuilt'] = date ('Y-m-d', strtotime($data['PA_YearBuilt'].'-1-1'));
@@ -192,33 +197,39 @@ class Index extends Common {
             $enq = new TEnquiryModel();
         }
         //不同估价师，同一小区，同一用途，在一段时间内不允许报相同的价;但管理员不受此限
-        if(session('user.user_name') != 'admin'){
-//             $findResult2 = $enq->where('Enquiry_CellName',$data['Enquiry_CellName'])
-//                         ->where('Apprsal_Use',$data['Apprsal_Use'])
-//                         ->where('Enquiry_Date','> time',date ( "Y-m-d", strtotime ( "-30 day" ) ))
-//                         ->where('Apprsal_Up',$data['Apprsal_Up'])
-//                         ->find();
-//             $findResult2 = $enq->findEnqueryByCommAndDate($data);
+        $auth = new \Auth();
+        if(!$auth->check('isadmin',session('user.user_id'))){
+            //如果不是管理员
             if($enq->findEnqueryByCommAndDate($data)){
                 return ['status'=>'报价雷同','msg'=> '在过去的一个月中已经有估价师对同一小区、同一用途作过相同报价，不再重复记录、'];
+            }else{
+                $insertEnguery = $enq->data($data)->save();
+                return ['status'=>'登记成功','msg'=> '已将您的询价记录成功记入数据库中'];
             }
-            
-        }
-        //同一估价师，同一小区，同一用途，在一段时间内不允许重复报价
-//         $findResult = $enq->where('OfferPeople',$data['OfferPeople'])
-//                     ->where('Enquiry_CellName',$data['Enquiry_CellName'])
-//                     ->where('Apprsal_Use',$data['Apprsal_Use'])
-//                     ->where('Enquiry_Date','> time',date ( "Y-m-d", strtotime ( "-30 day" ) ))
-//                     ->find();
-        //插入记录
-//         if(!$findResult){
-        if(!$enq->findEnqueryByOfferAndDateAndComm($data)){
-            $insertEnguery = $enq->data($data)->save();
-            $num = $enq->getCount($data);
-            return ['status'=>'登记成功','msg'=> '已将询价记录成功记入数据库中,本月'.$data['OfferPeople'].'已报价'.$num.'条'];
         }else{
-            return ['status'=>'重复数据','msg'=> '您在过去的一个月中已经对同一小区、同一用途作过报价，不再重复记录、'];
+            //这是管理员
+            if(!$enq->findEnqueryByOfferAndDateAndComm($data)){
+                $insertEnguery = $enq->data($data)->save();
+                $num = $enq->getCount($data);
+                return ['status'=>'登记成功','msg'=> '已将询价记录成功记入数据库中,本月'.$data['OfferPeople'].'已报价'.$num.'条'];
+            }else{
+                return ['status'=>'重复数据','msg'=> '您在过去的一个月中已经对同一小区、同一用途作过报价，不再重复记录、'];
+            }
         }
+        
+//         if(session('user.user_name') != 'admin'){
+//             if($enq->findEnqueryByCommAndDate($data)){
+//                 return ['status'=>'报价雷同','msg'=> '在过去的一个月中已经有估价师对同一小区、同一用途作过相同报价，不再重复记录、'];
+//             }
+//         }
+
+//         if(!$enq->findEnqueryByOfferAndDateAndComm($data)){
+//             $insertEnguery = $enq->data($data)->save();
+//             $num = $enq->getCount($data);
+//             return ['status'=>'登记成功','msg'=> '已将询价记录成功记入数据库中,本月'.$data['OfferPeople'].'已报价'.$num.'条'];
+//         }else{
+//             return ['status'=>'重复数据','msg'=> '您在过去的一个月中已经对同一小区、同一用途作过报价，不再重复记录、'];
+//         }
     }
 
     public function getHistory(){
