@@ -42,7 +42,6 @@ class Rules extends Common {
 	        }
 	        $d['title'] = $temp;
 	    }
-//         halt($data);
 	    $assign=array(
 	        'data'=>$data
 	    );
@@ -286,21 +285,72 @@ class Rules extends Common {
     public function enquery_list(){
         $mydb = new QueryRecordsModel();
         $where = '1=1';
-//         if(request()->isPost()){
-//             if(input('search_days')){
-//                 where("create_time", ">= time", strtotime('-'.search_days.' day'))
-//             }
-//             if(input('search_type')){
-//                 if(input('search_type')=='user'){
-//                     //按询价人分类统计
-//                     $where .= ' and '
-//                 }
-//             }
-//         }
-        $list = $mydb->order('create_time desc')->where("create_time", ">= time", strtotime('-'.input('search_days').' day'))->paginate(50);
-        $title = ['序号','查询人','小区','片区','查询结果','价格类型','成交价格','查询时间','争议价格'];
+        $data = input();
+//         dump($data);
+        if(!isset($data['search_days']) or $data['search_days']==''){
+            $data['search_days'] = 30;
+        }
+        if(!isset($data['search_type'])){
+            $data['search_type'] = 'all';
+        }
+        
+        if(input ( 'serach_user' )){
+            $where .= ' and user_name = "'.input ( 'serach_user' ).'"';
+        }
+        if(input ( 'search_comm' )){
+            $where .= ' and comm_name = "'.input ( 'search_comm' ).'"';
+        }
+//         dump($where);
+        if($data['search_type']=='user'){
+            $list = $mydb->field('count(id) as dealprice,id,user_name,comm_name,block,price,create_time,price_type,dispute')
+                ->where("create_time", ">= time", strtotime('-'.input('search_days').' day'))
+                ->where($where)
+                ->group('user_name')
+                ->order('dealprice desc')
+                ->paginate(30,false,[
+                    'query'=>[
+                       'search_days'=>  input('search_days'),
+                       'search_type'=>  input('search_type'),
+                       'search_comm'=>  input('search_comm'),
+                       'serach_user'=>  input('serach_user'),],
+                    'type'     => 'bootstrap',
+                    'var_page' => 'page',
+                ]);
+            $title = ['序号','查询人','小区','片区','查询结果','价格类型','查询次数','查询时间','争议价格'];
+        }elseif ($data['search_type']=='comm'){
+            $list = $mydb->field('count(id) as dealprice,id,user_name,comm_name,block,price,create_time,price_type,dispute')
+                ->where("create_time", ">= time", strtotime('-'.input('search_days').' day'))
+                ->where($where)
+                ->group('comm_name')
+                ->order('dealprice desc')
+                ->paginate(30,false,[
+                    'query'=>[
+                       'search_days'=>  input('search_days'),
+                       'search_type'=>  input('search_type'),
+                       'search_comm'=>  input('search_comm'),
+                       'serach_user'=>  input('serach_user'),],
+                    'type'     => 'bootstrap',
+                    'var_page' => 'page',
+                ]);
+            $title = ['序号','查询人','小区','片区','查询结果','价格类型','查询次数','查询时间','争议价格'];
+        }else{
+            $list = $mydb->order('create_time desc')
+                ->where("create_time", ">= time", strtotime('-'.input('search_days').' day'))
+                ->where($where)
+                ->paginate(30,false,[
+                    'query'=>[
+                       'search_days'=>  input('search_days'),
+                       'search_type'=>  input('search_type'),
+                       'search_comm'=>  input('search_comm'),
+                       'serach_user'=>  input('serach_user'),],
+                    'type'     => 'bootstrap',
+                    'var_page' => 'page',
+                ]);
+            $title = ['序号','查询人','小区','片区','查询结果','价格类型','成交价格','查询时间','争议价格'];
+        }
         $this->assign('title',$title);
         $this->assign('list',$list);
+        $this->assign('data',$data);
 //         halt($list);
         return $this->fetch();
     }

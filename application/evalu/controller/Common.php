@@ -21,21 +21,9 @@ class Common extends Controller
 		$module = $request->module();
 		$act = strtolower($module.'/'.$controller.'/'.$action);       //$controller . '/' . $action
 		$auth = new \Auth();
-// 		dump($act);
-// 		halt($auth->check($act,session('user.user_id')));
  		if(!$auth->check($act,session('user.user_id'))){
-//     		halt($act);
 		    $this->error(session('user.user_name').':'.$act.'你没有权限访问');
 		} 
-		//对功能模块进行限制，小区和挂牌数据列表非管理员不让看
-// 		if(session('user.user_name') != 'admin'){
-// 		    if($request->module()=='evalu'){
-// 		        if($request->controller()=='Sales' or $request->controller()=='Comms'){
-// 		            $this->error(session('user.user_name').':'.$act.'你没有操作权限');
-// 		        }
-// 		    }
-// 		}
-
 	}
 	
 	/*
@@ -53,7 +41,6 @@ class Common extends Controller
 	        return $t;    //如果是，则直接返回真值，不需要进行权限验证
 	    }else{
 	        //如果不是，则进行权限验证；
-// 	        import('ORG.Util.Auth');
 	        $auth=new \Auth();
 	        return $auth->check($rule,$uid,$relation)?$t:$f;
 	    }

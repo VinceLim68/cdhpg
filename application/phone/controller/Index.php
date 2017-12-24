@@ -184,7 +184,6 @@ class Index extends Common {
     public function insertquery(){
         //插入询价记录
         $data = input();
-//         halt($data);
         $result = $this->validate($data,'InsertQueryValidate');
         if(true !== $result){
             // 验证失败 输出错误信息
