@@ -8,6 +8,7 @@ use app\evalu\model\GroupModel;
 use app\evalu\model\RuleModel;
 use app\evalu\model\UserModel;
 use app\phone\model\QueryRecordsModel;
+use app\evalu\model\ErrorCommModel;
 
 class Rules extends Common {
 	protected $db;
@@ -283,6 +284,7 @@ class Rules extends Common {
     }
     
     public function enquery_list(){
+        //询价记录及统计结果
         $mydb = new QueryRecordsModel();
         $where = '1=1';
         $data = input();
@@ -347,6 +349,7 @@ class Rules extends Common {
                     'var_page' => 'page',
                 ]);
             $title = ['序号','查询人','小区','片区','查询结果','价格类型','成交价格','查询时间','争议价格'];
+            
         }
         $this->assign('title',$title);
         $this->assign('list',$list);
@@ -355,56 +358,92 @@ class Rules extends Common {
         return $this->fetch();
     }
     
-    public function get_enquery_records(){
-        //获取询价数据
-        $page = input ( 'page' ); // 第几页
-        $limit = input ( 'rows' ); // 每页几条记录
-        $sidx = input ( 'sidx' ); // 排序字段
-        $sord = input ( 'sord' ); // 正序还是倒序
+//     public function get_enquery_records(){
+//         //获取询价数据，这个应该不需要了，被上面的替代
+//         $page = input ( 'page' ); // 第几页
+//         $limit = input ( 'rows' ); // 每页几条记录
+//         $sidx = input ( 'sidx' ); // 排序字段
+//         $sord = input ( 'sord' ); // 正序还是倒序
         
-        if (! $sidx)
-            $sidx = 1;
-            $outputs = array ();
+//         if (! $sidx)
+//             $sidx = 1;
+//             $outputs = array ();
         
-            $where = '1=1';
+//             $where = '1=1';
         
-            if (input ( 'keywords' )) {
-                $keywords = input ( 'keywords' );
-                $where .= " and (keywords like '%" . $keywords . "%' or comm_name like '%" . $keywords . "%')";
-            }
-            ;
-            if (input ( 'region' )) {
-                $region = input ( 'region' );
-                $where .= " and region like '%" . $region . "%'";
-            }
-            ;
-            if (input ( 'block' )) {
-                $block = input ( 'block' );
-                $where .= " and block like '%" . $block . "%'";
-            }
-            ;
-            if (input ( 'address' )) {
-                $address = input ( 'address' );
-                $where .= " and comm_addr like '%" . $address . "%'";
-            }
-            ;
+//             if (input ( 'keywords' )) {
+//                 $keywords = input ( 'keywords' );
+//                 $where .= " and (keywords like '%" . $keywords . "%' or comm_name like '%" . $keywords . "%')";
+//             }
+//             ;
+//             if (input ( 'region' )) {
+//                 $region = input ( 'region' );
+//                 $where .= " and region like '%" . $region . "%'";
+//             }
+//             ;
+//             if (input ( 'block' )) {
+//                 $block = input ( 'block' );
+//                 $where .= " and block like '%" . $block . "%'";
+//             }
+//             ;
+//             if (input ( 'address' )) {
+//                 $address = input ( 'address' );
+//                 $where .= " and comm_addr like '%" . $address . "%'";
+//             }
+//             ;
         
-//             $sql_count = "SELECT COUNT(*) AS count FROM comm where " . $where;
-//             $records = $this->db->query ( $sql_count );
-            $mydb = new QueryRecordsModel();
-            $rec_nums = $mydb->where($where)->count('id');
-            $total = ceil ( $rec_nums/ $limit );
-            $list = $mydb->limit ( $limit )->page ( $page )->where ( $where )->order($sidx.' '.$sord)->select ()->toArray ();
-            /*
-             * 返回值：total总页数,page当前页码,records总记录数,
-             * rows数据集,id每条记录的唯一id,cell具体每条记录的内容
-             */
-            $outputs ['total'] = $total;
-            $outputs ['page'] = $page;
-            $outputs ['records'] = $rec_nums;
-            $outputs ['rows'] = $list;
+// //             $sql_count = "SELECT COUNT(*) AS count FROM comm where " . $where;
+// //             $records = $this->db->query ( $sql_count );
+//             $mydb = new QueryRecordsModel();
+//             $rec_nums = $mydb->where($where)->count('id');
+//             $total = ceil ( $rec_nums/ $limit );
+//             $list = $mydb->limit ( $limit )->page ( $page )->where ( $where )->order($sidx.' '.$sord)->select ()->toArray ();
+//             /*
+//              * 返回值：total总页数,page当前页码,records总记录数,
+//              * rows数据集,id每条记录的唯一id,cell具体每条记录的内容
+//              */
+//             $outputs ['total'] = $total;
+//             $outputs ['page'] = $page;
+//             $outputs ['records'] = $rec_nums;
+//             $outputs ['rows'] = $list;
         
-            return $outputs;
+//             return $outputs;
+//     }
+    public function err_comm_list(){
+        $mydb = new ErrorCommModel();
+        $where = '1=1';
+        $data = input();
+        if(!isset($data['search_days']) or $data['search_days']==''){
+            $data['search_days'] = 30;
+        }
+        if(!isset($data['search_type'])){
+            $data['search_type'] = 'all';
+        }
+        if(input ( 'search_type' ) and input('search_type')!='all'){
+            $where .= ' and type = "'.input ( 'search_type' ).'"';
+        }
+//         dump(input());
+        $list = $mydb
+            ->field('count(id) as times,id,user_name,comm_name,comm_id,create_time,type,memo')
+            ->where("create_time", ">= time", strtotime('-'.input('search_days').' day'))
+            ->where($where)
+            ->order('times desc')
+            ->group('comm_name')
+            ->paginate(30,false,[
+                'query'=>[
+                    'search_days'=>  input('search_days'),
+                    'search_type'=>  input('search_type'),
+                    'search_comm'=>  input('search_comm'),
+                    'serach_user'=>  input('serach_user'),],
+                'type'     => 'bootstrap',
+                'var_page' => 'page',
+            ]);
+//         halt($list);
+        $title = ['序号','小区','查询次数','小区id','查询人','查询时间','异常类型','说明'];
+        $this->assign('title',$title);
+        $this->assign('list',$list);
+        $this->assign('data',$data);
+        return $this->fetch();
     }
 
 }
