@@ -255,7 +255,7 @@ return [
 		// 验证码
 		'captcha' => [ 
 				'fontSize' => 20,
-				'codeSet' => '2345678abcdefhijkmnpqrstuvxwyzACDEFGHJKLMNPQRTUVWXY',
+				'codeSet' => '1234567890',
 				'imageH' => 45,
 				'imageW' => 150,
 				'length' => 2 
