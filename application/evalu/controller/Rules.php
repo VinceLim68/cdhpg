@@ -110,6 +110,47 @@ class Rules extends Common {
 	        return $this->fetch();
 	    }
 	}
+	
+	/**
+	 * 添加用户
+	 */
+	public function add_user(){
+	    if(request()->isPost()){
+	        $data=input('post.');
+// 	        dump($data);
+	        $result = $this->validate ($data, [
+	               'user_name'	=>	'require|length:2,10',
+			       'pass'		=>	'require',
+	               'email'		=>	'email|require'
+	        ] );
+	        	
+	        if (true !== $result) {
+	            // 验证失败 输出错误信息
+	            $this->error ( $result );
+	            exit ();
+	        } else {
+    	        $U = new UserModel();
+    	        $res = $U->add_user($data);
+	        };
+	        if($res['valid']){
+	            // 操作成功
+	            $this->success('添加成功',url('user'));
+	        }else{
+	            $error_word=$U->getError();
+	            if (empty($error_word)) {
+	                $this->success('编辑成功',url('edit_user',array('id'=>$uid)));
+	            }else{
+	                // 操作失败
+	                $this->error($error_word);
+	            }
+	    
+	        }
+	    }
+	    $data=(new GroupModel())->select();
+	    $this->assign('data',$data);
+        return $this->fetch();
+	}
+	
     /**
      * 用户组/角色列表
      */

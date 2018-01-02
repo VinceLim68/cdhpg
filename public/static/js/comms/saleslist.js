@@ -30,7 +30,7 @@ jQuery(function($) {
 			'action': $("#saleslist_hidden").val(),
 			//'sord': 'desc',
 			}, 
-		height: 250,
+		height: 400,
 		colModel: [{
 			name: 'id',
 			index: 'id',

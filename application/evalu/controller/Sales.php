@@ -246,5 +246,55 @@ class Sales extends Common {
 		return $this->redirect('comms/commslist');
 	}
 	
+	public function queryByComm(){
+        $data = input();
+// 	    if(request()->isPost()){
+// 	        dump(input());
+// 	    }
+        if(!isset($data['where']) or $data['where']==''){
+            $data['where'] = '';
+        }
+        if(!isset($data['order'])){
+            $data['order'] = 'price';
+        }
+        if(!isset($data['set'])){
+            $data['set'] = '';
+        }
+        dump($data);
+        if('' == $data['set']){
+            //查询记录
+            $list = $this->db->field('id,title,community_id,community_name,price,total_floor,builded_year')
+            ->where($data['where'] )
+            ->order($data['order'])
+            ->paginate(30,false,[
+                'query'=>[
+                    'where'=>  $data['where'],
+                    'order'=>  $data['order'],
+                    'set'=>  $data['set'],
+                ],
+            ]);
+        }else{
+            //修改记录
+        }
+	    $fields = Db::query('SHOW COLUMNS FROM for_sale_property');
+// 	    $list = $this->db->field('id,title,community_id,community_name,price,total_floor,builded_year')
+// 	           ->paginate(30,false,[
+//                     'query'=>[
+//                        'where'=>  $data['where'],
+//                        'order'=>  $data['order'],
+//                        'set'=>  $data['set'],
+//                        ],
+//                 ]);
+        $title = ['序号','标题','小区','名称','单价','总层','建成'];
+//         halt($list);
+        $this->assign('list',$list);
+        $this->assign('title',$title);
+        $this->assign('fields',$fields);
+        $this->assign('data',$data);
+	    return $this->fetch();
+	}
+	
+	
+	
 
 }

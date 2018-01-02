@@ -9,7 +9,7 @@
 	<li><i class="ace-icon fa fa-home home-icon"></i> <a href="#">大叔评估后台</a>
 	</li>
 	<li><a href="#">用户及权限管理</a></li>
-	<li><a href="#">查询记录</a></li>
+	<li><a href="#">异常记录</a></li>
 
 </ul>
 {/block} {block name="main"}
@@ -20,14 +20,13 @@
 		<form class="form-inline" style="float: right; color: white;" id="comms-serch" action="" method="post">
 			最近<input class="input-small" name="search_days" value='{$data['search_days']}'
 				type="text" style="width: 50px; text-align: center">天内 
-				<input	class="input-small" name="serach_user" placeholder="查询人..." type="text"> 
-				<input	class="input-small" name="page" type="hidden" value='1'> 
-				<input class="input-small" name="search_comm"	placeholder="小区..." type="text"> 
-				<select	class="form-control " name="search_type" style="width: 90px; margin-bottom: 2px;">
-					<option value="all" {if condition="$data['search_type']=='all'"}selected = "selected"{/if}>查询全部</option> 
-					<option value="user" {if condition="$data['search_type']=='user'"}selected = "selected"{/if}>按查询人统计</option>
-					<option value="comm" {if condition="$data['search_type']=='comm'"}selected = "selected"{/if}>按小区统计</option>
-				</select>
+			<input	class="input-small" name="page" type="hidden" value='1'> 
+			<select	class="form-control " name="search_type" style="width: 90px; margin-bottom: 2px;">
+				<option value="all" {if condition="$data['search_type']=='all'"}selected = "selected"{/if}>查询全部</option> 
+				<option value="1" {if condition="$data['search_type']=='1'"}selected = "selected"{/if}>查缺失小区列表</option>
+				<option value="2" {if condition="$data['search_type']=='2'"}selected = "selected"{/if}>查离散过大小区列表</option>
+				<option value="3" {if condition="$data['search_type']=='3'"}selected = "selected"{/if}>查无数据小区列表</option>
+			</select>	
 			<button type="submit" id="find_btn" class="btn btn-sm btn-info"
 				style="margin-right: 20px; border-radius: 20px; margin-bottom: 3px;">
 				<span class="ace-icon fa fa-search icon-on-right bigger-110"></span>
@@ -41,20 +40,19 @@
 				class="table table-striped table-bordered table-hover table-condensed">
 				<tr>
 					{foreach name="title" item="t"}
-					<th>{$t}</th> 
-					{/foreach}
+
+					<th>{$t}</th> {/foreach}
 				</tr>
 				{foreach name="list" item="v"}
 				<tr>
 					<td>{$v['id']}</td>
-					<td>{$v['user_name']}</td>
 					<td>{$v['comm_name']}</td>
-					<td>{$v['block']}</td>
-					<td>{$v['price']}</td>
-					<td>{$v['price_type']}</td>
-					<td>{$v['dealprice']}</td>
+					<td>{$v['times']}</td>
+					<td>{$v['comm_id']}</td>
+					<td>{$v['user_name']}</td>
 					<td>{$v['create_time']}</td>
-					<td>{$v['dispute']}</td>
+					<td>{$v['type']}</td>
+					<td>{$v['memo']}</td>
 				</tr>
 				{/foreach}
 			</table>

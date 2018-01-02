@@ -1746,7 +1746,8 @@
 	.skin-2 .container.main-container .breadcrumbs-fixed, .skin-2 .container.main-container .sidebar.compact+.main-content .breadcrumbs-fixed,
 		.skin-2 .container.main-container .sidebar.menu-min+.main-content .breadcrumbs-fixed
 		{
-		width: 734px
+		/* width: 734px  */
+			width:100%
 	}
 	.skin-2 .container.main-container .sidebar.responsive-min+.main-content .breadcrumbs-fixed
 		{
@@ -3071,7 +3072,8 @@
 	.skin-3 .container.main-container .breadcrumbs-fixed, .skin-3 .container.main-container .sidebar.compact+.main-content .breadcrumbs-fixed,
 		.skin-3 .container.main-container .sidebar.menu-min+.main-content .breadcrumbs-fixed
 		{
-		width: 734px
+		/* width: 734px  */
+			width:100%
 	}
 	.skin-3 .container.main-container .sidebar.responsive-min+.main-content .breadcrumbs-fixed
 		{
