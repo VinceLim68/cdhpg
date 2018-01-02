@@ -53,22 +53,19 @@
 </div>
 <!-- /.breadcrumb -->
 {/block} {block name="main"}
-
-<input type="hidden" id="saleslist_hidden" value="all">
-<div class="col-xs-12">
-	<div class="tabbable">
-		<ul class="nav nav-tabs padding-12 tab-color-blue background-blue"
-			id="myTab">
-			<li class="active"><a href="#home" data-toggle="tab">挂牌列表</a></li>
-			<li><a href="{:url('queryByComm')}">按小区查询</a></li>
-		</ul>
-		<div class="tab-content" style="padding:0;">
-			
-			<table id="grid-table"></table>
-			<div id="grid-pager"></div>
-		</div>
-	</div>
+<div class="page-header ">
+    <h1>
+        挂牌信息
+        <small>
+            <i class="ace-icon fa fa-angle-double-right"></i>
+            查看所有挂牌信息，匹配小区id等
+        </small>
+    </h1>
 </div>
+<input type="hidden" id="saleslist_hidden" value="all">
+
+<table id="grid-table"></table>
+<div id="grid-pager"></div>
 
 <div class="contextMenu row" id="contextMenu" style="display:none;">
     <ul >

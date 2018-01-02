@@ -112,4 +112,38 @@ class UserModel extends Model
 			
 	}
 	
+	//使用后台添加用户
+	public function add_user($data){
+	    try{
+	        $res = $this->data($data)->allowField(true)->save();
+	    }catch(\Exception $e){
+	        //	插入失败，错误代码是10501时，表示用户名重复
+	        if($e->getCode()==10501)
+	        {
+	            return ['valid'=>0,'msg'=>'用户名已被使用,再想一个吧'];
+	        }else{
+	            dump($e);
+	            return ['valid'=>0,'msg'=>$this->getError()];
+	        }
+	    }
+	    // 			记录ip
+	    $ip = LoginLogic::getIP();
+	    $this->save([
+	        'login_times'  => 0,
+	        'last_ip' => $ip,
+	    ],['user_id' => $this->user_id]);
+	    //把权限记录上去
+	    $GA = new GroupAccessModel();
+	    foreach ($data['group_ids'] as $k => $v) {
+	        $group=array(
+	            'uid'      =>  $this->user_id,
+	            'group_id' =>  $v
+	        );
+	        $GA ->insert($group);
+	    }
+	    return ['valid'=>1,'msg'=>'添加成功'];
+	    
+	    
+	}
+	
 }

@@ -169,10 +169,15 @@ class Index extends Common {
     }
     
     public function test(){
-        $a='30456~35000';
-//         $b = preg_match('/\d+/',$a,$arr);
-        preg_match_all('/\d+/',$a,$arr);
-        dump($arr[0][0]);
+        $res = Db::query('SHOW COLUMNS FROM for_sale_property');
+        foreach ($res as $item){
+            dump($item['Field']);
+        }
+//         halt($res);
+//         $a='30456~35000';
+// //         $b = preg_match('/\d+/',$a,$arr);
+//         preg_match_all('/\d+/',$a,$arr);
+//         dump($arr[0][0]);
 //         $reportid = input('id');
 //         $dbDB = new CPGRecordModel();
 //         $resu = $dbDB->field('RName,RAddress,RMoney,ZID')->where('ZID',$reportid)->find();

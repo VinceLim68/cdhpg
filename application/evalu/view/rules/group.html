@@ -3,18 +3,21 @@
 
 {/block} 
 {block name="breadcrumb"}
+<ul class="breadcrumb">
+	<li><i class="ace-icon fa fa-home home-icon"></i> <a href="#">大叔评估后台</a>
+	</li>
+	<li><a href="#">用户及权限管理</a></li>
+	<li><a href="#">角色管理</a></li>
 
+</ul>
 {/block} 
 {block name="main"}
-<div class="page-header">
-	<h1>用户组管理</h1>
-</div>
 <div class="col-xs-12">
 	<div class="tabbable">
 		<ul class="nav nav-tabs padding-12 tab-color-blue background-blue"
 			id="myTab">
-			<li class="active"><a href="#home" data-toggle="tab">用户组列表</a></li>
-			<li><a href="javascript:;" onclick="add()">添加用户组</a></li>
+			<li class="active"><a href="#home" data-toggle="tab">角色列表</a></li>
+			<li><a href="javascript:;" onclick="add()">添加角色</a></li>
 		</ul>
 		<div class="tab-content">
 			<table
