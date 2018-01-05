@@ -138,7 +138,7 @@ class Rules extends Common {
 	        }else{
 	            $error_word=$U->getError();
 	            if (empty($error_word)) {
-	                $this->success('编辑成功',url('edit_user',array('id'=>$uid)));
+	                $this->success('添加成功',url('user'));
 	            }else{
 	                // 操作失败
 	                $this->error($error_word);

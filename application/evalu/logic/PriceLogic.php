@@ -317,7 +317,12 @@ class PriceLogic
 				}
 			}
 		}
-		return round ( $sum1 / $count, 0 );
+		//如果没有数据，返回0
+		if($count == 0){
+		    return 0;
+		}else{
+    		return round ( $sum1 / $count, 0 );
+		}
 	}
 	
 	private function martgageRatio($data){

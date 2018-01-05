@@ -21,22 +21,25 @@
 			<li  class="active"><a href="javascript:;" onclick="add()">按小区查询</a></li>
 		</ul>
 		<div class="tab-content">
-		<div class="widget-header" id='search_div' style='padding-top: 5px; background: #5AA7D6;'>
-			<div class="text-muted" style="color:white;float:left;margin:auto 0;margin-top: 6px;">共{$list->total()}条记录</div>
-			
+			<div class="widget-header" id='search_div' style='padding-top: 5px; background: #5AA7D6;'>
+				<div class="text-muted" style="color:white;float:left;margin:auto 0;margin-top: 6px;">
+					共{$list->total()}条记录
+					{if condition="'' !== $data['set']"},修改成功{$data['num']}条记录{/if}
+				</div>
+				
 				<a href="javascript:;" onclick="add()" class="btn btn-sm btn-info"
 					style="margin-right: 20px; border-radius: 20px; margin-bottom: 3px;float:right;">
-					<span class="ace-icon fa fa-search icon-on-right bigger-110"></span>高级查询</a>
-		</div>
-			<table
-				class="table table-striped table-bordered table-hover table-condensed">
+					<span class="ace-icon fa fa-search icon-on-right bigger-110"></span>高级查询
+				</a>
+			</div>
+			<table	class="table table-striped table-bordered table-hover table-condensed">
 				<tr>
 					{foreach name="title" item="v"}
 					<th>{$v}</th>
 					{/foreach}
 				</tr>
 				{foreach name="list" item="v"}
-				<tr>
+				<tr >
 					<td>{$v['id']}</td>
 					<td>{$v['title']}</td>
 					<td>{$v['community_id']}</td>
@@ -64,8 +67,7 @@
 				<form id="bjy-form" class="form-inline"
 					action="{:url('queryByComm')}" method="post">
 					<input	class="input-small" name="page" type="hidden" value='1'> 
-					<table
-						class="table table-striped table-bordered table-hover table-condensed">
+					<table	class="table table-striped table-bordered table-hover table-condensed">
 						
 						<tr>
 							<th style="width: 50px;">WHERE</th>
@@ -80,7 +82,6 @@
 							name="where" value='{$data["where"]}' placeholder="请使用双引号"></td>
 						</tr>
 						<tr>
-						<tr>
 							<th style="width: 50px;">ORDER</th>
 							<td style="width: 70px;">
 								<select id="orderfield" style="width: 70px; margin-bottom: 2px;">
@@ -89,7 +90,7 @@
 								{/foreach}
 								</select>
 							</td>
-							<td><input style="width:100%;" type="text" name="order" value='{$data["order"]}'>
+							<td><input style="width:100%;" type="text" name="order" placeholder="请使用双引号" value='{$data["order"]}'>
 							</td>
 						</tr>
 						<tr>
@@ -101,13 +102,14 @@
 								{/foreach}
 								</select>
 							</td>
-							<td><input style="width:100%;" type="text" name="set" value='{$data["set"]}'>
+							<td><input style="width:100%;" type="text" name="set" placeholder="请使用双引号" value='{$data["set"]}'>
 							</td>
 						</tr>
 						
 						<tr>
 							<th></th>
-							<td><input class="btn btn-success" type="submit" value="修改"></td>
+							<td><input class="btn btn-success" type="submit" value="执行"></td>
+							<td><input class="btn btn-success" id="reset" value="重置"></td>
 						</tr>
 					</table>
 				</form>
@@ -115,21 +117,46 @@
 		</div>
 	</div>
 </div>
+
+<div class="modal fade" id="detailinfomation" tabindex="-1" role="dialog"
+	aria-labelledby="myModalLabel" aria-hidden="true">
+	<div class="modal-dialog">
+		<div class="modal-content">
+			<div class="modal-header">
+				<button type="button" class="close" data-dismiss="modal"
+					aria-hidden="true">&times;</button>
+				<h4 class="modal-title" id="myModalLabel">详细信息</h4>
+			</div>
+			<div class="modal-body">
+					
+			</div>
+		</div>
+	</div>
+</div>
+
+<div class="contextMenu" id="myMenu1">
+  <ul>
+    <li id="jump" style="margin-left:20px">跳转详细页面</li>
+    <li id="detail">查询完整信息</li>
+  </ul>
+</div> 
+
 {/block} {block name="pg_js"}
+<script src="__JS__/jquery.contextmenu.js"></script>
 <script>
 //调出查询窗口
 	
-	function add() {
-		//$("input[name='title'],input[name='name']").val('');
-		//$("input[name='pid']").val(0);
-		$('#bjy-add').modal('show');
-	}
+function add() {
+	//$("input[name='title'],input[name='name']").val('');
+	//$("input[name='pid']").val(0);
+	$('#bjy-add').modal('show');
+}
 jQuery(function($) {
 	//利用下拉列表，协助生成where查询
 	jQuery("#wherefield").on("change", 		
 		function(){
 			var where = $("input[name='where']").val();
-			var thisval =  $("#wherefield").val();
+			var thisval =  $("#wherefield").val() + ' = ""';
 			if('' == where){
 				where = thisval;
 			}else{
@@ -145,18 +172,68 @@ jQuery(function($) {
 			$("input[name='order']").val(thisval);
 	});
 	
-	//利用下拉列表，协助生成where查询
+	//利用下拉列表，协助生成update查询
 	jQuery("#setfield").on("change", 		
 		function(){
 			var set = $("input[name='set']").val();
-			var thisval =  $("#setfield").val();
+			var thisval =  $("#setfield").val()+ ' = ""';
 			if('' == set){
-				set = thisval + ' = ';
+				set = thisval ;
 			}else{
-				set += ' ,' + thisval + ' = '
+				set += ' ,' + thisval ;
 			}
 			$("input[name='set']").val(set);
 	});
+	
+	//重置按钮
+	jQuery("#reset").on("click", 		
+		function(){
+		$("input[name='set']").val('');
+		$("input[name='order']").val('') ;
+		$("input[name='where']").val('');
+	});
+	
+	
+	 $('div.tab-content table td').contextMenu('myMenu1', 
+      {
+           bindings: 
+           {
+             'jump': function(t) {
+            	 //取出当前行的序号
+           	 	var id = $(t).parent().find("td").eq(0).html();
+           	 	//alert(id);
+	           	 $.ajax({
+	         		url:'getUrlById',
+	         		data:{
+	         			ID:id,
+	         		},
+	         		success:function(response){  
+	         			window.open(response) ; 
+	 		        }  
+	         		
+	         	});
+            	 
+             },
+             'detail': function(t) {
+            	//取出当前行的序号
+            	 	var id = $(t).parent().find("td").eq(0).html();
+            	 	//alert(id);
+ 	           	 $.ajax({
+ 	         		url:'getFullById',
+ 	         		data:{
+ 	         			ID:id,
+ 	         		},
+ 	         		success:function(response){  
+ 	         			//alert(response) ; 
+ 	         			$('#detailinfomation div.modal-body').html(response);
+ 	         			$('#detailinfomation').modal('show');
+ 	 		        }  
+ 	         		
+ 	         	});
+             },
+            
+           }
+     });
 });
 </script>
 {/block}{block name="pg_inline_js"}
