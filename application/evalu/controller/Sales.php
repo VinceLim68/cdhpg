@@ -130,8 +130,29 @@ class Sales extends Common {
 		 */
 		$byId = input('ID');
 		$url = $this->db->field('details_url')->where('id',$byId)->find();
-		//echo $url;
 		return $url['details_url'];
+	}
+	
+	public function getFullById(){
+	    /*
+	     * 通过传入的id查询完整的挂牌信息
+	     */
+	    $byId = input('ID');
+	    $full = $this->db->where('id',$byId)->find()->toArray();
+	    $html = '<table	class="table table-striped table-bordered table-hover table-condensed">';
+	    foreach ($full as $k=>$v){
+	        $html .= '<tr>';
+	        $html .= '<th >';
+	        $html .= $k;
+	        $html .= '</th>';
+	        $html .= '<td >';
+	        $html .= $v;
+	        $html .= '</td>';
+	        $html .= '</tr>';
+	    }
+	    $html .= '</table>';
+	    //halt($full);
+	    return $html;
 	}
 	
 	public function match(){
@@ -248,43 +269,57 @@ class Sales extends Common {
 	
 	public function queryByComm(){
         $data = input();
-// 	    if(request()->isPost()){
-// 	        dump(input());
-// 	    }
-        if(!isset($data['where']) or $data['where']==''){
+        //把不规模的”替换掉
+        $data['num'] = 0;
+        $replace = array('“'=>'"');
+        $replace += array('”' => '"');
+        $replace += array("'" => '"');
+        $replace += array("‘" => '"');
+        $replace += array("’" => '"');
+        if(!isset($data['where']) or trim($data['where'])==''){
             $data['where'] = '';
-        }
-        if(!isset($data['order'])){
-            $data['order'] = 'price';
-        }
-        if(!isset($data['set'])){
-            $data['set'] = '';
-        }
-        dump($data);
-        if('' == $data['set']){
-            //查询记录
-            $list = $this->db->field('id,title,community_id,community_name,price,total_floor,builded_year')
-            ->where($data['where'] )
-            ->order($data['order'])
-            ->paginate(30,false,[
-                'query'=>[
-                    'where'=>  $data['where'],
-                    'order'=>  $data['order'],
-                    'set'=>  $data['set'],
-                ],
-            ]);
         }else{
-            //修改记录
+            $data['where'] = strtr($data['where'],$replace);
         }
+        if(!isset($data['order']) or trim($data['order'])==''){
+            $data['order'] = 'price';
+        }else{
+            $data['order'] = strtr($data['order'],$replace);
+        }
+        if(!isset($data['set']) or trim($data['set'])==''){
+            $data['set'] = '';
+        }else{
+//             $data['set'] = strtr($data['set'],$replace);
+//             $hello = explode(',',$data['set']);
+//             foreach($hello as $v) {
+//                 $temp = explode('=',$v);
+//                 $temp2[$temp[0]]=$temp[1];
+//             }
+//             $data['set']=$temp2;
+        }
+        
+        
+        dump($data);
+        if('' !== $data['set']){
+            //修改记录
+            $sqlstr = 'UPDATE for_sale_property SET '.$data['set'].' WHERE '.$data['where'];
+            $data['num'] = Db::execute($sqlstr);
+//             dump($num);
+            
+        }
+        //查询记录,无论是否修改，都需要查询
+        $list = $this->db->field('id,title,community_id,community_name,price,total_floor,builded_year')
+        ->where($data['where'] )
+        ->order($data['order']) 
+        ->paginate(100,false,[
+            'query'=>[
+                'where'=>  $data['where'],
+                'order'=>  $data['order'],
+                'set'=>  $data['set'],
+            ],
+        ]);
 	    $fields = Db::query('SHOW COLUMNS FROM for_sale_property');
-// 	    $list = $this->db->field('id,title,community_id,community_name,price,total_floor,builded_year')
-// 	           ->paginate(30,false,[
-//                     'query'=>[
-//                        'where'=>  $data['where'],
-//                        'order'=>  $data['order'],
-//                        'set'=>  $data['set'],
-//                        ],
-//                 ]);
+
         $title = ['序号','标题','小区','名称','单价','总层','建成'];
 //         halt($list);
         $this->assign('list',$list);
@@ -292,6 +327,20 @@ class Sales extends Common {
         $this->assign('fields',$fields);
         $this->assign('data',$data);
 	    return $this->fetch();
+	}
+	
+	public function test(){
+	    //用于测试代码
+	    //给数组赋值
+	    $var = 'a="1",b="2",c="abc"';
+	    $hello = explode(',',$var);
+// 	    dump($hello);
+	    
+	    foreach($hello as $v) {
+	       $temp = explode('=',$v);
+	       $vv[$temp[0]]=$temp[1];
+	    }
+	    dump($vv);
 	}
 	
 	

@@ -134,12 +134,21 @@ class UserModel extends Model
 	    ],['user_id' => $this->user_id]);
 	    //把权限记录上去
 	    $GA = new GroupAccessModel();
-	    foreach ($data['group_ids'] as $k => $v) {
+	    if(empty($data['group_ids'])){
+	        //如果没有指定权限，就是游客
 	        $group=array(
-	            'uid'      =>  $this->user_id,
-	            'group_id' =>  $v
+	            'uid'=>$this->user_id,
+	            'group_id'=>4
 	        );
-	        $GA ->insert($group);
+	        $GA->insert($group);
+	    }else{
+    	    foreach ($data['group_ids'] as $k => $v) {
+    	        $group=array(
+    	            'uid'      =>  $this->user_id,
+    	            'group_id' =>  $v
+    	        );
+    	        $GA ->insert($group);
+    	    }
 	    }
 	    return ['valid'=>1,'msg'=>'添加成功'];
 	    
