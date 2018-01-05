@@ -299,7 +299,7 @@ class Sales extends Common {
         }
         
         
-        dump($data);
+//         dump($data);
         if('' !== $data['set']){
             //修改记录
             $sqlstr = 'UPDATE for_sale_property SET '.$data['set'].' WHERE '.$data['where'];
