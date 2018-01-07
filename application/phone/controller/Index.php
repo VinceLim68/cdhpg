@@ -89,13 +89,16 @@ class Index extends Common {
         if(input('comm_id')){
             $comm_id = input('comm_id');
         }
-//         halt(input());
-//         halt($comm_id);
         $result = SalesModel::getRecordsByCommid($comm_id);
+        
+        //通过id找小区名称，写入session中，以便传到前端
         $getComm = Db::table('comm')->where('comm_id',$comm_id)->find();
         session('comm.comm_id',$comm_id);
         session('comm.comm_name',$getComm['comm_name']);
+        
+        
         if(count($result[1])>0){
+            //如果能查询出数据
             $PL = new PriceLogic($result);
             $getPrice_result = $PL->getStatic($getComm,$price);
             $getPrice_result['emplorers'] = config('emplorers');
@@ -104,22 +107,26 @@ class Index extends Common {
             $getPrice_result['structuer'] = config('structuer');
             
             $this->assign('B',$getPrice_result);
+            //===================登记查询记录===============================================
+            $ins = QueryRecordsModel::insert_record($getPrice_result);      //返回插入的id,如果是重复数据没有插入，则返回0
             //===================把离散值过大的数据记录error_comm,以备改进=================================
-            if($getPrice_result['std_r'] > config('std_r_limit')){
-                if($getPrice_result['comm']['comm_name']){
-                    //如何没有小区，就不记录了
-                    $errorcomm = ErrorCommModel::create([
-                        'memo'          =>  $getPrice_result['std_r'],
-                        'user_id'       =>  session('user.user_id'),
-                        'user_name'     =>  session('user.user_name'),
-                        'type'          =>  2,
-                        'comm_name'     =>  $getPrice_result['comm']['comm_name'],
-                        'comm_id'       =>  $getPrice_result['comm']['comm_id'],
-                    ]);
+            if($ins != 0){
+                //如果有追加查询记录，再考虑是否把偏离值大的记录下来
+                if($getPrice_result['std_r'] > config('std_r_limit')){
+                    if($getPrice_result['comm']['comm_name']){
+                        //如何没有小区，就不记录了
+                        $errorcomm = ErrorCommModel::create([
+                            'memo'          =>  $getPrice_result['std_r'],
+                            'user_id'       =>  session('user.user_id'),
+                            'user_name'     =>  session('user.user_name'),
+                            'type'          =>  2,
+                            'comm_name'     =>  $getPrice_result['comm']['comm_name'],
+                            'comm_id'       =>  $getPrice_result['comm']['comm_id'],
+                            'query_id'      =>  $ins,
+                        ]);
+                    }
                 }
             }
-            //===================登记查询记录===============================================
-            QueryRecordsModel::insert_record($getPrice_result);
             //===================还要分配一下权限===============================================
             //得到用户的权限
             $userrules = (new \Auth())->getAuthList(session('user.user_id'),1);
@@ -133,6 +140,7 @@ class Index extends Common {
 
             $this->assign('auth',$auth);
         }else{
+            //如果未查询出数据
             $errorcomm = ErrorCommModel::create([
                 'memo'          =>  '没数据',
                 'user_id'       =>  session('user.user_id'),
@@ -221,19 +229,6 @@ class Index extends Common {
             }
         }
         
-//         if(session('user.user_name') != 'admin'){
-//             if($enq->findEnqueryByCommAndDate($data)){
-//                 return ['status'=>'报价雷同','msg'=> '在过去的一个月中已经有估价师对同一小区、同一用途作过相同报价，不再重复记录、'];
-//             }
-//         }
-
-//         if(!$enq->findEnqueryByOfferAndDateAndComm($data)){
-//             $insertEnguery = $enq->data($data)->save();
-//             $num = $enq->getCount($data);
-//             return ['status'=>'登记成功','msg'=> '已将询价记录成功记入数据库中,本月'.$data['OfferPeople'].'已报价'.$num.'条'];
-//         }else{
-//             return ['status'=>'重复数据','msg'=> '您在过去的一个月中已经对同一小区、同一用途作过报价，不再重复记录、'];
-//         }
     }
 
     public function getHistory(){

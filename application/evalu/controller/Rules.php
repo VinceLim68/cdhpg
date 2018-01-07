@@ -486,5 +486,30 @@ class Rules extends Common {
         $this->assign('data',$data);
         return $this->fetch();
     }
+    
+    public function del_err_comm(){
+        $num = ErrorCommModel::destroy(['comm_id'=>input('ID')]);
+        return $num;
+    }
+    
+    public function getFullById(){
+        //查询异常记录的详细查询记录集
+        $mydb = new ErrorCommModel();
+        $list = $mydb->field('comm_name,user_name,create_time,type,memo,query_id')
+                ->where('comm_id',input('ID'))
+                ->order('create_time desc')
+                ->select();
+        $html = '';
+        foreach ($list as $item){
+            $html .= '<p>'.$item['user_name'].'于'.$item['create_time'];
+            if($item['query_id'] > 0){
+                $query = QueryRecordsModel::get($item['query_id']);
+                $html .= '查询'.$query->price_type.'估价结果：'.$query->price;
+            }
+            $html .= ',异常类型：'.$item['type'].','.$item['memo'].'</p>';
+        }
+        return $html;
+        
+    }
 
 }

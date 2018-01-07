@@ -1,6 +1,6 @@
 ﻿{extend name="mainbase" /} 
 {block name="pg_cs"}
-
+<link rel="stylesheet" href="__CSS__/jquery-ui.min.css" />
 {/block} 
 {block name="breadcrumb"}
 <ul class="breadcrumb">
@@ -142,6 +142,7 @@
 </div> 
 
 {/block} {block name="pg_js"}
+<script src="__JS__/jquery-ui.min.js"></script>
 <script src="__JS__/jquery.contextmenu.js"></script>
 <script>
 //调出查询窗口
@@ -152,6 +153,8 @@ function add() {
 	$('#bjy-add').modal('show');
 }
 jQuery(function($) {
+	$('.modal').draggable();
+	$(".modal").css("overflow", "hidden");//禁止模态对话框的半透明背景滚动
 	//利用下拉列表，协助生成where查询
 	jQuery("#wherefield").on("change", 		
 		function(){
