@@ -30,7 +30,7 @@ class QueryRecordsModel extends Model {
 	    //halt($res->id);
 	    //没找到才追加
 	    if(!$res){
-	        self::create([
+	        $ins = self::create([
 	                    'user_id'       =>  session('user.user_id'),
 	                    'user_name'     =>  session('user.user_name'),
 	                    'comm_name'     =>  $getPrice_result['comm']['comm_name'],
@@ -40,6 +40,9 @@ class QueryRecordsModel extends Model {
 	                    'price_type'    =>  $getPrice_result['priceByDeal']> 0 ? 2:1,
 	                    'dealprice'     =>  $getPrice_result['price'],
 	                ]);
+	        return $ins->id;
+	    }else{
+	        return 0;
 	    }
 	    
 	}
