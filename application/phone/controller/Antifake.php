@@ -16,4 +16,8 @@ class Antifake extends Controller {
         $this->assign('res',$resu);
         return $this->fetch();
     }
+    
+    public function propaganda(){
+        return $this->fetch();
+    }
 }
