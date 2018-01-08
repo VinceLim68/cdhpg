@@ -105,6 +105,7 @@ jQuery(function($) {
              'del_err': function(t) {
             	 //取出当前行的序号
            	 	var id = $(t).parent().find("td").eq(3).html();
+           	 	var commName = $(t).parent().find("td").eq(1).html();
            	 	//alert(id);
 	           	$.ajax({
 	         		url:'del_err_comm',
@@ -115,6 +116,7 @@ jQuery(function($) {
  	         			//alert(response) ;
  	         			response = '<p>成功删除'+response+'条记录</p>';
  	         			$('#mydialogg div.modal-body').html(response);
+ 	         			$('#mydialogg h4.modal-title').html(commName+'异常记录清理结果');
  	         			$('#mydialogg').modal('show');
  	 		        }  
 	         	});
