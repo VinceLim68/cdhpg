@@ -19,7 +19,7 @@
     <div class="panel-body">
         <div class="list-group" >
             {foreach $fields as $vo}
-            <a href="{:url('getPrice',array('comm_id'=>$vo['comm_id'],'price'=>$price))}" class="list-group-item " style="color: #3c763d;">
+            <a href="{:url('getPrice',array('community_id'=>$vo['comm_id'],'price'=>$price))}" class="list-group-item " style="color: #3c763d;">
                 <h4 class="list-group-item-heading" style="color: #3c763d;">{$vo['comm_name']}</h4>
                 <p style="margin-top:10px" class="list-group-item-text">版块:{$vo['region']}-{$vo['block']},{$vo['comm_addr']}</p>
                 <p style="margin-top:5px;margin-bottom:0px"> 关键词:"{$vo['keywords']}",id:"{$vo['comm_id']}"</p>
