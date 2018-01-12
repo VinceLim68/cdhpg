@@ -1,0 +1,32 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no">
+<title>大叔报价</title>
+<link rel="stylesheet" type="text/css" href="__CSS__/bootstrap.min.css">
+<link rel="stylesheet" type="text/css" href="__CSS__/comms/enquiry.css">
+</head>
+<body>
+  <div class="panel panel-default" style="margin:0 0;">
+    <div class="panel-heading">
+    	<h3 style="color: #3c763d;">
+    	请选择
+    	</h3>
+   	</div>
+    <div class="panel-body">
+        <div class="list-group" >
+            {foreach $fields as $vo}
+            <a href="{:url('getPrice',$vo)}" class="list-group-item " style="color: #3c763d;">
+                <h4 class="list-group-item-heading" style="color: #3c763d;">{$vo['usage']|base_decode}</h4>
+<!--                 <h5 class="list-group-item-heading" style="color: #3c763d;">{$vo['where']|base_decode}</h5> -->
+               
+            </a>
+            <hr style="background-color:#D5D5D5;color:#D5D5D5;"/>
+            {/foreach}
+        </div>
+    </div>
+</div> 
+
+</body>
+</html>

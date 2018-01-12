@@ -288,14 +288,6 @@ class Sales extends Common {
         }
         if(!isset($data['set']) or trim($data['set'])==''){
             $data['set'] = '';
-        }else{
-//             $data['set'] = strtr($data['set'],$replace);
-//             $hello = explode(',',$data['set']);
-//             foreach($hello as $v) {
-//                 $temp = explode('=',$v);
-//                 $temp2[$temp[0]]=$temp[1];
-//             }
-//             $data['set']=$temp2;
         }
         
         
