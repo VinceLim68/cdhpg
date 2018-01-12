@@ -134,6 +134,12 @@ class Index extends Common {
         //$comm_id = isset($data['rela_comm_id']) ? $data['rela_comm_id'] : $data['community_id'];
         //通过id找小区名称，写入session中，以便传到前端
         $getComm = Db::table('comm')->where('comm_id',$data['community_id'])->find();
+        if(isset($data['rela_comm_id']) and $data['rela_comm_id']>999){
+            //如果有关联小区，取出关联小区
+            $getComm['rela_comm'] = Db::table('comm')->where('comm_id',$data['rela_comm_id'])->value('comm_name');
+        }else{
+            $getComm['rela_comm'] = '';
+        }
         $getComm['usage'] = isset($data['usage'])? $data['usage']:'';
         session('comm.comm_id',$data['community_id']);
         session('comm.comm_name',$getComm['comm_name']);
