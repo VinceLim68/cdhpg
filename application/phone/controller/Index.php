@@ -128,9 +128,11 @@ class Index extends Common {
         //或者如果有成交记录，也可以重新计算，并把成交记录记入成交表中去
 //         halt(input());
         $data = input();
+//         halt($data);
         if(isset($data['where'])){$data['where'] = base_decode($data['where']);};
         if(isset($data['create_time'])){$data['create_time'] = base_decode($data['create_time']);};
         if(isset($data['usage'])){$data['usage'] = base_decode($data['usage']);};
+        if(!isset($data['price'])){$data['price'] = 0;};
         //$comm_id = isset($data['rela_comm_id']) ? $data['rela_comm_id'] : $data['community_id'];
         //通过id找小区名称，写入session中，以便传到前端
         $getComm = Db::table('comm')->where('comm_id',$data['community_id'])->find();
