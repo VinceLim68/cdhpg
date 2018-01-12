@@ -15,7 +15,10 @@
 
 	<div class="panel panel-default" style="margin: 0 0;">
 		<div class="panel-heading">
-			<h3 style="color: #3c763d;">{$B['comm']['comm_name']}<small style="padding-left:3%">{$B['comm']['region']}-{$B['comm']['block']}</small></h3>
+			<h3 style="color: #3c763d;">{$B['comm']['comm_name']}
+			{if condition="$B['comm']['usage']!=''"}-{$B['comm']['usage']}{/if}
+			<small style="padding-left:3%">{$B['comm']['region']}-{$B['comm']['block']}</small>
+			</h3>
 		</div>
 		<div class="panel-body" style="padding-top: 0;font-size: 18px;">
 			<ul class="nav nav-pills nav-tabs" >
@@ -74,10 +77,10 @@
 								元 <small>/平方米</small>
 							</h1>
 							{if condition="$B['std_r'] > $Think.config.std_r_limit "}
-							<p  style="text-align:center;color:#DD5A43;">数据离散性过大，本报价需要估价师确认</p>
+							<p  style="text-align:center;color:#DD5A43;">数据离散性({$B['std_r']})过大，本报价需要估价师确认</p>
 							{/if}
 							{if condition="$B['ori_len'] < $Think.config.min_base_records "}
-							<p  style="text-align:center;color:#DD5A43;">可供分析的数据偏少，本报价需要估价师确认</p>
+							<p  style="text-align:center;color:#DD5A43;">可供分析的数据({$B['ori_len']})偏少，本报价需要估价师确认</p>
 							{/if}
 							<p>
 							<span class="label label-success font-small" style="float:right;font-weight:100;margin-left:5px;">

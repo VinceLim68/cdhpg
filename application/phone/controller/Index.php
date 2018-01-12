@@ -12,6 +12,7 @@ use app\phone\model\TEnquiryModel;
 use app\phone\model\TCaseCfgModel;
 use app\evalu\logic\CreatExcelLogic;
 use app\phone\model\CPGRecordModel;
+use app\evalu\model\CommRelateModel;
 
 class Index extends Common {
     
@@ -71,36 +72,81 @@ class Index extends Common {
                 }else{
                 //3如果查到一个，转入统计模块
                     if(!input('price')){
-                        $this->redirect('getPrice', ['comm_id' => $commnames[0]['comm_id']]);
+                        $this->redirect('getCommChild', ['comm_id' => $commnames[0]['comm_id']]);
                     }else{
-                        $this->redirect('getPrice', ['comm_id' => $commnames[0]['comm_id'],'price'=>input('price')]);
+                        $this->redirect('getCommChild', ['comm_id' => $commnames[0]['comm_id'],'price'=>input('price')]);
                     }
+//                      if(!input('price')){
+//                         $this->redirect('getPrice', ['comm_id' => $commnames[0]['comm_id']]);
+//                     }else{
+//                         $this->redirect('getPrice', ['comm_id' => $commnames[0]['comm_id'],'price'=>input('price')]);
+//                     } 
                 }
             }
         }
         
     }
+    
 
-    public function getPrice($comm_id ='',$price = 0){
+    
+    public function getCommChild($comm_id ='',$price = 0){
+        //取得小区的子分类
+        $commrelate = new CommRelateModel;
+        $list = $commrelate->where('community_id',$comm_id)->select()->toArray();
+        $my = [];
+        if(empty($list)){
+            $my['community_id'] = $comm_id;
+            $my['price'] = $price;
+            $this->redirect('getPrice', $my);
+        }else{
+            //如果需要关联其他小区查询
+            //如果有两种以上数据需要手动选择
+            if(count($list)>=2){
+                foreach ($list as $item){
+                    $item['where'] = base_encode($item['where']);
+                    $item['create_time'] = base_encode($item['create_time']);
+                    $item['usage'] = base_encode($item['usage']);
+                    $item['price'] = $price;
+                    $my[] = $item;
+                }
+                $this->assign('fields',$my);
+                return $this->fetch();
+            }else{
+            //否则直接传递
+                $my = $list[0];
+                $my['price'] = $price;
+                $this->redirect('getPrice', $my);
+//                 halt($my);
+            }
+        }
+    }
+    public function getPrice(){
+        //$comm_id ='',$price = 0
         //通过小区编号求取相应的报价参数
         //1.如何有当月的报价记录，就直接读取
         //2.如果没有，就查询挂牌数据库进行计算，并把计算结果写入查询记录中去
         //或者如果有成交记录，也可以重新计算，并把成交记录记入成交表中去
-        if(input('comm_id')){
-            $comm_id = input('comm_id');
-        }
-        $result = SalesModel::getRecordsByCommid($comm_id);
-        
+//         halt(input());
+        $data = input();
+        if(isset($data['where'])){$data['where'] = base_decode($data['where']);};
+        if(isset($data['create_time'])){$data['create_time'] = base_decode($data['create_time']);};
+        if(isset($data['usage'])){$data['usage'] = base_decode($data['usage']);};
+        //$comm_id = isset($data['rela_comm_id']) ? $data['rela_comm_id'] : $data['community_id'];
         //通过id找小区名称，写入session中，以便传到前端
-        $getComm = Db::table('comm')->where('comm_id',$comm_id)->find();
-        session('comm.comm_id',$comm_id);
+        $getComm = Db::table('comm')->where('comm_id',$data['community_id'])->find();
+        $getComm['usage'] = isset($data['usage'])? $data['usage']:'';
+        session('comm.comm_id',$data['community_id']);
         session('comm.comm_name',$getComm['comm_name']);
+
+        $result = SalesModel::getRecordsByCommid($data);
+//         $result = SalesModel::getRecordsByCommid($comm_id);
+        
         
         
         if(count($result[1])>0){
             //如果能查询出数据
             $PL = new PriceLogic($result);
-            $getPrice_result = $PL->getStatic($getComm,$price);
+            $getPrice_result = $PL->getStatic($getComm,$data['price']);
             $getPrice_result['emplorers'] = config('emplorers');
             $getPrice_result['use'] = config('use');
             $getPrice_result['elevator'] = config('elevator');
@@ -177,10 +223,16 @@ class Index extends Common {
     }
     
     public function test(){
-        $res = Db::query('SHOW COLUMNS FROM for_sale_property');
-        foreach ($res as $item){
-            dump($item['Field']);
-        }
+//         $commrelate = new CommRelateModel;
+//         $commrelate->data([
+//             'community_id'  => 1209002,
+//             'rela_comm_id'  => 1209001,
+//             'rela_ratio'    => 0.83,
+//         ])->save();
+//         $res = Db::query('SHOW COLUMNS FROM for_sale_property');
+//         foreach ($res as $item){
+//             dump($item['Field']);
+//         }
 //         halt($res);
 //         $a='30456~35000';
 // //         $b = preg_match('/\d+/',$a,$arr);

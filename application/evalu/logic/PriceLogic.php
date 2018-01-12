@@ -15,6 +15,7 @@ class PriceLogic
     
     public function __construct($collection){
 //         halt($collection);
+        //按价格给数据排序
         array_multisort(array_column ( $collection[1], 'price' ), SORT_ASC, $collection[1]);
         $this->arr = $collection[1];
         $this->price = array_column ($this->arr, 'price' );
