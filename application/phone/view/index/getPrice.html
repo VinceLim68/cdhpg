@@ -31,6 +31,7 @@
 						<li ><a href="#box" aria-controls="box" role="tab" data-toggle="tab" >盒须图</a></li>
 					    <li ><a href="#scatter_area_price" aria-controls="scatter_area_price" role="tab" data-toggle="tab" >面积/房价散点</a></li>
 					    <li ><a href="#scatter_floor_price" aria-controls="scatter_floor_price" role="tab" data-toggle="tab" >总楼层/房价散点</a></li>
+					    <li ><a href="#scatter_builded_year_price" aria-controls="scatter_builded_year_price" role="tab" data-toggle="tab" >建成年份/房价散点</a></li>
 				    </ul>
 			    </li>
 				<li ><a href="#fee" aria-controls="fee" role="tab" data-toggle="tab" >收费</a></li>
@@ -71,9 +72,9 @@
 							<span class="badge" style="font-size: 16px">
 							{$B['priceByDeal'] > 0?	'二手房评估':'抵押评估价'}
 							</span>
-							{if condition="$B['comm']['rela_comm']!=''"}
+							{if condition="$B['comm']['rela_comm']!='' and $auth['look']"}
 							<span class="badge" style="font-size: 16px">
-							参照：{$B['comm']['rela_comm']}
+							参照：{$B['comm']['rela_comm']}*{$B['comm']['rela_ratio']}
 							</span>
 							{/if}
 							<h1 style="text-align: center; font-weight: 700;{if condition="$B['std_r'] > $Think.config.std_r_limit or  $B['ori_len'] < $Think.config.min_base_records"}opacity:0.4;{/if}">
@@ -165,6 +166,7 @@
 						</div>
 					</div>
 			    </div>
+				
 				<!-- 历史询价记录 -->
 <!-- 				<div role="tabpanel" class="tab-pane " id="historytab">
 					<table class="table" id="historytable">
@@ -377,6 +379,7 @@
    				    <div class="panel panel-success">
 						<div class="panel-heading" style="width:100% ;height:400px" >
 							<svg xmlns="http://www.w3.org/2000/svg" version="1.1" width="100%" height="100%">
+							
 								{volist name="B['area_price_scatter']['A_line']" id="vo"  }
 									<line x1="{$vo['x0']}%" y1="{$vo['y0']}%" x2="{$vo['x1']}%" y2="{$vo['y1']}%"  class='scatter_line' />
 									<text x="{$vo['t_x']}%" y="{$vo['t_y']}%" 
@@ -410,6 +413,7 @@
 									{else /} scatter_text_x
 									{/if} scatter_text' >{$vo['val']}</text>
 								{/volist}
+								<!-- 这是画点 -->
 								{volist name="B['floor_price_scatter']['A']" id="vo"  }
 									<circle cx="{$vo['x']}%" cy="{$vo['y']}%" class = 'scatter_circle' r="1%"/>
 								{/volist}
@@ -420,9 +424,34 @@
 							</svg>
 						</div>
 			    	</div>
-
-					</div>
-			  	</div>
+				</div>
+				
+				<!-- 建成年份楼价散点图 -->
+			    <div role="tabpanel" class="tab-pane" id="scatter_builded_year_price">
+			    	<div class="panel panel-success">
+						<div class="panel-heading" style="width:100% ;height:400px" >
+							<svg xmlns="http://www.w3.org/2000/svg" version="1.1" width="100%" height="100%">
+								{volist name="B['builded_year_price_scatter']['A_line']" id="vo"  }
+									<line x1="{$vo['x0']}%" y1="{$vo['y0']}%" x2="{$vo['x1']}%" y2="{$vo['y1']}%"  class='scatter_line' />
+									<text x="{$vo['t_x']}%" y="{$vo['t_y']}%" 
+									class='{if condition="$vo['t_x'] == 0 ")}
+									scatter_text_y
+									{else /} scatter_text_x
+									{/if} scatter_text' >{$vo['val']}</text>
+								{/volist}
+								<!-- 这是画点 -->
+								{volist name="B['builded_year_price_scatter']['A']" id="vo"  }
+									<circle cx="{$vo['x']}%" cy="{$vo['y']}%" class = 'scatter_circle' r="1%"/>
+								{/volist}
+									<line x1="{$B['builded_year_price_scatter']['axes'][0]['x0']}%" y1="{$B['builded_year_price_scatter']['axes'][0]['y0']}%" x2="{$B['builded_year_price_scatter']['axes'][0]['x1']}%" y2="{$B['builded_year_price_scatter']['axes'][0]['y1']}%"  class='scatter_axes' />
+									<text x="{$B['builded_year_price_scatter']['axes'][0]['t_x']}%" y="{$B['builded_year_price_scatter']['axes'][0]['t_y']}%"  class='XAxesText'>{$B['builded_year_price_scatter']['axes'][0]['val']}</text>
+									<line x1="{$B['builded_year_price_scatter']['axes'][1]['x0']}%" y1="{$B['builded_year_price_scatter']['axes'][1]['y0']}%" x2="{$B['builded_year_price_scatter']['axes'][1]['x1']}%" y2="{$B['builded_year_price_scatter']['axes'][1]['y1']}%"  class='scatter_axes' />
+									<text x="{$B['builded_year_price_scatter']['axes'][1]['t_x']}%" y="{$B['builded_year_price_scatter']['axes'][1]['t_y']}%" class='YAxesText'>{$B['builded_year_price_scatter']['axes'][1]['val']}</text>
+							</svg>
+						</div>
+			    	</div>
+				</div>
+		  	</div>
 			
 			<a class="btn btn-success btn-block btn-lg" href="{:url('index')}">返回</a>
 			{if condition="$auth['dispute']"}

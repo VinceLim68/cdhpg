@@ -31,24 +31,27 @@ class SalesModel extends Model {
 	    $more_months = config('select_more_months_per_time');
 	    $before_months = config('how_long_before_to_start_query');         //第一次查6个月的记录,'-6 month'
 	    if(is_array($data)){
-	        $comm_id = isset($data['rela_comm_id']) ? $data['rela_comm_id'] : $data['community_id'];
+	        $comm_id = (isset($data['rela_comm_id']) and $data['rela_comm_id']!=0) ? $data['rela_comm_id'] : $data['community_id'];
 	        $where = isset($data['where']) ? $data['where'] : ' 1=1 ';
 	        $rela_ratio = isset($data['rela_ratio']) ? $data['rela_ratio'] : 1;
 	        $rela_weight = isset($data['rela_weight']) ? $data['rela_weight'] : 1;
-	    }else{
-	        $comm_id = $data;
-	        $where = ' 1=1 ';
-	        $rela_ratio = 1;
-	        $rela_weight = 1;
 	    }
+// 	    halt($comm_id);
+// 	    else{
+// 	        $comm_id = $data;
+// 	        $where = ' 1=1 ';
+// 	        $rela_ratio = 1;
+// 	        $rela_weight = 1;
+// 	    }
 // 	    halt($data);
 	    $result = self::field($fields)
     	    ->where('community_id',$comm_id)
     	    ->where("first_acquisition_time", "> time", strtotime('-'.$before_months.' month'))
     	    ->where($where)
+//     	    ->fetchSql(true)
     	    ->select()
     	    ->toArray();
-	    
+// 	    halt($result);
 	    //采用关联方式，不再往前取值来增加记录数了
 // 	    $records_num = count($result);                                       //累计：获得记录数
 // 	    $min_base_records = config('min_base_records');                     //最低记录数

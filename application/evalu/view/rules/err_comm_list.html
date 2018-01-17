@@ -63,8 +63,9 @@
 
 <div class="contextMenu" id="myMenu">
   <ul>
-    <li id="del_err" style="margin-left:20px">已处理，删除此类记录</li>
+    <li id="del_err">已处理，删除此类记录</li>
     <li id="detail">查询完整查询记录信息</li>
+    <li id="handle_err">处理该异常记录</li>
   </ul>
 </div> 
 
@@ -76,11 +77,9 @@
         <h4 class="modal-title">信息</h4>
       </div>
       <div class="modal-body">
-<!--         <p>One fine body&hellip;</p> -->
       </div>
       <div class="modal-footer">
         <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
- <!--        <button type="button" class="btn btn-primary">Save changes</button> -->
       </div>
     </div><!-- /.modal-content -->
   </div><!-- /.modal-dialog -->
@@ -140,6 +139,12 @@ jQuery(function($) {
  	 		        }  
  	         		
  	         	});
+             },
+             'handle_err': function(t) {
+            	//取出当前行的序号
+           	 	var id = $(t).parent().find("td").eq(3).html();
+           	 	var commName = $(t).parent().find("td").eq(1).html();
+           	 	window.location.href= "{:url('Comms/handle_comm')}"+"?community_id="+id+"&commName="+commName;
              },
             
            }

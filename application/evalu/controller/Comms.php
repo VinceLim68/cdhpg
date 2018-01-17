@@ -4,6 +4,9 @@ namespace app\evalu\controller;
 
 use app\evalu\model\Comm;
 use think\Db;
+use app\evalu\model\CommRelateModel;
+use app\evalu\model\SalesModel;
+use app\evalu\logic\PriceLogic;
 
 class Comms extends Common {
 	protected $db;
@@ -231,5 +234,111 @@ class Comms extends Common {
 			$newid = $block_id * 1000 + 1;
 		}
 		return $newid;
+	}
+	
+	public function handle_comm(){
+        //这里传过来2个参数:community_id,commName
+	    $data = input();
+// 	    dump($data);
+	    $commrelate = new CommRelateModel();
+	    
+	    //如果首次跳转，没有获得关联数据，则先取出已有的关联定义，以备放在“关联设计”里
+	    if(!isset($data['id'])){
+    	    $rela_list = $commrelate->where('community_id',$data['community_id'])->select()->toArray();
+    	    if(!empty($rela_list)){
+    	        //如果有数据，把第一条数据重新赋给$data
+    	        $data = $rela_list[0];
+    	    }
+	    }
+	    
+	    //通过id找小区相关信息
+	    $getComm = Db::table('comm')->where('comm_id',$data['community_id'])->find();
+	    if(isset($data['rela_comm_id']) and $data['rela_comm_id']>999){
+	        //如果有关联小区，取出关联小区
+	        $getComm['rela_comm'] = Db::table('comm')->where('comm_id',$data['rela_comm_id'])->value('comm_name');
+	    }else{
+	        $getComm['rela_comm'] = '';
+	    }
+	    $getComm['rela_ratio'] = isset($data['rela_ratio']) ? $data['rela_ratio'] : 1;
+	    $getComm['usage'] = isset($data['usage'])? $data['usage']:'';
+	    
+	    $result = SalesModel::getRecordsByCommid($data);
+	    
+	    if(count($result[1])>0){
+	        //如果能查询出数据
+	        $PL = new PriceLogic($result);
+	        $getPrice_result = $PL->getStatic($getComm);
+	        $this->assign('B',$getPrice_result);
+	        $this->assign('rela_list',$rela_list);
+	        $this->assign('result',$result);
+	    }
+	        
+	    
+	    
+	    //取挂牌数据
+	    //把不规模的”替换掉
+// 	    $data['num'] = 0;
+	    $replace = array('“'=>'"');
+	    $replace += array('”' => '"');
+	    $replace += array("'" => '"');
+	    $replace += array("‘" => '"');
+	    $replace += array("’" => '"');
+	    //如果没有where条件，默认选择当前community_id的挂牌记录
+	    if(!isset($data['where']) or trim($data['where'])==''){
+	        $data['where'] = 'community_id = '.$data['community_id'];
+// 	        $data['where'] = base_encode($data['where']);
+	    }
+//         $data['where'] = base_decode($data['where']);
+	    
+	    //查询记录,
+// 	    $total = Db::table('for_sale_property')->where($data['where'] )->count('id');
+	    $saleslist = Db::table('for_sale_property')->field('id,title,community_id,community_name,price,total_floor,builded_year')
+	    ->where($data['where'] )
+	    ->paginate(100,FALSE,[
+	        'query'=>[
+// 	            'where'=>  base_encode($data['where']),
+	            'where'=> ($data['where']),
+// 	            'ispage' =>  true,
+	            'community_id' =>  $data['community_id'],
+	        ],
+	    ]);
+// 	    dump($data['where']);
+// 	    halt($saleslist);
+	    //$fields = Db::query('SHOW COLUMNS FROM for_sale_property');
+	    $title = ['序号','标题','小区','名称','单价','总层','建成'];
+	    $this->assign('saleslist',$saleslist);
+	    $this->assign('title',$title);
+// 	    $this->assign('total',$total);
+	    
+// 	    $this->assign('fields',$fields);
+	    $this->assign('data',$data);
+	    
+	    return $this->fetch();
+	}
+	
+	public function ajaxGetSaleslist(){
+	    $data = input();
+ 	    $saleslist = Db::table('for_sale_property')->field('id,title,community_id,community_name,price,total_floor,builded_year')
+	    ->where($data['where'] )
+	    ->paginate(50,FALSE,[
+	        'query'=>[
+	            'where'=> ($data['where']),
+	            'community_id' =>  $data['community_id'],
+	        ],
+	    ]); 
+	    $liststring = '';
+	    foreach ($saleslist as $v){
+	        $liststring .= '<tr>';
+	        $liststring .= '<td>'.$v['id'].'</td>';
+	        $liststring .= '<td>'.$v['title'].'</td>';
+	        $liststring .= '<td>'.$v['community_id'].'</td>';
+	        $liststring .= '<td>'.$v['community_name'].'</td>';
+	        $liststring .= '<td>'.$v['price'].'</td>';
+	        $liststring .= '<td>'.$v['total_floor'].'</td>';
+	        $liststring .= '<td>'.$v['builded_year'].'</td>';
+	        $liststring .= '</tr>';
+	    }
+	    return $liststring;
+	    //dump($saleslist);
 	}
 }

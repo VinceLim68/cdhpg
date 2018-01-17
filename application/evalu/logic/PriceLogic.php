@@ -21,7 +21,7 @@ class PriceLogic
         $this->price = array_column ($this->arr, 'price' );
         $this->date = $collection[0];
     }
-    public function getStatic($getComm,$price){
+    public function getStatic($getComm,$price=0){
         //获取数据分析的结果
         //1 初步清洗偏离值
         $length = count ($this->arr);
@@ -83,8 +83,10 @@ class PriceLogic
                     //============================以下是计算直方图==============================
                     $result['x_unit'] = ($result['X'] - 10)/max($result['barChart']);
                     $result['y_unit'] = (100 - $result['Y_padding'])/config('barChart_num');
+                    //============================以下是散点图==============================
                     $result['area_price_scatter'] = $this->scatter('price', 'area');
                     $result['floor_price_scatter'] = $this->scatter('price', 'total_floor');
+                    $result['builded_year_price_scatter'] = $this->scatter('price', 'builded_year');
                     return $result;
                 }
             }
@@ -96,49 +98,58 @@ class PriceLogic
         //===========================计算散点图==================================
 //         Xitem表示X轴的参数，$Yitem表示Y轴的参数
 //         $result_arr = $PL->getArr();
-        $area_price_scatter['Xmin'] = 10000000;
-        $area_price_scatter['Xmax'] = 0;
-        $area_price_scatter['Ymin'] = 10000000;
-        $area_price_scatter['Ymax'] = 0;
+        $XY_scatter['Xmin'] = 10000000;
+        $XY_scatter['Xmax'] = 0;
+        $XY_scatter['Ymin'] = 10000000;
+        $XY_scatter['Ymax'] = 0;
+        
+        //计算最大值最小值
         foreach ($this->arr as $item)
         {
             if ($item[$Xitem] > 0 and $item [$Yitem] > 0) {
                 $area_price [] = array($Xitem=>$item[$Xitem],$Yitem=>$item [$Yitem]);
-                if($item[$Xitem] > $area_price_scatter['Xmax']){
-                    $area_price_scatter['Xmax'] = $item[$Xitem];
+                if($item[$Xitem] > $XY_scatter['Xmax']){
+                    $XY_scatter['Xmax'] = $item[$Xitem];
                 }
-                if($item[$Xitem] < $area_price_scatter['Xmin']){
-                    $area_price_scatter['Xmin'] = $item[$Xitem];
+                if($item[$Xitem] < $XY_scatter['Xmin']){
+                    $XY_scatter['Xmin'] = $item[$Xitem];
                 }
-                if($item[$Yitem] > $area_price_scatter['Ymax']){
-                    $area_price_scatter['Ymax'] = $item[$Yitem];
+                if($item[$Yitem] > $XY_scatter['Ymax']){
+                    $XY_scatter['Ymax'] = $item[$Yitem];
                 }
-                if($item[$Yitem] < $area_price_scatter['Ymin']){
-                    $area_price_scatter['Ymin'] = $item[$Yitem];
+                if($item[$Yitem] < $XY_scatter['Ymin']){
+                    $XY_scatter['Ymin'] = $item[$Yitem];
                 }
             }
         }
-
-        //计算最大值最小值
+        //这是X轴的最大和最小值
         $scatter_extend_r = config('scatter_extend_r');
-        $area_price_scatter['X0'] = floor($area_price_scatter['Xmin']*(1-$scatter_extend_r)/1000)*1000;
-        $area_price_scatter['X5'] = ceil($area_price_scatter['Xmax']*(1+$scatter_extend_r)/1000)*1000;
+        $XY_scatter['X0'] = floor($XY_scatter['Xmin']*(1-$scatter_extend_r)/1000)*1000;
+        $XY_scatter['X5'] = ceil($XY_scatter['Xmax']*(1+$scatter_extend_r)/1000)*1000;
         $scatter_X_left = config('scatter_X_left');
-        $area_price_scatter['Xunit'] = (100 - $scatter_X_left)/($area_price_scatter['X5']-$area_price_scatter['X0']);
+        $XY_scatter['Xunit'] = (100 - $scatter_X_left)/($XY_scatter['X5']-$XY_scatter['X0']);
+        
+        //这是Y轴的最大和最小值
         if($Yitem == 'area'){
-            $area_price_scatter['Y0'] = floor($area_price_scatter['Ymin']*(1-$scatter_extend_r)/10)*10;
-            $area_price_scatter['Y5'] = ceil($area_price_scatter['Ymax']*(1+$scatter_extend_r)/10)*10;
-        }elseif ($Yitem == 'total_floor'){
-            $area_price_scatter['Y0'] = $area_price_scatter['Ymin']-1;
-            $area_price_scatter['Y5'] = $area_price_scatter['Ymax']+1;
+            $XY_scatter['Y0'] = floor($XY_scatter['Ymin']*(1-$scatter_extend_r)/10)*10;
+            $XY_scatter['Y5'] = ceil($XY_scatter['Ymax']*(1+$scatter_extend_r)/10)*10;
+            $Yname = '(面积 平方米)';
+        }elseif ($Yitem == 'total_floor' ){
+            $XY_scatter['Y0'] = $XY_scatter['Ymin']-1;
+            $XY_scatter['Y5'] = $XY_scatter['Ymax']+1;
+            $Yname = '(总楼层)';
+        }elseif ($Yitem == 'builded_year'){
+            $XY_scatter['Y0'] = $XY_scatter['Ymin']-1;
+            $XY_scatter['Y5'] = $XY_scatter['Ymax']+1;
+            $Yname = '(建成年份)';
         }
         $scatter_Y_top = config('scatter_Y_top');
-        $area_price_scatter['Yunit'] = (100 - $scatter_Y_top)/($area_price_scatter['Y5']-$area_price_scatter['Y0']);
+        $XY_scatter['Yunit'] = (100 - $scatter_Y_top)/($XY_scatter['Y5']-$XY_scatter['Y0']);
         
         //这是散点
         foreach ($area_price as $A_item){
-            $x = ($A_item[$Xitem]-$area_price_scatter['X0'] )*$area_price_scatter['Xunit'] + $scatter_X_left;
-            $y = ($A_item[$Yitem]-$area_price_scatter['Y0'] )*$area_price_scatter['Yunit'] + $scatter_Y_top;
+            $x = ($A_item[$Xitem]-$XY_scatter['X0'] )*$XY_scatter['Xunit'] + $scatter_X_left;
+            $y = ($A_item[$Yitem]-$XY_scatter['Y0'] )*$XY_scatter['Yunit'] + $scatter_Y_top;
             $A[] = array('x'=>$x,'y'=>$y);
         }
         //这是纵向的Y轴
@@ -147,7 +158,7 @@ class PriceLogic
             $x1 = $x0;
             $y0 = $scatter_Y_top ;
             $y1 = 100;
-            $value = $area_price_scatter['X0']+($area_price_scatter['X5']-$area_price_scatter['X0'])/5*$i;
+            $value = $XY_scatter['X0']+($XY_scatter['X5']-$XY_scatter['X0'])/5*$i;
             $A_line[] = array('x0'=>$x0,'x1'=>$x1,'y0'=>$y0,'y1'=>$y1,'val'=>$value,'t_x'=>$x0,'t_y'=>$y0-1);
             //'t_x','t_y'是文本显示的位置
         }
@@ -158,7 +169,7 @@ class PriceLogic
             $x1 = 100;
             $y0 = $scatter_Y_top + (100 - $scatter_Y_top)/5*$i;
             $y1 = $y0;
-            $value = $area_price_scatter['Y0']+($area_price_scatter['Y5']-$area_price_scatter['Y0'])/5*$i;
+            $value = $XY_scatter['Y0']+($XY_scatter['Y5']-$XY_scatter['Y0'])/5*$i;
             $A_line[] = array('x0'=>$x0,'x1'=>$x1,'y0'=>$y0,'y1'=>$y1,'val'=>$value,'t_x'=>0,'t_y'=>$y0);
             //'t_x','t_y'是文本显示的位置
         }
@@ -172,13 +183,13 @@ class PriceLogic
             't_x'=>100-1,
             't_y'=>$scatter_Y_top+4
         );          //X轴线
-                
+        
         $axes[] = array(
             'x0'=>$scatter_X_left,
             'x1'=>$scatter_X_left,
             'y0'=>$scatter_Y_top,
             'y1'=>100,
-            'val'=>($Yitem == 'area')? '(面积 平方米)':'(总楼层)',
+            'val'=>$Yname,
             't_x'=>$scatter_X_left+1,
             't_y'=>100-1
         );
