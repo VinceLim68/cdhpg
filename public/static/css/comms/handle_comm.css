@@ -1,0 +1,125 @@
+
+
+table {
+	border-bottom: 1px solid rgb(221, 221, 221);
+}
+.table>tbody>tr>td.left {
+	text-align: right;
+	color: #3c763d;
+    background-color: #EDF3F4;
+}
+
+.table>tbody>tr>td.right {
+	padding-left: 1%;
+}
+
+.table>tbody>tr>td.right>input {
+	border:none;
+	width:100%;
+}
+
+#historytable,#casetable {
+	color:#777;
+}
+.pagination ,.pager{
+	margin:0;
+}
+ 
+ svg{
+	/*style="width:100%;height:100%;color:#5cb85c"*/
+ 	width:100%;
+ 	height:100%;
+ 	color:#3C763D;
+
+ }
+ svg .plotboxtext{
+	 fill:#51626E;
+ }
+ 
+ svg line{
+	stroke-width:3;
+	stroke:#51626E; 
+	/* stroke-dasharray: 5; */
+	stroke-opacity:1;
+ 	
+ }
+ 
+ svg .plotbox_box{
+	fill:#51626E;
+	stroke:#51626E;
+	stroke-width:3;
+	opacity:1;
+ }
+ 
+ svg .barChart{
+	fill:#77A9AE;
+	stroke:#8BC0C6;
+	stroke-width:1;
+	stroke-opacity:0.9;
+ }
+ 
+ svg .barChart_text{
+	fill:#d6e9c6;
+	font-size: 14px;
+ 	stroke-width:2;
+ 	font-weight:700;
+ }
+ 
+ svg .scatter_circle{
+	r:0.5%;
+	stroke-width:1;
+	fill:#576874;
+ }
+ 
+ svg .scatter_line{
+	stroke:#ccc; 
+ 	stroke-width:1;
+ }
+ svg .scatter_text{
+	font-size:12px;
+ 	fill:#255625;
+ }
+ 
+ svg .scatter_text_y{
+	/* text-anchor:end; */
+ }
+ 
+ svg .scatter_axes{
+	stroke-width:2;
+ 	fill:#255625;
+ 	stroke:#255625;
+ 	
+ }
+ 
+ svg .YAxesText{
+	fill:#255625;
+ 	font-size:12px;
+ 	letter-spacing:1px;
+ }
+
+ svg .XAxesText{
+	fill:#255625;
+ 	font-size:12px;
+ 	letter-spacing:1px;
+ 	text-anchor:end;
+ }
+.form-control{
+	border: 1px solid #4CAE4C;
+	color:#3c763d;
+ }
+ .input-group > .form-control{
+	border-top-left-radius: 6px;
+	border-top-right-radius: 0px;
+	border-bottom-right-radius: 0px;
+	border-bottom-left-radius: 6px;
+ }
+ 
+ .input-group > .input-group-btn > .btn {
+	border-top-left-radius: 0px;
+	border-top-right-radius: 6px;
+	border-bottom-right-radius: 6px;
+	border-bottom-left-radius: 0px;
+	
+ }
+
+

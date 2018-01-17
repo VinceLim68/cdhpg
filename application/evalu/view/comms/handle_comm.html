@@ -1,0 +1,297 @@
+{extend name="mainbase" /} 
+{block name="pg_cs"}
+<link rel="stylesheet" href="__CSS__/jquery-ui.min.css" />
+<link rel="stylesheet" type="text/css" href="__CSS__/comms/handle_comm.css">
+{/block} 
+{block name="breadcrumb"}
+<ul class="breadcrumb">
+	<li><i class="ace-icon fa fa-home home-icon"></i> <a href="#">大叔评估后台</a>
+	</li>
+	<li><a href="#">小区管理</a></li>
+	<li><a href="#">小区功能拆分</a></li>
+
+</ul>
+{/block} 
+{block name="main"}
+<div class="col-xs-12">
+<div class="tabbable">
+	<ul class="nav nav-tabs padding-12 tab-color-blue background-blue" id="myTab">
+	    <li class="active" ><a href="#rela" aria-controls="rela" role="tab" data-toggle="tab" >关联设计</a></li>
+		<li ><a href="#list1" aria-controls="list1" role="tab" data-toggle="tab" >数据列表</a></li>
+		<li ><a href="#box" aria-controls="box" role="tab" data-toggle="tab" >盒须图</a></li>
+		<li ><a href="#scatter_area_price" aria-controls="scatter_area_price" role="tab" data-toggle="tab" >面积/房价散点</a></li>
+	    <li ><a href="#scatter_floor_price" aria-controls="scatter_floor_price" role="tab" data-toggle="tab" >总楼层/房价散点</a></li>
+	    <li ><a href="#scatter_builded_year_price" aria-controls="scatter_builded_year_price" role="tab" data-toggle="tab" >建成年份/房价散点</a></li>
+	</ul>
+	<div class="tab-content">
+		<!-- 盒须图 -->
+	    <div role="tabpanel" class="tab-pane" id="box" >
+		    <div class="panel panel-success">
+				<div class="panel-heading" style="width:100% ;height:400px" > 
+					<svg xmlns="http://www.w3.org/2000/svg" version="1.1" >
+						<!-- 竖向盒须图，基本只和Y轴有关，X轴相对固定 -->
+						<!-- 前端的异常值 -->
+						<line x1="{$B['X']+1}%" y1="{$B['Qmin']}%" x2="{$B['X']+$B['box_width']-1}%" y2="{$B['Qmin']}%"  style="stroke-dasharray: 5;"/>
+						<line x1="{$B['X']+$B['box_width']/2}%" y1="{$B['Qmin']}%" x2="{$B['X']+$B['box_width']/2}%" y2="{$B['Q1']}%"  style="stroke-dasharray: 5;"/>
+						<!-- 后端的异常值 -->	
+						<line x1="{$B['X']+1}%" y1="{$B['Qmax']}%" x2="{$B['X']+$B['box_width']-1}%" y2="{$B['Qmax']}%"  style=" stroke-dasharray: 5;"/>
+						<line x1="{$B['X']+$B['box_width']/2}%" y1="{$B['Qmax']}%" x2="{$B['X']+$B['box_width']/2}%" y2="{$B['Q3']}%"  style=" stroke-dasharray: 5;"/>
+											
+						<!-- 盒子 -->
+						<rect class='plotbox_box' x="{$B['X']}%" y="{$B['Q1']}%" width="{$B['box_width']}%" height="{$B['Q3']-$B['Q1']}%"  />
+						<!-- 前须 -->
+						<line x1="{$B['X']}%" y1="{$B['Q0']}%" x2="{$B['X']+$B['box_width']}%" y2="{$B['Q0']}%"  />
+						<line x1="{$B['X']+$B['box_width']/2}%" y1="{$B['Q0']}%" x2="{$B['X']+$B['box_width']/2}%" y2="{$B['Q1']}%"  />
+						<!-- 后须 -->
+						<line x1="{$B['X']}%" y1="{$B['Q4']}%" x2="{$B['X']+$B['box_width']}%" y2="{$B['Q4']}%"  />
+						<line x1="{$B['X']+$B['box_width']/2}%" y1="{$B['Q4']}%" x2="{$B['X']+$B['box_width']/2}%" y2="{$B['Q3']}%"  />
+						<!-- 中位数 -->
+						<line x1="{$B['X']}%" y1="{$B['Q2']}%" x2="{$B['X']+$B['box_width']}%" y2="{$B['Q2']}%"  style="stroke:#DFF0D8; "/>
+						<!-- 显示数字 -->
+						<text class='plotboxtext' x="{$B['X']+$B['box_width']+2}%" y="{$B['Qmin']}%" >{$B['min']}</text>
+						<text x="{$B['X']+$B['box_width']+2}%" y="{$B['Q0']}%" class='plotboxtext'>{$B['Q0v']}</text>
+						<text x="{$B['X']+$B['box_width']+2}%" y="{$B['Q1']}%" class='plotboxtext'>{$B['v25']}</text>
+						<text x="{$B['X']+$B['box_width']+2}%" y="{$B['Q2']}%" class='plotboxtext'>{$B['median']}</text>
+						<text x="{$B['X']+$B['box_width']+2}%" y="{$B['Q3']}%" class='plotboxtext'>{$B['v75']}</text>
+						<text x="{$B['X']+$B['box_width']+2}%" y="{$B['Q4']}%" class='plotboxtext' >{$B['Q4v']}</text>
+						<text x="{$B['X']+$B['box_width']+2}%" y="{$B['Qmax']}%" class='plotboxtext' >{$B['max']}</text>
+			            <!-- 画直方图 -->
+						{volist name="B['barChart']" id="vo"  }
+							<rect x="{$B['X']-$vo*$B['x_unit']-10}%" y="{$key*$B['y_unit']+$B['Y_padding']}%" width="{$vo*$B['x_unit']}%" height="{$B['y_unit']-1}%" class='barChart' />
+							<text x="{$B['X']-$vo*$B['x_unit']/2-10}%" y="{$key*$B['y_unit']+$B['Y_padding']+$B['y_unit']-2}%" class='barChart_text'>{$vo}</text>
+						{/volist}
+					</svg>
+					
+				 </div>
+				 <div class="list-group"	>
+						<table class="table">
+							<tr>
+								<td class="col-md-4 col-xs-4 left " >数据开始</td>
+								<td class="col-md-8 col-xs-8 right">{$B['from_date']}</td>
+		
+							</tr>
+							<tr>
+								<td class="col-md-4 col-xs-4 left" >数据量</td>
+								<td class="col-md-8 col-xs-8 right">{$B['len']}/{$B['ori_len']}，覆盖{$B['coverage']}%</td>
+		
+							</tr>
+							<tr>
+								<td class="col-md-4 col-xs-4 left" >标准差系数</td>
+								<td class="col-md-8 col-xs-8 right">{$B['std_r']}%</td>
+		
+							</tr>
+							<tr>
+								<td class="col-md-4 col-xs-4 left" >均价</td>
+								<td class="col-md-8 col-xs-8 right">{$B['mean']}元/平方米</td>
+		
+							</tr>
+							<tr>
+								<td class="col-md-4 col-xs-4 left" >抵押折扣率</td>
+								<td class="col-md-8 col-xs-8 right">{$B['mortgageRatio']*100}%</td>
+		
+							</tr>
+							<tr>
+								<td class="col-md-4 col-xs-4 left " >二手价</td>
+								<td class="col-md-8 col-xs-8 right">{$B['dealPricePosition']}%/{$B['dealPrice']}</td>
+							</tr>
+							<tr>
+								<td class="col-md-4 col-xs-4 left " >交易价/二手报价</td>
+								<td class="col-md-8 col-xs-8 right">{$B['price']}/{$B['priceByDeal']}</td>
+							</tr>
+							</table>
+					</div>
+			</div> 
+	    </div>
+
+		<!-- 面积楼价散点图 -->
+		<div role="tabpanel" class="tab-pane" id="scatter_area_price">
+			<div class="panel panel-success">
+				<div class="panel-heading" style="width:100% ;height:400px" >
+					<svg xmlns="http://www.w3.org/2000/svg" version="1.1" width="100%" height="100%">
+						{volist name="B['area_price_scatter']['A_line']" id="vo"  }
+							<line x1="{$vo['x0']}%" y1="{$vo['y0']}%" x2="{$vo['x1']}%" y2="{$vo['y1']}%"  class='scatter_line' />
+							<text x="{$vo['t_x']}%" y="{$vo['t_y']}%" 
+							class='{if condition="$vo['t_x'] == 0 ")}
+							scatter_text_y
+							{else /} scatter_text_x
+							{/if} scatter_text' >{$vo['val']}</text>
+						{/volist}
+						{volist name="B['area_price_scatter']['A']" id="vo"  }
+							<circle cx="{$vo['x']}%" cy="{$vo['y']}%" class = 'scatter_circle' r="1%"/>
+						{/volist}
+							<line x1="{$B['area_price_scatter']['axes'][0]['x0']}%" y1="{$B['area_price_scatter']['axes'][0]['y0']}%" x2="{$B['area_price_scatter']['axes'][0]['x1']}%" y2="{$B['area_price_scatter']['axes'][0]['y1']}%"  class='scatter_axes' />
+							<text x="{$B['area_price_scatter']['axes'][0]['t_x']}%" y="{$B['area_price_scatter']['axes'][0]['t_y']}%"  class='XAxesText'>{$B['area_price_scatter']['axes'][0]['val']}</text>
+							<line x1="{$B['area_price_scatter']['axes'][1]['x0']}%" y1="{$B['area_price_scatter']['axes'][1]['y0']}%" x2="{$B['area_price_scatter']['axes'][1]['x1']}%" y2="{$B['area_price_scatter']['axes'][1]['y1']}%"  class='scatter_axes' />
+							<text x="{$B['area_price_scatter']['axes'][1]['t_x']}%" y="{$B['area_price_scatter']['axes'][1]['t_y']}%" class='YAxesText'>{$B['area_price_scatter']['axes'][1]['val']}</text>
+					</svg>
+				</div>
+			</div>
+		</div>
+
+		<!-- 楼层楼价散点图 -->
+	    <div role="tabpanel" class="tab-pane" id="scatter_floor_price">
+	    	<div class="panel panel-success">
+				<div class="panel-heading" style="width:100% ;height:400px" >
+					<svg xmlns="http://www.w3.org/2000/svg" version="1.1" width="100%" height="100%">
+						{volist name="B['floor_price_scatter']['A_line']" id="vo"  }
+							<line x1="{$vo['x0']}%" y1="{$vo['y0']}%" x2="{$vo['x1']}%" y2="{$vo['y1']}%"  class='scatter_line' />
+							<text x="{$vo['t_x']}%" y="{$vo['t_y']}%" 
+							class='{if condition="$vo['t_x'] == 0 ")}
+							scatter_text_y
+							{else /} scatter_text_x
+							{/if} scatter_text' >{$vo['val']}</text>
+						{/volist}
+						<!-- 这是画点 -->
+						{volist name="B['floor_price_scatter']['A']" id="vo"  }
+							<circle cx="{$vo['x']}%" cy="{$vo['y']}%" class = 'scatter_circle' r="1%"/>
+						{/volist}
+							<line x1="{$B['floor_price_scatter']['axes'][0]['x0']}%" y1="{$B['floor_price_scatter']['axes'][0]['y0']}%" x2="{$B['floor_price_scatter']['axes'][0]['x1']}%" y2="{$B['floor_price_scatter']['axes'][0]['y1']}%"  class='scatter_axes' />
+							<text x="{$B['floor_price_scatter']['axes'][0]['t_x']}%" y="{$B['floor_price_scatter']['axes'][0]['t_y']}%"  class='XAxesText'>{$B['floor_price_scatter']['axes'][0]['val']}</text>
+							<line x1="{$B['floor_price_scatter']['axes'][1]['x0']}%" y1="{$B['floor_price_scatter']['axes'][1]['y0']}%" x2="{$B['floor_price_scatter']['axes'][1]['x1']}%" y2="{$B['floor_price_scatter']['axes'][1]['y1']}%"  class='scatter_axes' />
+							<text x="{$B['floor_price_scatter']['axes'][1]['t_x']}%" y="{$B['floor_price_scatter']['axes'][1]['t_y']}%" class='YAxesText'>{$B['floor_price_scatter']['axes'][1]['val']}</text>
+					</svg>
+				</div>
+	    	</div>
+		</div>
+		
+		<!-- 建成年份楼价散点图 -->
+	    <div role="tabpanel" class="tab-pane" id="scatter_builded_year_price">
+	    	<div class="panel panel-success">
+				<div class="panel-heading" style="width:100% ;height:400px" >
+					<svg xmlns="http://www.w3.org/2000/svg" version="1.1" width="100%" height="100%">
+						{volist name="B['builded_year_price_scatter']['A_line']" id="vo"  }
+							<line x1="{$vo['x0']}%" y1="{$vo['y0']}%" x2="{$vo['x1']}%" y2="{$vo['y1']}%"  class='scatter_line' />
+							<text x="{$vo['t_x']}%" y="{$vo['t_y']}%" 
+							class='{if condition="$vo['t_x'] == 0 ")}
+							scatter_text_y
+							{else /} scatter_text_x
+							{/if} scatter_text' >{$vo['val']}</text>
+						{/volist}
+						<!-- 这是画点 -->
+						{volist name="B['builded_year_price_scatter']['A']" id="vo"  }
+							<circle cx="{$vo['x']}%" cy="{$vo['y']}%" class = 'scatter_circle' r="1%"/>
+						{/volist}
+							<line x1="{$B['builded_year_price_scatter']['axes'][0]['x0']}%" y1="{$B['builded_year_price_scatter']['axes'][0]['y0']}%" x2="{$B['builded_year_price_scatter']['axes'][0]['x1']}%" y2="{$B['builded_year_price_scatter']['axes'][0]['y1']}%"  class='scatter_axes' />
+							<text x="{$B['builded_year_price_scatter']['axes'][0]['t_x']}%" y="{$B['builded_year_price_scatter']['axes'][0]['t_y']}%"  class='XAxesText'>{$B['builded_year_price_scatter']['axes'][0]['val']}</text>
+							<line x1="{$B['builded_year_price_scatter']['axes'][1]['x0']}%" y1="{$B['builded_year_price_scatter']['axes'][1]['y0']}%" x2="{$B['builded_year_price_scatter']['axes'][1]['x1']}%" y2="{$B['builded_year_price_scatter']['axes'][1]['y1']}%"  class='scatter_axes' />
+							<text x="{$B['builded_year_price_scatter']['axes'][1]['t_x']}%" y="{$B['builded_year_price_scatter']['axes'][1]['t_y']}%" class='YAxesText'>{$B['builded_year_price_scatter']['axes'][1]['val']}</text>
+					</svg>
+				</div>
+	    	</div>
+		</div>
+		
+		<!-- 关联设计 --> 
+		<div role="tabpanel" class="tab-pane in active" id="rela">
+  			<h3 style="color: #3c763d;">{$B['comm']['comm_name']}
+			{if condition="$B['comm']['usage']!=''"}-{$B['comm']['usage']}{/if}
+			<small style="padding-left:3%">{$B['comm']['region']}-{$B['comm']['block']}</small>
+			</h3>
+			<div class="panel  panel-success">
+			  <div class="panel-heading" style="padding-bottom: 30px;">
+				<span class="badge" style="font-size: 16px">
+				{$B['priceByDeal'] > 0?	'二手房评估':'抵押评估价'}
+				</span>
+				{if condition="$B['comm']['rela_comm']!='' and $auth['look']"}
+				<span class="badge" style="font-size: 16px">
+				参照：{$B['comm']['rela_comm']}*{$B['comm']['rela_ratio']}
+				</span>
+				{/if}
+				<h1 style="text-align: center; font-weight: 700;{if condition="$B['std_r'] > $Think.config.std_r_limit or  $B['ori_len'] < $Think.config.min_base_records"}opacity:0.4;{/if}">
+				{$B['priceByDeal'] > 0 ?$B['priceByDeal']:$B['mortgagePrice']}
+					元 <small>/平方米</small>
+				</h1>
+				{if condition="$B['std_r'] > $Think.config.std_r_limit "}
+				<p  style="text-align:center;color:#FFB752;">数据离散性({$B['std_r']})过大，本报价需要估价师确认</p>
+				{/if}
+				{if condition="$B['ori_len'] < $Think.config.min_base_records "}
+				<p  style="text-align:center;color:#FFB752;">可供分析的数据({$B['ori_len']})偏少，本报价需要估价师确认</p>
+				{/if}
+				<p>
+				<span class="label label-success font-small" style="float:right;font-weight:100;margin-left:5px;">
+				{$B['avg_area']}平方米
+				</span>
+				<span class="label label-success font-small" style="float:right;font-weight:100;margin-left:5px;">
+				{$B['avg_floor_index']}层/共{$B['avg_total_floor']}层
+				</span>
+				<span class="label label-success font-small" style="float:right;font-weight:100;margin-left:5px;">
+				{$B['avg_builded_year']}年
+				</span>
+				</p>
+				</div>
+			  <div class="panel-body">
+			    <table class="table table-striped table-bordered table-hover table-condensed" id="rela_table">
+					<tr>
+						<th>序号</th>
+						<th>小区ID</th>
+						<th>功能</th>
+						<th>关联小区ID</th>
+						<th>关联系数</th>
+						<th>权重</th>
+						<th>过滤条件</th>
+						<th>设立时间</th>
+					</tr>
+					{foreach name="rela_list" item="v"}
+					<tr>
+						<td>{$v['id']}</td>
+						<td>{$v['community_id']}</td>
+						<td>{$v['usage']}</td>
+						<td>{$v['rela_comm_id']}</td>
+						<td>{$v['rela_ratio']}</td>
+						<td>{$v['rela_weight']}</td>
+						<td>{$v['where']}</td>
+						<td>{$v['create_time']}</td>
+					</tr>
+					{/foreach}
+				</table>
+			  </div>
+			</div>						
+		</div>						
+
+		
+		<!-- 数据列表 --> 
+		<div role="tabpanel" class="tab-pane " id="list1">
+			<div class="widget-header" id='search_div' style='padding-top: 5px; background: #5AA7D6;'>
+			<div class="text-muted" style="color:white;float:left;margin:auto 0;margin-top: 6px;">共{$saleslist->total()}条记录</div>
+				<div style="float:left;margin-left:5px;">{$saleslist->render()}</div>
+				<a href="javascript:;" onclick="add()" class="btn btn-sm btn-info"
+					style="margin-right: 20px; border-radius: 20px; margin-bottom: 3px;float:right;">
+					<span class="ace-icon fa fa-search icon-on-right bigger-110"></span>高级查询
+				</a>
+			</div>
+				
+			<table	class="table table-striped table-bordered table-hover table-condensed">
+				<thead>
+					{foreach name="title" item="v"}
+					<th>{$v}</th>
+					{/foreach}
+				</thead>
+<!-- 				<tr>
+				</tr> -->
+				<tbody id="salestable">
+				{foreach name="saleslist" item="v"}
+				<tr >
+					<td>{$v['id']}</td>
+					<td>{$v['title']}</td>
+					<td>{$v['community_id']}</td>
+					<td>{$v['community_name']}</td>
+					<td>{$v['price']}</td>
+					<td>{$v['total_floor']}</td>
+					<td>{$v['builded_year']}</td>
+				</tr>
+				{/foreach}
+				</tbody>
+			</table>
+		</div>
+	</div>
+</div>
+</div>
+</div>
+
+{/block} {block name="pg_js"}
+<script src="__JS__/jquery-ui.min.js"></script>
+<script src="__JS__/jquery.contextmenu.js"></script>
+<script src="__JS__/comms/handle_comm.js"></script>
+
+{/block}{block name="pg_inline_js"}
+
+{/block}

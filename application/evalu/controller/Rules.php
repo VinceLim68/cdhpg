@@ -454,6 +454,7 @@ class Rules extends Common {
         $mydb = new ErrorCommModel();
         $where = '1=1';
         $data = input();
+        dump($data);
         if(!isset($data['search_days']) or $data['search_days']==''){
             $data['search_days'] = 30;
         }
@@ -463,12 +464,16 @@ class Rules extends Common {
         if(input ( 'search_type' ) and input('search_type')!='all'){
             $where .= ' and type = "'.input ( 'search_type' ).'"';
         }
+        $order = 'times desc';
+        if($data['search_type']=='2'){
+            $order = 'memo desc';
+        }
 //         dump(input());
         $list = $mydb
             ->field('count(id) as times,id,user_name,comm_name,comm_id,create_time,type,memo')
             ->where("create_time", ">= time", strtotime('-'.input('search_days').' day'))
             ->where($where)
-            ->order('times desc')
+            ->order($order)
             ->group('comm_name')
             ->paginate(30,false,[
                 'query'=>[

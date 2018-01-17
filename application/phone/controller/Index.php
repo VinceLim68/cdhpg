@@ -113,9 +113,12 @@ class Index extends Common {
                 return $this->fetch();
             }else{
             //否则直接传递
-                $my = $list[0];
-                $my['price'] = $price;
-                $this->redirect('getPrice', $my);
+                $item = $list[0];
+                $item['where'] = base_encode($item['where']);
+                $item['create_time'] = base_encode($item['create_time']);
+                $item['usage'] = base_encode($item['usage']);
+                $item['price'] = $price;
+                $this->redirect('getPrice', $item);
 //                 halt($my);
             }
         }
@@ -142,6 +145,7 @@ class Index extends Common {
         }else{
             $getComm['rela_comm'] = '';
         }
+        $getComm['rela_ratio'] = isset($data['rela_ratio']) ? $data['rela_ratio'] : 1;
         $getComm['usage'] = isset($data['usage'])? $data['usage']:'';
         session('comm.comm_id',$data['community_id']);
         session('comm.comm_name',$getComm['comm_name']);
@@ -153,6 +157,7 @@ class Index extends Common {
         
         if(count($result[1])>0){
             //如果能查询出数据
+//             halt($result);
             $PL = new PriceLogic($result);
             $getPrice_result = $PL->getStatic($getComm,$data['price']);
             $getPrice_result['emplorers'] = config('emplorers');
@@ -183,15 +188,25 @@ class Index extends Common {
             }
             //===================还要分配一下权限===============================================
             //得到用户的权限
-            $userrules = (new \Auth())->getAuthList(session('user.user_id'),1);
-            $auth['history'] = in_array('phone/index/gethistory',$userrules)?true:false;
-            $auth['case'] = in_array('phone/index/getcase',$userrules)?true:false;
-            $auth['insert'] = in_array('phone/index/insertquery',$userrules)?true:false;
-            $auth['excel'] = in_array('phone/index/createxcel',$userrules)?true:false;
-            $auth['look'] = in_array('phone/index/look',$userrules)?true:false;
-            $auth['admin'] = in_array('isadmin',$userrules)?true:false;
-            $auth['dispute'] = in_array('phone/index/dispute',$userrules)?true:false;
-
+            $thisAuth = new \Auth();
+            $auth['history'] = $thisAuth->check('phone/index/gethistory', session('user.user_id'));
+            $auth['case'] = $thisAuth->check('phone/index/getcase', session('user.user_id'));
+            $auth['insert'] = $thisAuth->check('phone/index/insertquery', session('user.user_id'));
+            $auth['excel'] = $thisAuth->check('phone/index/createxcel', session('user.user_id'));
+            $auth['look'] = $thisAuth->check('phone/index/look', session('user.user_id'));
+            $auth['admin'] = $thisAuth->check('isadmin', session('user.user_id'));
+            $auth['dispute'] = $thisAuth->check('phone/index/dispute', session('user.user_id'));
+//             halt($auth);
+//             $userrules = (new \Auth())->getAuthList(session('user.user_id'),1);
+//             $auth['history'] = in_array('phone/index/gethistory',$userrules)?true:false;
+//             $auth['case'] = in_array('phone/index/getcase',$userrules)?true:false;
+//             $auth['insert'] = in_array('phone/index/insertquery',$userrules)?true:false;
+//             $auth['excel'] = in_array('phone/index/createxcel',$userrules)?true:false;
+//             $auth['look'] = in_array('phone/index/look',$userrules)?true:false;
+//             $auth['admin'] = in_array('isadmin',$userrules)?true:false;
+//             $auth['dispute'] = in_array('phone/index/dispute',$userrules)?true:false;
+//             $auth['isadmin'] = (new \Auth())->check('isadmin', session('user.user_id'));
+//             halt($auth['isadmin']);
             $this->assign('auth',$auth);
         }else{
             //如果未查询出数据
