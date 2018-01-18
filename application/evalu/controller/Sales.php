@@ -310,6 +310,7 @@ class Sales extends Common {
                 'set'=>  $data['set'],
             ],
         ]);
+        //halt($list);
 	    $fields = Db::query('SHOW COLUMNS FROM for_sale_property');
 
         $title = ['序号','标题','小区','名称','单价','总层','建成'];

@@ -120,6 +120,8 @@ class PriceLogic
                 if($item[$Yitem] < $XY_scatter['Ymin']){
                     $XY_scatter['Ymin'] = $item[$Yitem];
                 }
+            }else{
+                return 0;
             }
         }
         //这是X轴的最大和最小值

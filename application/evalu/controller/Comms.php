@@ -243,14 +243,14 @@ class Comms extends Common {
 	    $commrelate = new CommRelateModel();
 	    
 	    //如果首次跳转，没有获得关联数据，则先取出已有的关联定义，以备放在“关联设计”里
-	    if(!isset($data['id'])){
+// 	    if(!isset($data['id'])){
     	    $rela_list = $commrelate->where('community_id',$data['community_id'])->select()->toArray();
     	    if(!empty($rela_list)){
     	        //如果有数据，把第一条数据重新赋给$data
     	        $data = $rela_list[0];
     	    }
-	    }
-	    
+// 	    }
+// 	    dump($data);
 	    //通过id找小区相关信息
 	    $getComm = Db::table('comm')->where('comm_id',$data['community_id'])->find();
 	    if(isset($data['rela_comm_id']) and $data['rela_comm_id']>999){
@@ -272,45 +272,20 @@ class Comms extends Common {
 	        $this->assign('rela_list',$rela_list);
 	        $this->assign('result',$result);
 	    }
-	        
-	    
 	    
 	    //取挂牌数据
-	    //把不规模的”替换掉
-// 	    $data['num'] = 0;
-	    $replace = array('“'=>'"');
-	    $replace += array('”' => '"');
-	    $replace += array("'" => '"');
-	    $replace += array("‘" => '"');
-	    $replace += array("’" => '"');
-	    //如果没有where条件，默认选择当前community_id的挂牌记录
 	    if(!isset($data['where']) or trim($data['where'])==''){
 	        $data['where'] = 'community_id = '.$data['community_id'];
-// 	        $data['where'] = base_encode($data['where']);
+	    }else{
+	        $data['where'] .= ' AND community_id = '.$data['community_id'];
 	    }
-//         $data['where'] = base_decode($data['where']);
-	    
-	    //查询记录,
-// 	    $total = Db::table('for_sale_property')->where($data['where'] )->count('id');
-	    $saleslist = Db::table('for_sale_property')->field('id,title,community_id,community_name,price,total_floor,builded_year')
-	    ->where($data['where'] )
-	    ->paginate(100,FALSE,[
-	        'query'=>[
-// 	            'where'=>  base_encode($data['where']),
-	            'where'=> ($data['where']),
-// 	            'ispage' =>  true,
-	            'community_id' =>  $data['community_id'],
-	        ],
-	    ]);
-// 	    dump($data['where']);
-// 	    halt($saleslist);
-	    //$fields = Db::query('SHOW COLUMNS FROM for_sale_property');
+	    $data = $this->datahandle($data);
+	    $saleslist = $this->getSales($data);
+	    $fields = Db::query('SHOW COLUMNS FROM for_sale_property');
 	    $title = ['序号','标题','小区','名称','单价','总层','建成'];
 	    $this->assign('saleslist',$saleslist);
 	    $this->assign('title',$title);
-// 	    $this->assign('total',$total);
-	    
-// 	    $this->assign('fields',$fields);
+	    $this->assign('fields',$fields);
 	    $this->assign('data',$data);
 	    
 	    return $this->fetch();
@@ -318,14 +293,13 @@ class Comms extends Common {
 	
 	public function ajaxGetSaleslist(){
 	    $data = input();
- 	    $saleslist = Db::table('for_sale_property')->field('id,title,community_id,community_name,price,total_floor,builded_year')
-	    ->where($data['where'] )
-	    ->paginate(50,FALSE,[
-	        'query'=>[
-	            'where'=> ($data['where']),
-	            'community_id' =>  $data['community_id'],
-	        ],
-	    ]); 
+// 	    halt($data);
+	    //dump($data);
+	    $data1 = $this->datahandle($data);
+// 	    halt($data1);
+        //dump($data1);
+        $saleslist = $this->getSales($data1);
+        $response['page'] = $saleslist->render();
 	    $liststring = '';
 	    foreach ($saleslist as $v){
 	        $liststring .= '<tr>';
@@ -338,7 +312,55 @@ class Comms extends Common {
 	        $liststring .= '<td>'.$v['builded_year'].'</td>';
 	        $liststring .= '</tr>';
 	    }
-	    return $liststring;
+	    $response['items'] = $liststring;
+	    return $response;
 	    //dump($saleslist);
+	}
+	
+	private function datahandle($data){
+	    //对输入的数组进行处理，赋默认值
+	    $replace = array('“'=>'"');
+	    $replace += array('”' => '"');
+	    $replace += array("'" => '"');
+	    $replace += array("‘" => '"');
+	    $replace += array("’" => '"');
+	    if(!isset($data['where']) or trim($data['where'])==''){
+	        $data['where'] = '';
+	    }else{
+	        $data['where'] = strtr($data['where'],$replace);
+	    }
+	    if(!isset($data['order']) or trim($data['order'])==''){
+	        $data['order'] = 'price';
+	    }else{
+	        $data['order'] = strtr($data['order'],$replace);
+	    }
+	    if(!isset($data['set']) or trim($data['set'])==''){
+	        $data['set'] = '';
+	    }
+	    return $data;
+	}
+	
+	private function getSales($data){
+	     
+	    if('' !== $data['set']){
+	        //修改记录
+	        $sqlstr = 'UPDATE for_sale_property SET '.$data['set'].' WHERE '.$data['where'];
+	        $data['num'] = Db::execute($sqlstr);
+	    }
+	    //查询记录,无论是否修改，都需要查询
+	    //echo ($data['order']);
+	    $sales = Db::table('for_sale_property')->field('id,title,community_id,community_name,price,total_floor,builded_year')
+	    ->where($data['where'] )
+	    ->order($data['order'])
+	    ->paginate(100,false,[
+	        'query'=>[
+	            'where'=>  $data['where'],
+	            'order'=>  $data['order'],
+	            'set'=>  $data['set'],
+	            'community_id' =>  $data['community_id'],
+	        ],
+	    ]);
+	    
+	    return $sales;
 	}
 }
