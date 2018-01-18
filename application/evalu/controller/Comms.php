@@ -300,6 +300,7 @@ class Comms extends Common {
         //dump($data1);
         $saleslist = $this->getSales($data1);
         $response['page'] = $saleslist->render();
+        $response['total'] = $saleslist->total();
 	    $liststring = '';
 	    foreach ($saleslist as $v){
 	        $liststring .= '<tr>';

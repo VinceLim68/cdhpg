@@ -67,6 +67,7 @@ jQuery(function($) {
 				//$("ul.pagination").html(pagestring);
 				$("#pages").html(response['page']);
 				$("#salestable").html(response['items']);
+				$(".text-muted").html('共'+response['total']+'条记录');
 			}
  		
 		})
@@ -85,6 +86,7 @@ jQuery(function($) {
 				  $('#mydialogg').modal('hide');
 					$("#pages").html(response['page']);
 					$("#salestable").html(response['items']);
+					$(".text-muted").html('共'+response['total']+'条记录');
 				  //$("#salestable").html(response);
 			  },
 		  })

@@ -104,10 +104,12 @@ class PriceLogic
         $XY_scatter['Ymax'] = 0;
         
         //计算最大值最小值
+        $dots =[];
         foreach ($this->arr as $item)
         {
+            //只取出非0数据
             if ($item[$Xitem] > 0 and $item [$Yitem] > 0) {
-                $area_price [] = array($Xitem=>$item[$Xitem],$Yitem=>$item [$Yitem]);
+                $dots [] = array($Xitem=>$item[$Xitem],$Yitem=>$item [$Yitem]);
                 if($item[$Xitem] > $XY_scatter['Xmax']){
                     $XY_scatter['Xmax'] = $item[$Xitem];
                 }
@@ -120,9 +122,10 @@ class PriceLogic
                 if($item[$Yitem] < $XY_scatter['Ymin']){
                     $XY_scatter['Ymin'] = $item[$Yitem];
                 }
-            }else{
-                return 0;
             }
+        }
+        if(empty($dots)){
+            return 0;
         }
         //这是X轴的最大和最小值
         $scatter_extend_r = config('scatter_extend_r');
@@ -149,7 +152,7 @@ class PriceLogic
         $XY_scatter['Yunit'] = (100 - $scatter_Y_top)/($XY_scatter['Y5']-$XY_scatter['Y0']);
         
         //这是散点
-        foreach ($area_price as $A_item){
+        foreach ($dots as $A_item){
             $x = ($A_item[$Xitem]-$XY_scatter['X0'] )*$XY_scatter['Xunit'] + $scatter_X_left;
             $y = ($A_item[$Yitem]-$XY_scatter['Y0'] )*$XY_scatter['Yunit'] + $scatter_Y_top;
             $A[] = array('x'=>$x,'y'=>$y);
