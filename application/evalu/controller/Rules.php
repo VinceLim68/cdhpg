@@ -454,7 +454,7 @@ class Rules extends Common {
         $mydb = new ErrorCommModel();
         $where = '1=1';
         $data = input();
-        dump($data);
+//         dump($data);
         if(!isset($data['search_days']) or $data['search_days']==''){
             $data['search_days'] = 30;
         }

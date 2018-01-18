@@ -8,7 +8,7 @@
 	<li><i class="ace-icon fa fa-home home-icon"></i> <a href="#">大叔评估后台</a>
 	</li>
 	<li><a href="#">小区管理</a></li>
-	<li><a href="#">小区功能拆分</a></li>
+	<li><a href="#">{$B['comm']['comm_name']}功能拆分</a></li>
 
 </ul>
 {/block} 
@@ -248,12 +248,14 @@
 		</div>						
 
 		
+		
+		
 		<!-- 数据列表 --> 
 		<div role="tabpanel" class="tab-pane " id="list1">
 			<div class="widget-header" id='search_div' style='padding-top: 5px; background: #5AA7D6;'>
-			<div class="text-muted" style="color:white;float:left;margin:auto 0;margin-top: 6px;">共{$saleslist->total()}条记录</div>
-				<div style="float:left;margin-left:5px;">{$saleslist->render()}</div>
-				<a href="javascript:;" onclick="add()" class="btn btn-sm btn-info"
+				<div class="text-muted" style="color:white;float:left;margin:auto 0;margin-top: 6px;">共{$saleslist->total()}条记录</div>
+				<div id="pages" style="float:left;margin-left:5px;">{$saleslist->render()}</div>
+				<a href="javascript:;" onclick="modal()" class="btn btn-sm btn-info"
 					style="margin-right: 20px; border-radius: 20px; margin-bottom: 3px;float:right;">
 					<span class="ace-icon fa fa-search icon-on-right bigger-110"></span>高级查询
 				</a>
@@ -265,8 +267,6 @@
 					<th>{$v}</th>
 					{/foreach}
 				</thead>
-<!-- 				<tr>
-				</tr> -->
 				<tbody id="salestable">
 				{foreach name="saleslist" item="v"}
 				<tr >
@@ -282,9 +282,93 @@
 				</tbody>
 			</table>
 		</div>
+		
+		
+		
 	</div>
 </div>
 </div>
+
+<!-- 模态框 -->
+<div class="modal fade" tabindex="-1" role="dialog" id="mydialogg">
+  <div class="modal-dialog modal-sm" role="document">
+    <div class="modal-content">
+      <div class="modal-header">
+        <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+        <h4 class="modal-title">信息</h4>
+      </div>
+      <div class="modal-body">
+      </div>
+      <!-- <div class="modal-footer">
+        <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
+      </div> -->
+    </div><!-- /.modal-content -->
+  </div><!-- /.modal-dialog -->
+</div><!-- /.modal -->
+
+
+<div class="modal fade" id="myquery" tabindex="-1" role="dialog"
+	aria-labelledby="myModalLabel" aria-hidden="true">
+	<div class="modal-dialog">
+		<div class="modal-content">
+			<div class="modal-header">
+				<button type="button" class="close" data-dismiss="modal"
+					aria-hidden="true">&times;</button>
+				<h4 class="modal-title" id="myModalLabel">高级查询</h4>
+			</div>
+			<div class="modal-body">
+				<form id="myform" class="form-inline">
+					<input name="page" type="hidden" value='1'> 
+					<input name="community_id" type="hidden" value='{$data["community_id"]}'> 
+					<table	class="table table-striped table-bordered table-hover table-condensed">
+						
+						<tr>
+							<th style="width: 50px;">WHERE</th>
+							<td style="width: 70px;">
+								<select id="wherefield" style="width: 70px; margin-bottom: 2px;">
+								{foreach name="fields" item="v"}
+									<option value="{$v['Field']}" >{$v['Field']}</option> 
+								{/foreach}
+								</select>
+							</td>
+							<td><input style="width:100%;" class="input-medium" type="text" 
+							name="where" value='{$data["where"]}' placeholder="请使用双引号"></td>
+						</tr>
+						<tr>
+							<th style="width: 50px;">ORDER</th>
+							<td style="width: 70px;">
+								<select id="orderfield" style="width: 70px; margin-bottom: 2px;">
+								{foreach name="fields" item="v"}
+									<option value="{$v['Field']}" >{$v['Field']}</option> 
+								{/foreach}
+								</select>
+							</td>
+							<td><input style="width:100%;" type="text" name="order" placeholder="请使用双引号" value='{$data["order"]}'>
+							</td>
+						</tr>
+						<tr>
+							<th style="width: 50px;">UPDATE</th>
+							<td style="width: 70px;">
+								<select id="setfield" style="width: 70px; margin-bottom: 2px;">
+								{foreach name="fields" item="v"}
+									<option value="{$v['Field']}" >{$v['Field']}</option> 
+								{/foreach}
+								</select>
+							</td>
+							<td><input style="width:100%;" type="text" name="set" placeholder="请使用双引号" value='{$data["set"]}'>
+							</td>
+						</tr>
+						
+						<tr>
+							<th></th>
+							<td><input class="btn btn-success" id="submitmyform" type="submit" value="执行"></td>
+							<td><input class="btn btn-success" id="reset" value="重置"></td>
+						</tr>
+					</table>
+				</form>
+			</div>
+		</div>
+	</div>
 </div>
 
 {/block} {block name="pg_js"}

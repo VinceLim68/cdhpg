@@ -35,14 +35,13 @@ class SalesModel extends Model {
 	        $where = isset($data['where']) ? $data['where'] : ' 1=1 ';
 	        $rela_ratio = isset($data['rela_ratio']) ? $data['rela_ratio'] : 1;
 	        $rela_weight = isset($data['rela_weight']) ? $data['rela_weight'] : 1;
+	    }else{
+	        //这部分在getForExcel时有用
+	        $comm_id = $data;
+	        $where = ' 1=1 ';
+	        $rela_ratio = 1;
+	        $rela_weight = 1;
 	    }
-// 	    halt($comm_id);
-// 	    else{
-// 	        $comm_id = $data;
-// 	        $where = ' 1=1 ';
-// 	        $rela_ratio = 1;
-// 	        $rela_weight = 1;
-// 	    }
 // 	    halt($data);
 	    $result = self::field($fields)
     	    ->where('community_id',$comm_id)
