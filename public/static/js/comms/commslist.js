@@ -601,4 +601,8 @@ jQuery(function($) {
 		$('.ui-jqdialog').remove();
 	});
 	
+//	$("#gridtable td").on('dblclick',function(){
+//		alert('db');
+//	})
+	
 });

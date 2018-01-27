@@ -76,11 +76,6 @@ class Index extends Common {
                     }else{
                         $this->redirect('getCommChild', ['comm_id' => $commnames[0]['comm_id'],'price'=>input('price')]);
                     }
-//                      if(!input('price')){
-//                         $this->redirect('getPrice', ['comm_id' => $commnames[0]['comm_id']]);
-//                     }else{
-//                         $this->redirect('getPrice', ['comm_id' => $commnames[0]['comm_id'],'price'=>input('price')]);
-//                     } 
                 }
             }
         }

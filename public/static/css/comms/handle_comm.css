@@ -1,5 +1,14 @@
+#rela_c ,#sele_field{
+	height: 34px;
+	width:100%;
+}
+#relaform .form-group input {
+	width:100%;
+}
 
-
+#reladialogg .modal-body .btn{
+	width:90%;
+}
 table {
 	border-bottom: 1px solid rgb(221, 221, 221);
 }

@@ -267,49 +267,86 @@ class Sales extends Common {
 		return $this->redirect('comms/commslist');
 	}
 	
+	public function datahandle($data){
+	    //把不规模的”替换掉
+	    $data['num'] = 0;
+	    $replace = array('“'=>'"');
+	    $replace += array('”' => '"');
+	    $replace += array("'" => '"');
+	    $replace += array("‘" => '"');
+	    $replace += array("’" => '"');
+	    if(!isset($data['where']) or trim($data['where'])==''){
+	        $data['where'] = '';
+	    }else{
+	        $data['where'] = strtr($data['where'],$replace);
+	    }
+	    if(!isset($data['sort'])){
+	        $data['sort'] = '';
+	    }
+	    if(!isset($data['order']) or trim($data['order'])==''){
+	        $data['order'] = 'price';
+	        $data['neworder'] = 'price ASC';
+	    }else{
+	        $data['neworder'] = strtr($data['order'].' '.$data['sort'],$replace);
+	        //$data['order'] = strtr($data['order'].' '.$data['sort'],$replace);
+	    }
+	    if(!isset($data['set']) or trim($data['set'])==''){
+	        $data['set'] = '';
+	    }
+	    return $data;
+	}
+	
+	public function getSalesByArray($data){
+	    if('' !== $data['set']){
+	        //修改记录
+	        $sqlstr = 'UPDATE for_sale_property SET '.$data['set'].' WHERE '.$data['where'];
+	        $data['num'] = Db::execute($sqlstr);
+	    }
+// 	    if(!isset($data['community_id'])){
+// 	        $data['community_id'] = 0;
+// 	    }
+	    //查询记录,无论是否修改，都需要查询
+	    //echo ($data['order']);
+	    $sales = Db::table('for_sale_property')->field('id,title,community_id,community_name,price,total_floor,builded_year')
+	    ->where($data['where'] )
+	    ->order($data['neworder'])
+	    ->paginate(100,false,[
+	        'query'=>[
+	            'where'=>  $data['where'],
+	            'order'=>  $data['order'],
+	            'set'=>  $data['set'],
+	            'community_id' =>  isset($data['community_id']) ? $data['community_id'] : '',
+	        ],
+	    ]);
+	    $sales['num'] = $data['num']; 
+	    return $sales;
+	}
 	public function queryByComm(){
         $data = input();
-        //把不规模的”替换掉
-        $data['num'] = 0;
-        $replace = array('“'=>'"');
-        $replace += array('”' => '"');
-        $replace += array("'" => '"');
-        $replace += array("‘" => '"');
-        $replace += array("’" => '"');
-        if(!isset($data['where']) or trim($data['where'])==''){
-            $data['where'] = '';
-        }else{
-            $data['where'] = strtr($data['where'],$replace);
-        }
-        if(!isset($data['order']) or trim($data['order'])==''){
-            $data['order'] = 'price';
-        }else{
-            $data['order'] = strtr($data['order'],$replace);
-        }
-        if(!isset($data['set']) or trim($data['set'])==''){
-            $data['set'] = '';
-        }
+//         dump($data);
         
+        $data = $this->datahandle($data);
+        $list = $this->getSalesByArray($data);
         
 //         dump($data);
-        if('' !== $data['set']){
-            //修改记录
-            $sqlstr = 'UPDATE for_sale_property SET '.$data['set'].' WHERE '.$data['where'];
-            $data['num'] = Db::execute($sqlstr);
-//             dump($num);
+//         if('' !== $data['set']){
+//             //修改记录
+//             $sqlstr = 'UPDATE for_sale_property SET '.$data['set'].' WHERE '.$data['where'];
+//             $data['num'] = Db::execute($sqlstr);
+// //             dump($num);
             
-        }
-        //查询记录,无论是否修改，都需要查询
-        $list = $this->db->field('id,title,community_id,community_name,price,total_floor,builded_year')
-        ->where($data['where'] )
-        ->order($data['order']) 
-        ->paginate(100,false,[
-            'query'=>[
-                'where'=>  $data['where'],
-                'order'=>  $data['order'],
-                'set'=>  $data['set'],
-            ],
-        ]);
+//         }
+//         //查询记录,无论是否修改，都需要查询
+//         $list = $this->db->field('id,title,community_id,community_name,price,total_floor,builded_year')
+//         ->where($data['where'] )
+//         ->order(data['neworder']) 
+//         ->paginate(100,false,[
+//             'query'=>[
+//                 'where'=>  $data['where'],
+//                 'order'=>  $data['order'],
+//                 'set'=>  $data['set'],
+//             ],
+//         ]);
         //halt($list);
 	    $fields = Db::query('SHOW COLUMNS FROM for_sale_property');
 
