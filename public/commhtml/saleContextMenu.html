@@ -1,0 +1,38 @@
+<!-- 还没用上 -->
+<div class="contextMenu" id="myMenu1">
+	<ul>
+		<li id="jump" style="margin-left: 20px">跳转详细页面</li>
+		<li id="detail">查询完整信息</li>
+	</ul>
+</div>
+
+<script>
+jQuery(function($) {
+    $('div.tab-content table
+td').contextMenu('myMenu1', {
+        bindings: {
+            'jump': function(t) {
+                //取出当前行的序号 
+                var id = $(t).parent().find("td").eq(0).html(); //alert(id);
+                $.ajax({
+                    url: 'getUrlById',
+                    data: {
+                        ID: id,
+                    },
+                    success: function(response) {
+                        window.open(response);
+                    }
+                });
+            },
+            'detail': function(t) { //取出当前行的序号 var
+                id = $(t).parent().find("td").eq(0).html(); //alert(id); $.ajax({
+                url: 'getFullById',
+                data: {
+                    ID: id,
+                },
+                success: function(response) {
+                    //alert(response) ; $('#detailinfomation
+                    div.modal - body ').html(response); $('#detailinfomation ').modal('show '); }
+
+}); }, } }); });
+</script>

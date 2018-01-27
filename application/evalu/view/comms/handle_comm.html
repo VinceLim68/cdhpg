@@ -17,11 +17,11 @@
 <div class="tabbable">
 	<ul class="nav nav-tabs padding-12 tab-color-blue background-blue" id="myTab">
 	    <li class="active" ><a href="#rela" aria-controls="rela" role="tab" data-toggle="tab" >关联设计</a></li>
-		<li ><a href="#list1" aria-controls="list1" role="tab" data-toggle="tab" >数据列表</a></li>
 		<li ><a href="#box" aria-controls="box" role="tab" data-toggle="tab" >盒须图</a></li>
 		<li ><a href="#scatter_area_price" aria-controls="scatter_area_price" role="tab" data-toggle="tab" >面积/房价散点</a></li>
 	    <li ><a href="#scatter_floor_price" aria-controls="scatter_floor_price" role="tab" data-toggle="tab" >总楼层/房价散点</a></li>
 	    <li ><a href="#scatter_builded_year_price" aria-controls="scatter_builded_year_price" role="tab" data-toggle="tab" >建成年份/房价散点</a></li>
+		<li ><a href="#list1" aria-controls="list1" role="tab" data-toggle="tab" >数据列表</a></li>
 	</ul>
 	<div class="tab-content">
 		<!-- 盒须图 -->
@@ -219,6 +219,29 @@
 				</p>
 				</div>
 			  <div class="panel-body">
+			  	<div  >
+			  		<button type="button" class="btn btn-success" id="add_rela" style="border-radius: 5px;float:right;padding: 3px 15px;">
+			  			<span class="glyphicon glyphicon-plus" aria-hidden="true"></span>增加关联规则
+			  		</button>
+			  		<form class="form-inline" id="search_form" style="float:left;">
+<!-- 					  <div class="form-group">
+					    <label class="sr-only" ></label>
+					    <input class="form-control" name="community_id" placeholder="小区ID" value={$B['comm']['comm_id']}>
+					  </div> -->
+					  <div class="form-group">
+					    <label >小区名称</label>
+					    <input class="form-control" name="commName" id="commName"  placeholder="请输入小区名称" >
+<!-- 							value={$B['comm']['comm_name']} list="relacomms"<datalist id="relacomms">
+							{foreach name="rela_comms" item="v"}
+							  <option value="{$v['comm_name']}">{$v['comm_name']}
+						  	{/foreach}
+							</datalist> -->
+					  </div>
+					  <button type="submit" class="btn btn-success" style="border-radius: 5px;padding: 3px 15px;">
+			  			<span class="glyphicon glyphicon-search" aria-hidden="true"></span>查询
+		  			</button>
+					</form>
+		  		</div>
 			    <table class="table table-striped table-bordered table-hover table-condensed" id="rela_table">
 					<tr>
 						<th>序号</th>
@@ -291,89 +314,95 @@
 
 <!-- 模态框 -->
 <div class="modal fade" tabindex="-1" role="dialog" id="mydialogg">
-  <div class="modal-dialog modal-sm" role="document">
+  <div class="modal-dialog" role="document">
     <div class="modal-content">
       <div class="modal-header">
         <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
         <h4 class="modal-title">信息</h4>
       </div>
       <div class="modal-body">
+      	
       </div>
-      <!-- <div class="modal-footer">
-        <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
-      </div> -->
     </div><!-- /.modal-content -->
   </div><!-- /.modal-dialog -->
 </div><!-- /.modal -->
 
 
-<div class="modal fade" id="myquery" tabindex="-1" role="dialog"
-	aria-labelledby="myModalLabel" aria-hidden="true">
-	<div class="modal-dialog">
-		<div class="modal-content">
-			<div class="modal-header">
-				<button type="button" class="close" data-dismiss="modal"
-					aria-hidden="true">&times;</button>
-				<h4 class="modal-title" id="myModalLabel">高级查询</h4>
-			</div>
-			<div class="modal-body">
-				<form id="myform" class="form-inline">
-					<input name="page" type="hidden" value='1'> 
-					<input name="community_id" type="hidden" value='{$data["community_id"]}'> 
-					<table	class="table table-striped table-bordered table-hover table-condensed">
-						
-						<tr>
-							<th style="width: 50px;">WHERE</th>
-							<td style="width: 70px;">
-								<select id="wherefield" style="width: 70px; margin-bottom: 2px;">
-								{foreach name="fields" item="v"}
-									<option value="{$v['Field']}" >{$v['Field']}</option> 
-								{/foreach}
-								</select>
-							</td>
-							<td><input style="width:100%;" class="input-medium" type="text" 
-							name="where" value='{$data["where"]}' placeholder="请使用双引号"></td>
-						</tr>
-						<tr>
-							<th style="width: 50px;">ORDER</th>
-							<td style="width: 70px;">
-								<select id="orderfield" style="width: 70px; margin-bottom: 2px;">
-								{foreach name="fields" item="v"}
-									<option value="{$v['Field']}" >{$v['Field']}</option> 
-								{/foreach}
-								</select>
-							</td>
-							<td><input style="width:100%;" type="text" name="order" placeholder="请使用双引号" value='{$data["order"]}'>
-							</td>
-						</tr>
-						<tr>
-							<th style="width: 50px;">UPDATE</th>
-							<td style="width: 70px;">
-								<select id="setfield" style="width: 70px; margin-bottom: 2px;">
-								{foreach name="fields" item="v"}
-									<option value="{$v['Field']}" >{$v['Field']}</option> 
-								{/foreach}
-								</select>
-							</td>
-							<td><input style="width:100%;" type="text" name="set" placeholder="请使用双引号" value='{$data["set"]}'>
-							</td>
-						</tr>
-						
-						<tr>
-							<th></th>
-							<td><input class="btn btn-success" id="submitmyform" type="submit" value="执行"></td>
-							<td><input class="btn btn-success" id="reset" value="重置"></td>
-						</tr>
-					</table>
-				</form>
-			</div>
-		</div>
-	</div>
+
+<!-- 挂牌记录查询模态框-->
+{include file="./commhtml/myquery.html"/}
+
+<!-- 关联规则模态框 -->
+<div class="modal fade" tabindex="-1" role="dialog" id="reladialogg">
+  <div class="modal-dialog " role="document">
+    <div class="modal-content">
+      <div class="modal-header">
+        <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+        <h4 class="modal-title">关联规则<small style="margin-left: 20px;"></small></h4>
+      </div>
+      <div class="modal-body" style="padding:0;">
+			<form class="form-horizontal" id="relaform" action="/evalu/comms/handle_comm.html" method="post">
+				
+			</form>
+      </div>
+
+    </div><!-- /.modal-content -->
+  </div><!-- /.modal-dialog -->
+</div><!-- /.modal -->
+
+<!-- 挂牌信息列表右键菜单 -->
+<div class="contextMenu" id="salelistmenu">
+	<ul>
+		<li id="jump" style="margin-left: 20px">跳转详细页面</li>
+		<li id="detail">查询完整信息</li>
+	</ul>
 </div>
 
 {/block} {block name="pg_js"}
 <script src="__JS__/jquery-ui.min.js"></script>
 <script src="__JS__/jquery.contextmenu.js"></script>
+<script type="text/javascript">
+	var waitingImg = "__CSS__/1.gif";
+	var myself = "{:url('handle_comm')}";
+</script>
+<script>
+jQuery(function ($) {
+    $('#salestable td').contextMenu('salelistmenu', {
+        bindings: {
+            'jump': function (t) {
+                    //取出当前行的序号 
+                    var id = $(t).parent().find("td").eq(0).html(); //alert(id);
+                    $.ajax({
+                        url: "{:url('Sales/getUrlById')}",
+                        data: {
+                            ID: id,
+                        },
+                        success: function (response) {
+                            window.open(response);
+                        }
+                    });
+                },
+                'detail': function (t) { //取出当前行的序号 var
+                    id = $(t).parent().find("td").eq(0).html(); //alert(id); 
+                    $.ajax({
+                        url: "{:url('Sales/getFullById')}",
+                        data: {
+                            ID: id,
+                        },
+                        success: function (response) {
+                            //alert(response);
+                            $('#mydialogg  div.modal-body').html(response); 
+                            $('#mydialogg ').modal('show');
+                        }
+
+                    });
+                },
+        }
+    });
+});
+
+</script>
+
 <script src="__JS__/comms/handle_comm.js"></script>
 
 {/block}{block name="pg_inline_js"}

@@ -7,6 +7,7 @@ use think\Db;
 use app\evalu\model\CommRelateModel;
 use app\evalu\model\SalesModel;
 use app\evalu\logic\PriceLogic;
+use app\evalu\logic\MatchLogic;
 
 class Comms extends Common {
 	protected $db;
@@ -236,31 +237,91 @@ class Comms extends Common {
 		return $newid;
 	}
 	
+	public function ajaxGetCommName(){
+	    if (request()->isGet()) {
+//              dump(input());
+	        $result = $this->validate ( input (), [
+	            'commName' => 'require|max:25|min:2',
+	        ],
+	            [
+	                'commName.require' => '请问您要查询哪个小区？',
+	                'commName.max'     => '名称最多不能超过25个字符',
+	                'commName.min'     => '名称最少要两个字',
+	            ] );
+	         
+	        if (true !== $result) {
+	            // 验证失败 输出错误信息
+	            return $result;
+	        } else {
+	            //找出匹配的记录，每条记录的内容 是：comm_id,comm_name,pri_level,keywords
+	            $commnames = MatchLogic::matchSearch(input('commName'));
+                if(!$commnames){
+                    //如果没有查到
+                    return ('没有查询到叫"'.input('param.commName').'"的地方');
+                }elseif(count($commnames)>1){
+                    //4如果查到多个，列表展示，让用户手动挑选后，再转入统计模块
+                    $commArr = [];      //取出完整的数据
+                    $mystr = '<table class="table table-striped">';
+                    $mystr .= '<tr><th>小区</th><th>ID</th><th>区块</th><th>版块</th><th>地址</th></tr>';
+                    foreach ($commnames as $comm){
+                        $v = Db::table('comm')->where('comm_id',$comm['comm_id'])->find();
+                        $mystr .= '<tr>';
+                        $mystr .= '<td><a href="'.url("handle_comm").'?community_id='.$v['comm_id'].'">'.$v['comm_name'].'</a></td>';
+                        $mystr .= '<td>'.$v['comm_id'].'</td>';
+                        $mystr .= '<td>'.$v['region'].'</td>';
+                        $mystr .= '<td>'.$v['block'].'</td>';
+                        $mystr .= '<td>'.$v['comm_addr'].'</td>';
+                        $mystr .= '</tr>';
+                        $commArr[] = $v;
+                    }
+
+                    $mystr .= '</table>';
+                    return $mystr;
+                }else{
+                    //3如果只查到一个，直接返回comm_id
+                    return $commnames[0];
+
+                }
+	        }
+	   }
+	}
+	
 	public function handle_comm(){
-        //这里传过来2个参数:community_id,commName
+        //如果是从异常记录跳转，这里传过来2个参数:community_id,commName
 	    $data = input();
 // 	    dump($data);
-	    $commrelate = new CommRelateModel();
 	    
-	    //如果首次跳转，没有获得关联数据，则先取出已有的关联定义，以备放在“关联设计”里
-// 	    if(!isset($data['id'])){
-    	    $rela_list = $commrelate->where('community_id',$data['community_id'])->select()->toArray();
-    	    if(!empty($rela_list)){
-    	        //如果有数据，把第一条数据重新赋给$data
-    	        $data = $rela_list[0];
-    	    }
+        $commrelate = new CommRelateModel();
+        if(isset($data['action']) and $data['action']==1){
+            //如果是增加关联规则，先保存
+            if(!$commrelate->where('community_id',$data['community_id'])->where('usage',$data['usage'])->find()){
+                //如果没有相同community_id和用途的记录，才能追加
+                // 过滤post数组中的非数据表字段数据
+                $see = $commrelate->data($data)->allowField(true)->save();
+                //dump($see);
+            }
+        }
+	    
+	    $rela_list = $commrelate->where('community_id',$data['community_id'])->select()->toArray();
+	    if(!empty($rela_list) and !isset($data['usage']) and !isset($data['rela_comm_id'])){
+	        //如果有数据，而且传递过来的数据非关联规则，则把查询出来的把第一条关联规则赋给$data
+	        $data = $rela_list[0];
+	    }
+        $this->assign('rela_list',$rela_list);
 // 	    }
-// 	    dump($data);
 	    //通过id找小区相关信息
 	    $getComm = Db::table('comm')->where('comm_id',$data['community_id'])->find();
+	    $rela_comms = $this->db->where('block_id',$getComm['block_id'])->select()->toArray();
+	    $this->assign('rela_comms',$rela_comms);
+	    //如果有关联小区，也取出来
 	    if(isset($data['rela_comm_id']) and $data['rela_comm_id']>999){
-	        //如果有关联小区，取出关联小区
 	        $getComm['rela_comm'] = Db::table('comm')->where('comm_id',$data['rela_comm_id'])->value('comm_name');
 	    }else{
 	        $getComm['rela_comm'] = '';
 	    }
 	    $getComm['rela_ratio'] = isset($data['rela_ratio']) ? $data['rela_ratio'] : 1;
 	    $getComm['usage'] = isset($data['usage'])? $data['usage']:'';
+	    
 	    
 	    $result = SalesModel::getRecordsByCommid($data);
 	    
@@ -269,7 +330,6 @@ class Comms extends Common {
 	        $PL = new PriceLogic($result);
 	        $getPrice_result = $PL->getStatic($getComm);
 	        $this->assign('B',$getPrice_result);
-	        $this->assign('rela_list',$rela_list);
 	        $this->assign('result',$result);
 	    }
 	    
@@ -279,8 +339,11 @@ class Comms extends Common {
 	    }else{
 	        $data['where'] .= ' AND community_id = '.$data['community_id'];
 	    }
-	    $data = $this->datahandle($data);
-	    $saleslist = $this->getSales($data);
+// 	    $data = $this->datahandle($data);
+// 	    $saleslist = $this->getSales($data);
+	    $data = action('Sales/datahandle',  ['data' => $data]);
+	    $saleslist = action('Sales/getSalesByArray',  ['data' => $data]);
+	    
 	    $fields = Db::query('SHOW COLUMNS FROM for_sale_property');
 	    $title = ['序号','标题','小区','名称','单价','总层','建成'];
 	    $this->assign('saleslist',$saleslist);
@@ -289,16 +352,21 @@ class Comms extends Common {
 	    $this->assign('data',$data);
 	    
 	    return $this->fetch();
+	        
 	}
 	
 	public function ajaxGetSaleslist(){
+	    //$event = controller('Sales', 'event');
 	    $data = input();
 // 	    halt($data);
 	    //dump($data);
-	    $data1 = $this->datahandle($data);
+// 	    $data1 = $this->datahandle($data);
+	    $data1 = action('Sales/datahandle',  ['data' => $data]);
+	    $saleslist = action('Sales/getSalesByArray',  ['data' => $data1]);
+// 	    $data1 = $event->datahandle($data);
 // 	    halt($data1);
         //dump($data1);
-        $saleslist = $this->getSales($data1);
+//         $saleslist = $this->getSales($data1);
         $response['page'] = $saleslist->render();
         $response['total'] = $saleslist->total();
 	    $liststring = '';
@@ -318,50 +386,176 @@ class Comms extends Common {
 	    //dump($saleslist);
 	}
 	
-	private function datahandle($data){
-	    //对输入的数组进行处理，赋默认值
-	    $replace = array('“'=>'"');
-	    $replace += array('”' => '"');
-	    $replace += array("'" => '"');
-	    $replace += array("‘" => '"');
-	    $replace += array("’" => '"');
-	    if(!isset($data['where']) or trim($data['where'])==''){
-	        $data['where'] = '';
-	    }else{
-	        $data['where'] = strtr($data['where'],$replace);
-	    }
-	    if(!isset($data['order']) or trim($data['order'])==''){
-	        $data['order'] = 'price';
-	    }else{
-	        $data['order'] = strtr($data['order'],$replace);
-	    }
-	    if(!isset($data['set']) or trim($data['set'])==''){
-	        $data['set'] = '';
-	    }
-	    return $data;
+// 	private function datahandle($data){
+// 	    //对输入的数组进行处理，赋默认值
+// 	    $replace = array('“'=>'"');
+// 	    $replace += array('”' => '"');
+// 	    $replace += array("'" => '"');
+// 	    $replace += array("‘" => '"');
+// 	    $replace += array("’" => '"');
+// 	    if(!isset($data['where']) or trim($data['where'])==''){
+// 	        $data['where'] = '';
+// 	    }else{
+// 	        $data['where'] = strtr($data['where'],$replace);
+// 	    }
+// 	    if(!isset($data['order']) or trim($data['order'])==''){
+// 	        $data['order'] = 'price';
+// 	    }else{
+// 	        $data['order'] = strtr($data['order'],$replace);
+// 	    }
+// 	    if(!isset($data['set']) or trim($data['set'])==''){
+// 	        $data['set'] = '';
+// 	    }
+// 	    return $data;
+// 	}
+	
+// 	private function getSales($data){
+	     
+// 	    if('' !== $data['set']){
+// 	        //修改记录
+// 	        $sqlstr = 'UPDATE for_sale_property SET '.$data['set'].' WHERE '.$data['where'];
+// 	        $data['num'] = Db::execute($sqlstr);
+// 	    }
+// 	    //查询记录,无论是否修改，都需要查询
+// 	    //echo ($data['order']);
+// 	    $sales = Db::table('for_sale_property')->field('id,title,community_id,community_name,price,total_floor,builded_year')
+// 	    ->where($data['where'] )
+// 	    ->order($data['order'])
+// 	    ->paginate(100,false,[
+// 	        'query'=>[
+// 	            'where'=>  $data['where'],
+// 	            'order'=>  $data['order'],
+// 	            'set'=>  $data['set'],
+// 	            'community_id' =>  $data['community_id'],
+// 	        ],
+// 	    ]);
+	    
+// 	    return $sales;
+// 	}
+	
+	public function chooseChild($rela_list){
+	    $this->assign('rela_list',$rela_list);
+	    return $this->fetch('chooseChild');
 	}
 	
-	private function getSales($data){
-	     
-	    if('' !== $data['set']){
-	        //修改记录
-	        $sqlstr = 'UPDATE for_sale_property SET '.$data['set'].' WHERE '.$data['where'];
-	        $data['num'] = Db::execute($sqlstr);
+	public function ajaxGetRelaById(){
+	    //以ajax方式来生成一个关联规则的页面
+	    //如果传过来的是关联规则的id
+	    $isADD = false;         //是否增加记录
+	    if(null !== input('id')){
+	        //如果带着关联规则的id过来，就是修改
+    	    $myid = input('id');
+    	    $rela = (new CommRelateModel())->find($myid)->toArray();
+    	    $title = '序号：<span>'.$rela['id'].'</span>   ('.$rela['create_time'].')';
+	    }elseif (null !== input('community_id')){
+	        //如果没有关联id,但是有小区id,属于增加
+	        $isADD = TRUE;
+	        $rela['community_id'] = input('community_id');
+	        $rela['id'] = '';
+	        $rela['create_time'] = '';
+	        $rela['usage'] = '';
+	        $rela['rela_comm_id'] = '';
+	        $rela['rela_ratio'] = 1;
+	        $rela['rela_weight'] = 1;
+	        $rela['where'] = '';
+	        $rela['memo'] = '';
+	        $title = '新增';
 	    }
-	    //查询记录,无论是否修改，都需要查询
-	    //echo ($data['order']);
-	    $sales = Db::table('for_sale_property')->field('id,title,community_id,community_name,price,total_floor,builded_year')
-	    ->where($data['where'] )
-	    ->order($data['order'])
-	    ->paginate(100,false,[
-	        'query'=>[
-	            'where'=>  $data['where'],
-	            'order'=>  $data['order'],
-	            'set'=>  $data['set'],
-	            'community_id' =>  $data['community_id'],
-	        ],
-	    ]);
+
+	    $getComm = $this->db->where('comm_id',$rela['community_id'])->find();//->toArray();
+	    $rela_comms = $this->db->where('block_id',$getComm->block_id)->select()->toArray();
+	    $fields = Db::query('SHOW COLUMNS FROM for_sale_property');
+        
+        $mystr = '';
+        
+        $mystr .= '<div class="form-group"><label class="col-md-2 control-label left">小区</label>';
+        $mystr .= '<div class="col-md-5 right"><input type="text" name="community_id" value="'.$rela['community_id'].'"></div>';
+        $mystr .= '<input type="hidden" name="action" value="'.$isADD.'">';
+        $mystr .= '<div class="col-md-4 left"><p class="form-control-static">'.$getComm->comm_name.'</p></div></div>';
+        
+        $mystr .= '<div class="form-group"><label class="col-md-2 control-label left">分类功能</label>';
+        $mystr .= '<div class="col-md-5 right"><input type="text" name="usage" value="'.$rela['usage'].'"></div></div>';
+        
+        $mystr .= '<div class="form-group"><label class="col-md-2 control-label left">分类说明</label>';
+        $mystr .= '<div class="col-md-9 right"><input type="text" name="memo" value="'.$rela['memo'].'"></div></div>';
+        
+        $mystr .= '<div class="form-group"><label class="col-md-2 control-label left">关联小区</label>';
+        $mystr .= '<div class="col-md-5 right"><input type="text" name="rela_comm_id" value="'.$rela['rela_comm_id'].'"></div>';
+        $mystr .= '<div class="col-md-4 left">';
+//         $mystr .= '<input type="text" id="rela_c" list="relacomms"  />';
+        $mystr .= '<select id="rela_c">';
+    	foreach ($rela_comms as $rela_comm){
+            $mystr .= '<option value = "'.$rela_comm["comm_id"].'">'.$rela_comm["comm_name"].'</option>';
+        }
+        $mystr .= '</select>';
+        $mystr .= '</div></div>';
+        
+        $mystr .= '<div class="form-group"><label class="col-md-2 control-label left">关联系数</label>';
+        $mystr .= '<div class="col-md-5 right"><input type="text" name="rela_ratio" value="'.$rela['rela_ratio'].'"></div>';
+        $mystr .= '<div class="col-md-2 left"><p class="form-control-static">权重</p></div>';//'<label class="col-md-2 control-label left">权重</label>';
+        $mystr .= '<div class="col-md-2 right"><input type="text" name="rela_weight" value="'.$rela['rela_weight'].'"></div></div>';
+        
+        $mystr .= '<div class="form-group"><label class="col-md-2 control-label left">过滤条件</label>';
+        $mystr .= '<div class="col-md-5 left"><select id="sele_field">';
+        foreach ($fields as $field){
+            $mystr .= '<option value = "'.$field['Field'].'">'.$field['Field'].'</option>';
+        }
+        $mystr .= '</select></div></div>';
+        
+        $mystr .= '<div class="form-group"><div class="col-md-9 col-md-offset-2">
+            <textarea class="form-control" rows="2" name="where" >'.$rela['where'].'</textarea></div>';
+        $mystr .= '</div>';
+        $mystr .= '<div class="form-group">';
+        
+        if(!$isADD){
+            $mystr .= '<div class="col-md-3 col-xs-3 " ><button type="button" style="margin-left:12px;" class="btn btn-success" id="modi_rela">修改关联规则</button></div>';
+            $mystr .= '<div class="col-md-3 col-xs-3 "><button type="button" style="margin-left:10px;" class="btn btn-success" id="del_rela">删除关联规则</button></div>';
+            $mystr .= '<div class="col-md-3 col-xs-3 "><button type="submit" style="margin-left:10px;" class="btn btn-success" id="refresh_data">更新数据</button></div>';
+        }else{
+            $mystr .= '<div class="col-md-3 col-xs-3 "><button type="submit" style="margin-left:10px;" class="btn btn-success" id="refresh_data">增加规则</button></div>';
+        }
+        $mystr .= '<div class="col-md-3 col-xs-3 "><button type="button" class="btn btn-success" data-dismiss="modal">取消</button></div>';
+        $mystr .= '</div>';
+        
+        
+        
+        $res[] = $title;
+        $res[] = $mystr;
+	    return $res;
+	}
+	
+	public function modifyRelation(){
+	    $data = input();
+// 	    halt($data);
 	    
-	    return $sales;
+	    $commrelate = new CommRelateModel();
+	    // 过滤post数组中的非数据表字段数据
+	    $res = $commrelate->allowField(true)->save($data,['id' => $data['rela_id']]);
+	    return $res;
+	}
+	
+	public function delRelation(){
+	    $data = input();
+	    $commRelate = new CommRelateModel();
+	    $rela = $commRelate->find($data['rela_id'])->toArray();
+	    $res['num'] = CommRelateModel::destroy($data['rela_id']);
+	    $relation = $commRelate->where('community_id',$rela['community_id'])->select();
+// 	    halt($data);
+	    $mystr = '<tr><th>序号</th><th>小区ID</th><th>功能</th><th>关联小区ID</th><th>关联系数</th><th>权重</th><th>过滤条件</th><th>设立时间</th></tr>';
+	    foreach ($relation as $v){
+	        $mystr .= '<tr>
+            	    <td>'.$v["id"].'</td>
+            	    <td>'.$v["community_id"].'</td>
+            	    <td>'.$v["usage"].'</td>
+            	    <td>'.$v["rela_comm_id"].'</td>
+            	    <td>'.$v["rela_ratio"].'</td>
+            	    <td>'.$v["rela_weight"].'</td>
+            	    <td>'.$v["where"].'</td>
+            	    <td>'.$v["create_time"].'</td>
+            	    </tr>';
+	    }
+        $res['str'] = $mystr;
+        //halt($res);
+	    return $res;
 	}
 }

@@ -24,7 +24,7 @@
 			<div class="widget-header" id='search_div' style='padding-top: 5px; background: #5AA7D6;'>
 				<div class="text-muted" style="color:white;float:left;margin:auto 0;margin-top: 6px;">
 					共{$list->total()}条记录
-					{if condition="'' !== $data['set']"},修改成功{$data['num']}条记录{/if}
+					{if condition="'' !== $data['set']"},修改成功{$list['num']}条记录{/if}
 				</div>
 				
 				<a href="javascript:;" onclick="add()" class="btn btn-sm btn-info"
@@ -54,69 +54,8 @@
 		</div>
 	</div>
 </div>
-<div class="modal fade" id="bjy-add" tabindex="-1" role="dialog"
-	aria-labelledby="myModalLabel" aria-hidden="true">
-	<div class="modal-dialog">
-		<div class="modal-content">
-			<div class="modal-header">
-				<button type="button" class="close" data-dismiss="modal"
-					aria-hidden="true">&times;</button>
-				<h4 class="modal-title" id="myModalLabel">高级查询</h4>
-			</div>
-			<div class="modal-body">
-				<form id="bjy-form" class="form-inline"
-					action="{:url('queryByComm')}" method="post">
-					<input	class="input-small" name="page" type="hidden" value='1'> 
-					<table	class="table table-striped table-bordered table-hover table-condensed">
-						
-						<tr>
-							<th style="width: 50px;">WHERE</th>
-							<td style="width: 70px;">
-								<select id="wherefield" style="width: 70px; margin-bottom: 2px;">
-								{foreach name="fields" item="v"}
-									<option value="{$v['Field']}" >{$v['Field']}</option> 
-								{/foreach}
-								</select>
-							</td>
-							<td><input style="width:100%;" class="input-medium" type="text" 
-							name="where" value='{$data["where"]}' placeholder="请使用双引号"></td>
-						</tr>
-						<tr>
-							<th style="width: 50px;">ORDER</th>
-							<td style="width: 70px;">
-								<select id="orderfield" style="width: 70px; margin-bottom: 2px;">
-								{foreach name="fields" item="v"}
-									<option value="{$v['Field']}" >{$v['Field']}</option> 
-								{/foreach}
-								</select>
-							</td>
-							<td><input style="width:100%;" type="text" name="order" placeholder="请使用双引号" value='{$data["order"]}'>
-							</td>
-						</tr>
-						<tr>
-							<th style="width: 50px;">UPDATE</th>
-							<td style="width: 70px;">
-								<select id="setfield" style="width: 70px; margin-bottom: 2px;">
-								{foreach name="fields" item="v"}
-									<option value="{$v['Field']}" >{$v['Field']}</option> 
-								{/foreach}
-								</select>
-							</td>
-							<td><input style="width:100%;" type="text" name="set" placeholder="请使用双引号" value='{$data["set"]}'>
-							</td>
-						</tr>
-						
-						<tr>
-							<th></th>
-							<td><input class="btn btn-success" type="submit" value="执行"></td>
-							<td><input class="btn btn-success" id="reset" value="重置"></td>
-						</tr>
-					</table>
-				</form>
-			</div>
-		</div>
-	</div>
-</div>
+<!-- {:url('queryByComm')} -->
+{include file="./commhtml/myquery.html" /}
 
 <div class="modal fade" id="detailinfomation" tabindex="-1" role="dialog"
 	aria-labelledby="myModalLabel" aria-hidden="true">
@@ -148,7 +87,7 @@
 //调出查询窗口
 	
 function add() {
-	$('#bjy-add').modal('show');
+	$('#myquery').modal('show');
 }
 jQuery(function($) {
 	$('.modal').draggable();

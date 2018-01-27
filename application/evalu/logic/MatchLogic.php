@@ -61,13 +61,6 @@ class MatchLogic {
 		$matchId = array();		
 		self::getComms();
 		foreach (self::$comms[$type] as $commItem){
-// 		    $start = strpos($commItem['comm_name'], $commName);
-// 		    if (false !== $start) {
-// 		        $t = array($start,$commItem['comm_name'],$commItem['id']);
-// 	            $matchId[] = $t;
-// 	            continue;
-// 	        }
-			// 			$commItem['keyword']中可能通过'/'带着辅助字，先拆分开来，真正的key是它的第一个元素
 			$key = explode ( "/", $commItem ['keyword'] );
 
 			// 			在小区名称中查找关键字
@@ -124,15 +117,6 @@ class MatchLogic {
 	}
 	
 	static public function matchID($data){
-// 	    $matchid = self::matching($data);
-// 	    $num = count($matchid);
-// 	    if($num == 1){
-// 	        return $matchid[0];
-// 	    }elseif ($num > 1){
-// 	        return $num;
-// 	    }else{
-// 	        return 0;
-// 	    }
 		//这是最后匹配id的控制器，前面getid可能匹配出多个id,或者没有匹配出id,在这里进行进一步的处理
 		$getid = self::getId($data['community_name'],$data['title'],"comms");
 		$id = 0;
