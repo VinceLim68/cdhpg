@@ -191,7 +191,7 @@
 				<span class="badge" style="font-size: 16px">
 				{$B['priceByDeal'] > 0?	'二手房评估':'抵押评估价'}
 				</span>
-				{if condition="$B['comm']['rela_comm']!=''"}
+				{if condition="$B['comm']['rela_comm']!='' or $B['comm']['rela_ratio']!=1"}
 				<span class="badge" style="font-size: 16px">
 				参照：{$B['comm']['rela_comm']}*{$B['comm']['rela_ratio']}
 				</span>
@@ -278,7 +278,7 @@
 			<div class="widget-header" id='search_div' style='padding-top: 5px; background: #5AA7D6;'>
 				<div class="text-muted" style="color:white;float:left;margin:auto 0;margin-top: 6px;">共{$saleslist->total()}条记录</div>
 				<div id="pages" style="float:left;margin-left:5px;">{$saleslist->render()}</div>
-				<a href="javascript:;" onclick="modal()" class="btn btn-sm btn-info"
+				<a href="javascript:;" onclick="ActiveMyquery()" class="btn btn-sm btn-info"
 					style="margin-right: 20px; border-radius: 20px; margin-bottom: 3px;float:right;">
 					<span class="ace-icon fa fa-search icon-on-right bigger-110"></span>高级查询
 				</a>
@@ -329,8 +329,7 @@
 
 
 
-<!-- 挂牌记录查询模态框-->
-{include file="./commhtml/myquery.html"/}
+
 
 <!-- 关联规则模态框 -->
 <div class="modal fade" tabindex="-1" role="dialog" id="reladialogg">
@@ -364,41 +363,47 @@
 <script type="text/javascript">
 	var waitingImg = "__CSS__/1.gif";
 	var myself = "{:url('handle_comm')}";
+	var sales_geturlbyid = "{:url('Sales/getUrlById')}";
+	var sales_getfullbyid = "{:url('Sales/getFullById')}";
+	var menuobj = {
+	        bindings: {
+	            'jump': function (t) {
+	                    //取出当前行的序号 
+	                    var id = $(t).parent().find("td").eq(0).html(); //alert(id);
+	                    $.ajax({
+	                        url: "{:url('Sales/getUrlById')}",
+	                        data: {
+	                            ID: id,
+	                        },
+	                        success: function (response) {
+	                            window.open(response);
+	                        }
+	                    });
+	                },
+	                'detail': function (t) { //取出当前行的序号 var
+	                    id = $(t).parent().find("td").eq(0).html(); //alert(id); 
+	                    $.ajax({
+	                        url: "{:url('Sales/getFullById')}",
+	                        data: {
+	                            ID: id,
+	                        },
+	                        success: function (response) {
+	                            //alert(response);
+	                            $('#mydialogg  div.modal-body').html(response); 
+	                            $('#mydialogg ').modal('show');
+	                        }
+
+	                    });
+	                },
+	        }
+	    };
+	
 </script>
+<!-- 挂牌记录查询模态框-->
+{include file="./commhtml/myquery.html"/}
 <script>
 jQuery(function ($) {
-    $('#salestable td').contextMenu('salelistmenu', {
-        bindings: {
-            'jump': function (t) {
-                    //取出当前行的序号 
-                    var id = $(t).parent().find("td").eq(0).html(); //alert(id);
-                    $.ajax({
-                        url: "{:url('Sales/getUrlById')}",
-                        data: {
-                            ID: id,
-                        },
-                        success: function (response) {
-                            window.open(response);
-                        }
-                    });
-                },
-                'detail': function (t) { //取出当前行的序号 var
-                    id = $(t).parent().find("td").eq(0).html(); //alert(id); 
-                    $.ajax({
-                        url: "{:url('Sales/getFullById')}",
-                        data: {
-                            ID: id,
-                        },
-                        success: function (response) {
-                            //alert(response);
-                            $('#mydialogg  div.modal-body').html(response); 
-                            $('#mydialogg ').modal('show');
-                        }
-
-                    });
-                },
-        }
-    });
+    $('#salestable td').contextMenu('salelistmenu', menuobj);
 });
 
 </script>
