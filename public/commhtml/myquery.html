@@ -23,9 +23,10 @@
 									<option value="{$v['Field']}">{$v['Field']}</option>
 									{/foreach}
 							</select></td>
-							<td><input style="width: 100%;" class="input-medium"
+							<td><textarea class="form-control" rows="3" name="where"  placeholder="请使用双引号" style="width: 100%;">{$data["where"]}</textarea></td>
+		<!-- 					<input style="width: 100%;" class="input-medium"
 								type="text" name="where" value='{$data["where"]}'
-								placeholder="请使用双引号"></td>
+								placeholder="请使用双引号"> -->
 						</tr>
 						<tr>
 							<th style="width: 50px;">ORDER</th>
@@ -67,3 +68,42 @@
 		</div>
 	</div>
 </div>
+
+<script type="text/javascript">
+jQuery(function ($) {
+	//利用下拉列表，协助生成where查询
+	jQuery("body").on("change","#wherefield", 		
+		function(){
+			//alert('');
+			var where = $("textarea[name='where']").val();
+			var thisval =  $("#wherefield").val() + ' = ""';
+			if('' == where){
+				where = thisval;
+			}else{
+				where += ' AND ' + thisval;
+			}
+			$("textarea[name='where']").val(where);
+	});
+	
+	//利用下拉列表，协助生成order查询
+	jQuery("#orderfield").on("change", 		
+		function(){
+			var thisval =  $("#orderfield").val() ;
+			$("input[name='order']").val(thisval);
+	});
+	
+	//利用下拉列表，协助生成update查询
+	jQuery("#setfield").on("change", 		
+		function(){
+			var set = $("input[name='set']").val();
+			var thisval =  $("#setfield").val()+ ' = ""';
+			if('' == set){
+				set = thisval ;
+			}else{
+				set += ' ,' + thisval ;
+			}
+			$("input[name='set']").val(set);
+	});
+});
+	
+</script>

@@ -1,4 +1,4 @@
-function modal(){
+function ActiveMyquery(){
 	$('#myquery').modal('show');
 }
 function getUrlParam(url){
@@ -38,7 +38,7 @@ jQuery(function($) {
 	$('.modal').draggable();
 	$(".modal").css("overflow", "hidden");//禁止模态对话框的半透明背景滚动
 	
-	$("#rela_table td").on('click',function(t){
+	$("#rela_table ").on('click','td', function(t){
 		var rela_id =  $(this).parent().find('td').eq(0).html();
 		$.ajax({
 			url:'ajaxGetRelaById',
@@ -71,38 +71,7 @@ jQuery(function($) {
 				$("#pages").html(response['page']);
 				$("#salestable").html(response['items']);
 				$(".text-muted").html('共'+response['total']+'条记录');
-			    $('#salestable td').contextMenu('salelistmenu', {
-			        bindings: {
-			            'jump': function (t) {
-			                    //取出当前行的序号 
-			                    var id = $(t).parent().find("td").eq(0).html(); //alert(id);
-			                    $.ajax({
-			                        url: "{:url('Sales/getUrlById')}",
-			                        data: {
-			                            ID: id,
-			                        },
-			                        success: function (response) {
-			                            window.open(response);
-			                        }
-			                    });
-			                },
-			                'detail': function (t) { //取出当前行的序号 var
-			                    id = $(t).parent().find("td").eq(0).html(); //alert(id); 
-			                    $.ajax({
-			                        url: "{:url('Sales/getFullById')}",
-			                        data: {
-			                            ID: id,
-			                        },
-			                        success: function (response) {
-			                            //alert(response);
-			                            $('#mydialogg  div.modal-body').html(response); 
-			                            $('#mydialogg ').modal('show');
-			                        }
-
-			                    });
-			                },
-			        }
-			    });
+			    $('#salestable td').contextMenu('salelistmenu', menuobj);
 			}
  		
 		})
@@ -123,6 +92,7 @@ jQuery(function($) {
 					$("#pages").html(response['page']);
 					$("#salestable").html(response['items']);
 					$(".text-muted").html('共'+response['total']+'条记录');
+					$('#salestable td').contextMenu('salelistmenu', menuobj);
 				  //$("#salestable").html(response);
 			  },
 		  })
@@ -159,18 +129,19 @@ jQuery(function($) {
 	    //$("#search_form").submit();
 		
 	});
-	//利用下拉列表，协助生成where查询
-	jQuery("body").on("change",".wherefield", 		
-		function(){
-			var where = $("textarea[name='where']").val();
-			var thisval =  $(".wherefield").val() + ' = ""';
-			if('' == where){
-				where = thisval;
-			}else{
-				where += ' AND ' + thisval;
-			}
-			$("textarea[name='where']").val(where);
-	});
+//	//利用下拉列表，协助生成where查询
+//	jQuery("body").on("change",".wherefield", 		
+//		function(){
+//			alert('');
+//			var where = $("textarea[name='where']").val();
+//			var thisval =  $(".wherefield").val() + ' = ""';
+//			if('' == where){
+//				where = thisval;
+//			}else{
+//				where += ' AND ' + thisval;
+//			}
+//			$("textarea[name='where']").val(where);
+//	});
 	
 	jQuery("body").on("change","#sele_field", 		
 			function(){
@@ -241,6 +212,21 @@ jQuery(function($) {
 		});
 	});
 	
+	//提交关联规则表单时，提示等候
+//	$('#relaform').on('submit',wait('正在刷新页面中，请稍侯......',true))
+//	
+//	//定义一个提示等候的方法
+//	function wait(message,iswaiting){
+//		var html = '';
+//		if(iswaiting){
+//			html += '<img src="' + waitingImg + '" />';
+//		}
+//		html += '<span style="margin-left:10px;">' + message + '</span>';
+//		$('#relaform').modal('hide');
+//		$('#mydialogg div.modal-body').html(html);
+//		$('#mydialogg').modal('show');
+//	}
+	
 	//利用下拉小区名称列表，获取小区id，
 	jQuery("body").on("change","#rela_c", 		
 			function(){
@@ -248,25 +234,25 @@ jQuery(function($) {
 		$("input[name='rela_comm_id']").val(thisval);
 	});
 	
-	//利用下拉列表，协助生成order查询
-	jQuery("#orderfield").on("change", 		
-		function(){
-			var thisval =  $("#orderfield").val() ;
-			$("input[name='order']").val(thisval);
-	});
+//	//利用下拉列表，协助生成order查询
+//	jQuery("#orderfield").on("change", 		
+//		function(){
+//			var thisval =  $("#orderfield").val() ;
+//			$("input[name='order']").val(thisval);
+//	});
 	
-	//利用下拉列表，协助生成update查询
-	jQuery("#setfield").on("change", 		
-		function(){
-			var set = $("input[name='set']").val();
-			var thisval =  $("#setfield").val()+ ' = ""';
-			if('' == set){
-				set = thisval ;
-			}else{
-				set += ' ,' + thisval ;
-			}
-			$("input[name='set']").val(set);
-	});
+//	//利用下拉列表，协助生成update查询
+//	jQuery("#setfield").on("change", 		
+//		function(){
+//			var set = $("input[name='set']").val();
+//			var thisval =  $("#setfield").val()+ ' = ""';
+//			if('' == set){
+//				set = thisval ;
+//			}else{
+//				set += ' ,' + thisval ;
+//			}
+//			$("input[name='set']").val(set);
+//	});
 	
 	//重置按钮
 	jQuery("#reset").on("click", 		
