@@ -264,6 +264,7 @@ jQuery(function($) {
 	
 	jQuery('#add_rela').on("click",function(){
 		var comm = $('#myquery input[name="community_id"]').val();
+		alert(getrelation);
 		$.ajax({
 			url: getrelation,
 			data:{
