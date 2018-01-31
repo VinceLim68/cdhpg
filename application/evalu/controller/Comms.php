@@ -37,10 +37,16 @@ class Comms extends Common {
 	}
 	
 	/*
-	 * 测试:原始的ace的jgrid页面
+	 * 测试:原始的ace的jgrid页面[路道街巷里园]
 	 */
-	public function testlist() {
-		return $this->fetch ();
+	public function test() {
+		//$pattern = '/(.*市)?(.*区)?(.*[路道街巷里园])(\d+号(之[三二一四五六七八九十]*)?)(\d+)(室|单元)?/';
+		$pattern = '/(.*市)?(.*区)?(\D*)(\d+号)(之[三二一四五六七八九十]*)?(\d+)(室|单元)?/';
+// 		$pattern = '/(.*u5e02)?(.*u533a)?(.*[u8defu9053u8857u5df7u91cc])(\d+u53f7(u4e4b[u4e09u4e8cu4e00u56dbu4e94u516du4e03u516bu4e5du5341u96f60]*)?)(\d+(u5ba4|u5355u5143))?/';
+		$string = '湖里区梧桐里32号202室住宅房地产抵押价值估价';
+		$match = [];
+		$result = preg_match($pattern,$string,$match);
+		dump($match);
 	}
 	
 	/**
@@ -146,6 +152,8 @@ class Comms extends Common {
 		$this->assign ( 'list', $list );
 		return $this->fetch ();
 	}
+	
+	
 	public function matchid() {
 		/*
 		 * $comm = $this->db->select();
@@ -194,6 +202,7 @@ class Comms extends Common {
 		;
 		return $blos;
 	}
+	
 	private function get_newblockid($region) {
 		/* 根据指定的region，取出新的block的id值 */
 		// 1、先把指定region的所有block的id取出放到一个数组中去
@@ -286,7 +295,24 @@ class Comms extends Common {
 	   }
 	}
 	
+	public function usagesplit(){
+	    //小区根据功能拆分
+	    //取近30天离散度最大的小区
+	    $commid = Db::table('error_comm')
+	       ->where("create_time", ">= time", strtotime('-30 day'))
+	       ->where("type",2)
+	       ->order("memo desc")
+	       ->find();
+	    $id = $commid['comm_id'];
+	    //跳转到拆分模块去
+	    
+	    $this->redirect('handle_comm?community_id='.$id);
+	    
+	}
+	
+	
 	public function handle_comm(){
+	    //处理拆分小区的模块
         //如果是从异常记录跳转，这里传过来2个参数:community_id,commName
 	    $data = input();
 // 	    dump($data);

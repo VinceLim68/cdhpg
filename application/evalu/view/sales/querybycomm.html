@@ -55,7 +55,7 @@
 	</div>
 </div>
 <!-- {:url('queryByComm')} -->
-{include file="./commhtml/myquery.html" /}
+
 
 <div class="modal fade" id="detailinfomation" tabindex="-1" role="dialog"
 	aria-labelledby="myModalLabel" aria-hidden="true">
@@ -83,6 +83,7 @@
 {/block} {block name="pg_js"}
 <script src="__JS__/jquery-ui.min.js"></script>
 <script src="__JS__/jquery.contextmenu.js"></script>
+{include file="./commhtml/myquery.html" /}
 <script>
 //调出查询窗口
 	
@@ -93,7 +94,7 @@ jQuery(function($) {
 	$('.modal').draggable();
 	$(".modal").css("overflow", "hidden");//禁止模态对话框的半透明背景滚动
 	//利用下拉列表，协助生成where查询
-	jQuery("#wherefield").on("change", 		
+	/* jQuery("#wherefield").on("change", 		
 		function(){
 			var where = $("input[name='where']").val();
 			var thisval =  $("#wherefield").val() + ' = ""';
@@ -131,7 +132,7 @@ jQuery(function($) {
 		$("input[name='set']").val('');
 		$("input[name='order']").val('') ;
 		$("input[name='where']").val('');
-	});
+	}); */
 	
 	
 	 $('div.tab-content table td').contextMenu('myMenu1', 

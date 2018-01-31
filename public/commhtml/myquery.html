@@ -104,6 +104,14 @@ jQuery(function ($) {
 			}
 			$("input[name='set']").val(set);
 	});
+	
+	//重置按钮
+	jQuery("#reset").on("click", 		
+			function(){
+			$("input[name='set']").val('');
+			$("input[name='order']").val('') ;
+			$("textarea[name='where']").val('');
+		});
 });
 	
 </script>
