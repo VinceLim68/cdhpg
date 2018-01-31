@@ -219,15 +219,14 @@
 				</p>
 				</div>
 			  <div class="panel-body">
-			  	<div  >
+			  	<div  style="height:40px;">
 			  		<button type="button" class="btn btn-success" id="add_rela" style="border-radius: 5px;float:right;padding: 3px 15px;">
 			  			<span class="glyphicon glyphicon-plus" aria-hidden="true"></span>增加关联规则
 			  		</button>
+			  		<button type="button" class="btn btn-success" id="del_err" style="border-radius: 5px; float: right; padding: 3px 15px; margin-right: 3px;">
+			  			<span class="glyphicon glyphicon-refresh" aria-hidden="true"></span>清理异常记录
+			  		</button>
 			  		<form class="form-inline" id="search_form" style="float:left;">
-<!-- 					  <div class="form-group">
-					    <label class="sr-only" ></label>
-					    <input class="form-control" name="community_id" placeholder="小区ID" value={$B['comm']['comm_id']}>
-					  </div> -->
 					  <div class="form-group">
 					    <label >小区名称</label>
 					    <input class="form-control" name="commName" id="commName"  placeholder="请输入小区名称" >
@@ -363,8 +362,15 @@
 <script type="text/javascript">
 	var waitingImg = "__CSS__/1.gif";
 	var myself = "{:url('handle_comm')}";
-	var sales_geturlbyid = "{:url('Sales/getUrlById')}";
-	var sales_getfullbyid = "{:url('Sales/getFullById')}";
+	var getrelation = "{:url('ajaxGetRelaById')}";
+	var getsalelist = "{:url('ajaxGetSaleslist')}";
+	var getcommname = "{:url('ajaxGetCommName')}";
+	var modiurl = "{:url('modifyRelation')}";
+	var delurl = "{:url('delRelation')}";
+	var del_err_comm = "{:url('Rules/del_err_comm')}";
+	var thiscomm = "{$B['comm']['comm_name']}";
+	//var sales_geturlbyid = "{:url('Sales/getUrlById')}";
+	//var sales_getfullbyid = "{:url('Sales/getFullById')}";
 	var menuobj = {
 	        bindings: {
 	            'jump': function (t) {

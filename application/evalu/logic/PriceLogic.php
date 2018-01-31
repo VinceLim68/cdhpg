@@ -221,7 +221,11 @@ class PriceLogic
             $getPrice_result['max'],
             $getPrice_result['v75']+($getPrice_result['v75']-$getPrice_result['v25'])*1.5
             );
-        $unit = (100-$getPrice_result['Y_padding'])/($getPrice_result['max']-$getPrice_result['min']);
+        if($getPrice_result['max']==$getPrice_result['min']){
+            $unit = (100-$getPrice_result['Y_padding']);
+        }else{
+            $unit = (100-$getPrice_result['Y_padding'])/($getPrice_result['max']-$getPrice_result['min']);
+        }
         $getPrice_result['Qmin'] = $getPrice_result['Y_padding'];
         $getPrice_result['Qmax'] = 99;
         $getPrice_result['Q0'] = ($getPrice_result['Q0v']-$getPrice_result['min'])*$unit + $getPrice_result['Y_padding'];
@@ -390,6 +394,7 @@ class PriceLogic
 	private function barChart($num){
 	    $minOfArr = min ($this->price);
 	    $eachScope = (max ($this->price) - $minOfArr) / $num;
+	    $eachScope = $eachScope == 0 ? 1 : $eachScope;
 	    $barChartArr = array ();
 	    for($i = 0; $i < $num; $i ++) {
 	        $barChartArr [$i] = 0; // 给数组赋值0；

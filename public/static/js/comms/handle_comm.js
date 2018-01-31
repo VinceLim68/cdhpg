@@ -41,7 +41,7 @@ jQuery(function($) {
 	$("#rela_table ").on('click','td', function(t){
 		var rela_id =  $(this).parent().find('td').eq(0).html();
 		$.ajax({
-			url:'ajaxGetRelaById',
+			url: getrelation,
 			data:{
 				id:rela_id,
 			},
@@ -58,7 +58,7 @@ jQuery(function($) {
 		var myurl = $(this).attr("href");
 		var urlparam = getUrlParam(myurl);
  		$.ajax({
-			url:'ajaxGetSaleslist',
+			url:getsalelist,
      		data:		urlparam,
      		beforeSend:function(){
      			//alert(waitingImg);
@@ -79,7 +79,7 @@ jQuery(function($) {
 	$("#myform").on("submit", function(event) {
 		  event.preventDefault();
 		  $.ajax({
-			  url:'ajaxGetSaleslist',
+			  url:getsalelist,
 			  data:$(this).serialize(),
 			  beforeSend:function(){
 				  var html = '<img src="' + waitingImg + '" /><span style="margin-left:10px;">查询中，请稍侯......</span>';
@@ -109,7 +109,7 @@ jQuery(function($) {
 //	        return false;  
 //	    } ;
 	    $.ajax({
-	    	url:'ajaxGetCommName',
+	    	url:getcommname,
 	    	data:$(this).serialize(),
 	    	success:function(response){
 //	    		alert(typeof(response));
@@ -160,7 +160,7 @@ jQuery(function($) {
 		var id = $('#reladialogg .modal-header h4 small span').text();
 		//alert(id);
 		$.ajax({
-			url:'modifyRelation',
+			url:modiurl,
 			data: $.param({'rela_id':id,}) + '&' + $('#relaform').serialize(),
 			dataType: "json",
 			beforeSend:function(){
@@ -187,7 +187,7 @@ jQuery(function($) {
 		var id = $('#reladialogg .modal-header h4 small span').text();
 		//alert(id);
 		$.ajax({
-			url:'delRelation',
+			url:delurl,
 			data: {
 				rela_id:id,
 			},
@@ -255,17 +255,17 @@ jQuery(function($) {
 //	});
 	
 	//重置按钮
-	jQuery("#reset").on("click", 		
-		function(){
-		$("input[name='set']").val('');
-		$("input[name='order']").val('') ;
-		$("textarea[name='where']").val('');
-	});
+//	jQuery("#reset").on("click", 		
+//		function(){
+//		$("input[name='set']").val('');
+//		$("input[name='order']").val('') ;
+//		$("textarea[name='where']").val('');
+//	});
 	
 	jQuery('#add_rela').on("click",function(){
 		var comm = $('#myquery input[name="community_id"]').val();
 		$.ajax({
-			url:'ajaxGetRelaById',
+			url: getrelation,
 			data:{
 				community_id:comm,
 			},
@@ -275,6 +275,25 @@ jQuery(function($) {
      			$('#reladialogg').modal('show');
 			}
 		})
-	})
+	});
+	
+	$('#del_err').on("click",function(){
+		var id = $('#myquery input[name="community_id"]').val();
+		//var commName = $(t).parent().find("td").eq(1).html();
+   	 	//alert(id);
+       	$.ajax({
+     		url:del_err_comm,
+     		data:{
+     			ID:id,
+     		},
+     		success:function(response){  
+      			//alert(response) ;
+      			response = '<p>成功删除'+response+'条记录</p>';
+      			$('#mydialogg div.modal-body').html(response);
+      			$('#mydialogg h4.modal-title').html(thiscomm+'异常记录清理结果');
+      			$('#mydialogg').modal('show');
+		        }  
+     	});
+	});
 
 })
