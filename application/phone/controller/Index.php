@@ -181,7 +181,7 @@ class Index extends Common {
                             'comm_id'       =>  $getPrice_result['comm']['comm_id'],
                             'query_id'      =>  $ins,
                         ]);
-                        halt($errorcomm);
+                        //halt($errorcomm);
                         //dump($errorcomm);
                     }
                 };
