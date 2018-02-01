@@ -105,6 +105,7 @@ class PriceLogic
         
         //计算最大值最小值
         $dots =[];
+        
         foreach ($this->arr as $item)
         {
             //只取出非0数据
@@ -127,6 +128,8 @@ class PriceLogic
         if(empty($dots)){
             return 0;
         }
+        
+        
         //这是X轴的最大和最小值
         $scatter_extend_r = config('scatter_extend_r');
         $XY_scatter['X0'] = floor($XY_scatter['Xmin']*(1-$scatter_extend_r)/1000)*1000;
@@ -205,6 +208,13 @@ class PriceLogic
         $scatter['axes'] = $axes;
 //         halt($scatter);
         return $scatter;
+    }
+    
+    private function getByPosition($arr,$position){
+        //取数组$arr中取相应位置$position的元素，这个数组是多维数组
+        $length = count($arr);
+        $posi = round(($length -1) * $position / 100,0);
+        return array_slice ($arr, $posi, 1 );
     }
     
     private function plotBox($getPrice_result){

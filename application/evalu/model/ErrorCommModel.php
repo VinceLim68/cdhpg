@@ -16,7 +16,7 @@ class ErrorCommModel extends Model {
 
 	public function getTypeAttr($value)
 	{
-	    $status = [1=>'查无小区',2=>'离散过大',3=>'没有数据'];
+	    $status = [1=>'查无小区',2=>'离散过大',3=>'没有数据',4=>'数据偏少'];
 	    return $status[$value];
 	}
 	

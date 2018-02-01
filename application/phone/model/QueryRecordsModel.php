@@ -22,12 +22,13 @@ class QueryRecordsModel extends Model {
 	    /*
 	     * 添加记录，增加了判断重复的功能：同一个用户，同一个小区，2小时内不再记录
 	     */
+	    //halt($getPrice_result);
 	    $res = self::field('id')
                     ->where('user_id',session('user.user_id'))
             	    ->where('comm_id',$getPrice_result['comm']['comm_id'])
             	    ->where("create_time", "> time", strtotime("-2 hours"))
             	    ->find();
-	    //halt($res->id);
+	    //halt($res);
 	    //没找到才追加
 	    if(!$res){
 	        $ins = self::create([
