@@ -264,7 +264,6 @@ jQuery(function($) {
 	
 	jQuery('#add_rela').on("click",function(){
 		var comm = $('#myquery input[name="community_id"]').val();
-		alert(getrelation);
 		$.ajax({
 			url: getrelation,
 			data:{
@@ -280,15 +279,12 @@ jQuery(function($) {
 	
 	$('#del_err').on("click",function(){
 		var id = $('#myquery input[name="community_id"]').val();
-		//var commName = $(t).parent().find("td").eq(1).html();
-   	 	//alert(id);
        	$.ajax({
      		url:del_err_comm,
      		data:{
      			ID:id,
      		},
      		success:function(response){  
-      			//alert(response) ;
       			response = '<p>成功删除'+response+'条记录</p>';
       			$('#mydialogg div.modal-body').html(response);
       			$('#mydialogg h4.modal-title').html(thiscomm+'异常记录清理结果');
