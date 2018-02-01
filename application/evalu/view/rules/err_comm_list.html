@@ -26,6 +26,7 @@
 				<option value="1" {if condition="$data['search_type']=='1'"}selected = "selected"{/if}>查缺失小区列表</option>
 				<option value="2" {if condition="$data['search_type']=='2'"}selected = "selected"{/if}>查离散过大小区列表</option>
 				<option value="3" {if condition="$data['search_type']=='3'"}selected = "selected"{/if}>查无数据小区列表</option>
+				<option value="4" {if condition="$data['search_type']=='4'"}selected = "selected"{/if}>数据偏少小区列表</option>
 			</select>	
 			<button type="submit" id="find_btn" class="btn btn-sm btn-info"
 				style="margin-right: 20px; border-radius: 20px; margin-bottom: 3px;">
@@ -40,17 +41,21 @@
 				class="table table-striped table-bordered table-hover table-condensed">
 				<tr>
 					{foreach name="title" item="t"}
-
-					<th>{$t}</th> {/foreach}
+						{in name="t" value="序号,小区id,查询时间"}
+							<th class="hidden-xs">{$t}</th> 
+						{else/}
+							<th>{$t}</th> 
+						{/in}
+					{/foreach}
 				</tr>
 				{foreach name="list" item="v"}
 				<tr>
-					<td>{$v['id']}</td>
+					<td class="hidden-xs">{$v['id']}</td>
 					<td>{$v['comm_name']}</td>
 					<td>{$v['times']}</td>
-					<td>{$v['comm_id']}</td>
+					<td class="hidden-xs">{$v['comm_id']}</td>
 					<td>{$v['user_name']}</td>
-					<td>{$v['create_time']}</td>
+					<td class="hidden-xs">{$v['create_time']}</td>
 					<td>{$v['type']}</td>
 					<td>{$v['memo']}</td>
 				</tr>

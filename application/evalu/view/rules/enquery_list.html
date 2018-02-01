@@ -41,12 +41,11 @@
 				class="table table-striped table-bordered table-hover table-condensed">
 				<tr>
 					{foreach name="title" item="t"}
-						{in name="t" value="序号,片区,价格类型,成交价格,争议价格"}
+{in name="t" value="序号,片区,价格类型,成交价格,争议价格"}
 							<th class="hidden-xs">{$t}</th> 
 						{else/}
 							<th>{$t}</th> 
 						{/in}
-					
 					{/foreach}
 				</tr>
 				{foreach name="list" item="v"}
