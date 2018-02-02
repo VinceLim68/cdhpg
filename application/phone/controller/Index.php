@@ -164,12 +164,9 @@ class Index extends Common {
             //===================登记查询记录===============================================
             $ins = QueryRecordsModel::insert_record($getPrice_result);      //返回插入的id,如果是重复数据没有插入，则返回0
             //===================把离散值过大的数据记录error_comm,以备改进=================================
-//             dump($ins);
             if($ins != 0){
                 //如果有追加查询记录，再考虑是否把偏离值大的记录下来
-                
                 if($getPrice_result['std_r'] > config('std_r_limit')){
-                    
                     if($getPrice_result['comm']['comm_name']){
                         //如何没有小区，就不记录了
                         $errorcomm = ErrorCommModel::create([
@@ -181,8 +178,6 @@ class Index extends Common {
                             'comm_id'       =>  $getPrice_result['comm']['comm_id'],
                             'query_id'      =>  $ins,
                         ]);
-                        //halt($errorcomm);
-                        //dump($errorcomm);
                     }
                 };
                 //把数据量偏少的记录下来
