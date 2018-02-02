@@ -93,15 +93,39 @@ class PriceLogic
         }
     }
     
-   
+    private function getByPosition($arr,$position){
+        //取数组$arr中取相应位置$position的元素，这个数组是多维数组
+        $length = count($arr);
+        $posi = round(($length -1) * $position / 100,0);
+        return array_slice ($arr, $posi, 1 );
+    }
+    
+    private function clearByBox($dots,$item){
+        //先按item排序
+        array_multisort(array_column($dots, $item), SORT_ASC, $dots);
+        //取盒子值
+        $value25 = $this->getByPosition($dots, 25);
+        $value75 = $this->getByPosition($dots, 75);
+//         halt($value75);
+        $boxlen = $value75[0][$item] - $value25[0][$item];
+        //重新过滤数组
+        $newdots = [];
+        foreach ($dots as $dot){
+            if($dot[$item] <= ($value75[0][$item]+1.5*$boxlen) and $dot[$item] >= ($value25[0][$item]-1.5*$boxlen)){
+                $newdots[] = $dot;
+            }
+        }
+        return $newdots;
+    }
+    
     private function scatter($Xitem,$Yitem){
         //===========================计算散点图==================================
 //         Xitem表示X轴的参数，$Yitem表示Y轴的参数
 //         $result_arr = $PL->getArr();
-        $XY_scatter['Xmin'] = 10000000;
-        $XY_scatter['Xmax'] = 0;
-        $XY_scatter['Ymin'] = 10000000;
-        $XY_scatter['Ymax'] = 0;
+//         $XY_scatter['Xmin'] = 10000000;
+//         $XY_scatter['Xmax'] = 0;
+//         $XY_scatter['Ymin'] = 10000000;
+//         $XY_scatter['Ymax'] = 0;
         
         //计算最大值最小值
         $dots =[];
@@ -111,23 +135,35 @@ class PriceLogic
             //只取出非0数据
             if ($item[$Xitem] > 0 and $item [$Yitem] > 0) {
                 $dots [] = array($Xitem=>$item[$Xitem],$Yitem=>$item [$Yitem]);
-                if($item[$Xitem] > $XY_scatter['Xmax']){
-                    $XY_scatter['Xmax'] = $item[$Xitem];
-                }
-                if($item[$Xitem] < $XY_scatter['Xmin']){
-                    $XY_scatter['Xmin'] = $item[$Xitem];
-                }
-                if($item[$Yitem] > $XY_scatter['Ymax']){
-                    $XY_scatter['Ymax'] = $item[$Yitem];
-                }
-                if($item[$Yitem] < $XY_scatter['Ymin']){
-                    $XY_scatter['Ymin'] = $item[$Yitem];
-                }
+//                 if($item[$Xitem] > $XY_scatter['Xmax']){
+//                     $XY_scatter['Xmax'] = $item[$Xitem];
+//                 }
+//                 if($item[$Xitem] < $XY_scatter['Xmin']){
+//                     $XY_scatter['Xmin'] = $item[$Xitem];
+//                 }
+//                 if($item[$Yitem] > $XY_scatter['Ymax']){
+//                     $XY_scatter['Ymax'] = $item[$Yitem];
+//                 }
+//                 if($item[$Yitem] < $XY_scatter['Ymin']){
+//                     $XY_scatter['Ymin'] = $item[$Yitem];
+//                 }
             }
         }
         if(empty($dots)){
             return 0;
         }
+        
+        //对散点图作两次过滤，把异常值剔除
+        $dots = $this->clearByBox($dots, $Xitem);
+        reset($dots); //第一个
+        $XY_scatter['Xmin']  = current($dots)[$Xitem];
+        end($dots);  //最后一个
+        $XY_scatter['Xmax'] = current($dots)[$Xitem];
+        $dots = $this->clearByBox($dots, $Yitem);
+        reset($dots); //第一个
+        $XY_scatter['Ymin']  = current($dots)[$Yitem];
+        end($dots);  //最后一个
+        $XY_scatter['Ymax'] = current($dots)[$Yitem];
         
         
         //这是X轴的最大和最小值
@@ -208,13 +244,6 @@ class PriceLogic
         $scatter['axes'] = $axes;
 //         halt($scatter);
         return $scatter;
-    }
-    
-    private function getByPosition($arr,$position){
-        //取数组$arr中取相应位置$position的元素，这个数组是多维数组
-        $length = count($arr);
-        $posi = round(($length -1) * $position / 100,0);
-        return array_slice ($arr, $posi, 1 );
     }
     
     private function plotBox($getPrice_result){
