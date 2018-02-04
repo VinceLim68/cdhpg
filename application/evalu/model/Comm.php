@@ -12,6 +12,7 @@ class Comm extends Model {
 	protected $table = 'comm';
 	protected $resultSetType = 'collection'; // 这个设置可以很快把返回数据集转成array
 	protected $field = true; // 忽略非数据表字段而不报错
+	
 	public function getPriLevelAttr($value) {
 		$pri_level = [ 
 				0 => '小区级',
@@ -20,6 +21,11 @@ class Comm extends Model {
 		return $pri_level [$value];
 	}
 	
+	public function commrelate()
+	{  //定义与关联规则字段的一对多关系：一个小区对应一个、或者没有、或者多个规则
+	    //因为我在模型名的后面加上了Model，所以这里的表名也要加上_model
+	    return $this->hasMany('comm_relate_model','community_id','comm_id');
+	}
 	/*
 	 * public function setPriLevelAttr($value)
 	 * {

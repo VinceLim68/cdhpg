@@ -32,6 +32,7 @@ class HasMany extends Relation {
 	public function __construct(Model $parent, $model, $foreignKey, $localKey) {
 		$this->parent = $parent;
 		$this->model = $model;
+		//dump($model);
 		$this->foreignKey = $foreignKey;
 		$this->localKey = $localKey;
 		$this->query = (new $model ())->db ();

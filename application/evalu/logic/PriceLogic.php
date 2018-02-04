@@ -24,41 +24,46 @@ class PriceLogic
     public function getStatic($getComm,$price=0){
         //获取数据分析的结果
         //1 初步清洗偏离值
-        $length = count ($this->arr);
-        if (0 == $length) {
+        $result = $this->calPriceIndex();
+        
+//         $length = count ($this->arr);
+//         if (0 == $length) {
+        if (0 == $result) {
             return '没有原始数据，无法分析';
         }else{
-            $this->arr = $this->firstClearData();
+//             $this->arr = $this->firstClearData();
             //在清洗的基础上，得到price数组
-            if(0 == count($this->arr)){
+//             if(0 == count($this->arr)){
+            if(1 == $result){
                 return '第一次清洗后没有数据了，无法分析';
             }else{
-                $this->price = array_column ($this->arr, 'price' );
+//                 $this->price = array_column ($this->arr, 'price' );
                 //第二次清洗，把超过标准差的数据再次清除
-                $this->arr = $this->secondClearData();
-                if(0 == count($this->arr)){
+//                 $this->arr = $this->secondClearData();
+//                 if(0 == count($this->arr)){
+                if(2 == $result){
                     return '第二次清洗后没有数据了，无法分析';
                 }else{
-                    $this->price = array_column ($this->arr, 'price' );
-                    //计算一些数学统计数据
-                    $result = $this->math();
-                    //再计算标准差、平均值等
-                    $result = array_merge ( $result, $this->std_mean()); 
-                    //计算基价的内涵数据
-                    $result ['avg_area'] = $this->getAvg ( 'area' ); // 分别平均面积、平均楼层、平均总楼层、平均建成年份写入数组
-                    $result ['avg_total_floor'] = $this->getAvg (  'total_floor' );
-                    $result ['avg_floor_index'] = $this->getAvg ( 'floor_index' );
-                    $result ['avg_builded_year'] = $this->getAvg ('builded_year' );
-                    $result ['mortgageRatio'] = $this->martgageRatio($result);
-                    $result ['mortgagePrice'] = $this->mortgagePrice ( $result );
-                    $result ['dealPricePosition'] = $this->dealPricePosition($result['mean']);
-                    $result ['dealPrice'] = $this->getValByPosition($result ['dealPricePosition']);
+//                     $this->price = array_column ($this->arr, 'price' );
+//                     //计算一些数学统计数据
+//                     $result = $this->math();
+//                     //再计算标准差、平均值等
+//                     $result = array_merge ( $result, $this->std_mean()); 
+//                     //计算基价的内涵数据
+//                     $result ['avg_area'] = $this->getAvg ( 'area' ); // 分别平均面积、平均楼层、平均总楼层、平均建成年份写入数组
+//                     $result ['avg_total_floor'] = $this->getAvg (  'total_floor' );
+//                     $result ['avg_floor_index'] = $this->getAvg ( 'floor_index' );
+//                     $result ['avg_builded_year'] = $this->getAvg ('builded_year' );
+//                     $result ['mortgageRatio'] = $this->martgageRatio($result);
+//                     $result ['mortgagePrice'] = $this->mortgagePrice ( $result );
+//                     $result ['dealPricePosition'] = $this->dealPricePosition($result['mean']);
+//                     $result ['dealPrice'] = $this->getValByPosition($result ['dealPricePosition']);
                     
-                    //清洗后的有效数据数量
-                    $result ['len'] = count($this->arr); 
-                    //原始的数据数量
-                    $result['ori_len'] = $length;
-                    $result['from_date'] = date('Y-m-d',$this->date );
+//                     //清洗后的有效数据数量
+//                     $result ['len'] = count($this->arr); 
+//                     //原始的数据数量
+//                     $result['ori_len'] = $length;
+//                     $result['from_date'] = date('Y-m-d',$this->date );
                     $result['comm'] = $getComm;
                     $result['price'] = $price;
                     $result['priceByDeal'] = 0;
@@ -72,10 +77,11 @@ class PriceLogic
                         }
                     }
                     //覆盖率
-                    $result['coverage'] = round($result['len']/$result['ori_len']*100,2);
+//                     $result['coverage'] = round($result['len']/$result['ori_len']*100,2);
                     //标准差系数
-                    $result['std_r'] = round($result['std']/$result['mean']*100,2);
+//                     $result['std_r'] = round($result['std']/$result['mean']*100,2);
                     
+                    //dump($result);
                     //计算盒须图
                     $result = $this->plotBox($result);
                     //计算直方图的数据
@@ -87,6 +93,68 @@ class PriceLogic
                     $result['area_price_scatter'] = $this->scatter('price', 'area');
                     $result['floor_price_scatter'] = $this->scatter('price', 'total_floor');
                     $result['builded_year_price_scatter'] = $this->scatter('price', 'builded_year');
+                    return $result;
+                }
+            }
+        }
+    }
+    
+    public function calPriceIndex(){
+        //计算价格指数
+        $length = count ($this->arr);
+        if (0 == $length) {
+//             return '没有原始数据，无法分析';
+            return 0;
+        }else{
+            $this->arr = $this->firstClearData();
+            //在清洗的基础上，得到price数组
+            if(0 == count($this->arr)){
+                return 1;
+//                 return '第一次清洗后没有数据了，无法分析';
+            }else{
+                $this->price = array_column ($this->arr, 'price' );
+                //第二次清洗，把超过标准差的数据再次清除
+                $this->arr = $this->secondClearData();
+                if(0 == count($this->arr)){
+                    return 2;
+//                     return '第二次清洗后没有数据了，无法分析';
+                }else{
+                    $this->price = array_column ($this->arr, 'price' );
+                    //计算一些数学统计数据
+                    $result = $this->math();
+                    //再计算标准差、平均值等
+                    $result = array_merge ( $result, $this->std_mean());
+                    //计算基价的内涵数据
+                    $result ['avg_area'] = $this->getAvg ( 'area' ); // 分别平均面积、平均楼层、平均总楼层、平均建成年份写入数组
+                    $result ['avg_total_floor'] = $this->getAvg (  'total_floor' );
+                    $result ['avg_floor_index'] = $this->getAvg ( 'floor_index' );
+                    $result ['avg_builded_year'] = $this->getAvg ('builded_year' );
+                    $result ['mortgageRatio'] = $this->martgageRatio($result);
+                    $result ['mortgagePrice'] = $this->mortgagePrice ( $result );
+                    $result ['dealPricePosition'] = $this->dealPricePosition($result['mean']);
+                    $result ['dealPrice'] = $this->getValByPosition($result ['dealPricePosition']);
+        
+                    //清洗后的有效数据数量
+                    $result ['len'] = count($this->arr);
+                    //原始的数据数量
+                    $result['ori_len'] = $length;
+                    $result['from_date'] = date('Y-m-d',$this->date );
+                    //$result['comm'] = $getComm;
+                    //$result['price'] = $price;
+                    //$result['priceByDeal'] = 0;
+        
+                    //这里是处理有输入成交价时
+//                     if($price > 0){
+//                         if($price > $result['max'] or $price < $result['min']*0.9){
+//                             $result['priceByDeal'] = -1;           //-1表示异常，0表示没有提供成交价
+//                         }else{
+//                             $result['priceByDeal'] = $this->dealPrice($price, $result);
+//                         }
+//                     }
+                    //覆盖率
+                    $result['coverage'] = round($result['len']/$result['ori_len']*100,2);
+                    //标准差系数
+                    $result['std_r'] = round($result['std']/$result['mean']*100,2);
                     return $result;
                 }
             }
