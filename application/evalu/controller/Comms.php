@@ -596,6 +596,7 @@ class Comms extends Common {
 	
 	public function calPriceIndex(){
 	    //批量生成历史价格指数
+	    ignore_user_abort(true); // 后台运行
 	    error_reporting(0);
 	    set_time_limit(0);
 	    
@@ -630,23 +631,18 @@ class Comms extends Common {
 	    //批量生成价格指数
 	    $i = 0;
 	    foreach ($datas as $item){
-// 	        $result = SalesModel::getRecordsByCommid($item);
-//             $getPrice_result = (new PriceLogic($result))->calPriceIndex();
-//             $getPrice_result = array_merge ( $getPrice_result, $item);
-//             if($item['community_id']=='1113037'){
             $i += 1;    
             $getPrice_result = $this->cal($item);
             (new CommhistorypriceModel($getPrice_result))->allowField(true)->save();
             echo '-------------------------'.$i.'-------------------------</br>';
             dump($getPrice_result);
             flush();
-//             }
 	    }
+	    ignore_user_abort(false); // 解除后台运行
 	}
 	
 	private function cal($item){
 	    $result = SalesModel::getRecordsByCommid($item);
-// 	    dump($result);
 	    if($result[1]){
     	    $getPrice_result = (new PriceLogic($result))->calPriceIndex();
     	    $result = array_merge ( $item,$getPrice_result);
