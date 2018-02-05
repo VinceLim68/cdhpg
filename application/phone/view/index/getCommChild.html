@@ -19,8 +19,6 @@
             {foreach $fields as $vo}
             <a href="{:url('getPrice',$vo)}" class="list-group-item " style="color: #3c763d;">
                 <h4 class="list-group-item-heading" style="color: #3c763d;">{$vo['usage']|base_decode}</h4>
-<!--                 <h5 class="list-group-item-heading" style="color: #3c763d;">{$vo['where']|base_decode}</h5> -->
-               
             </a>
             <hr style="background-color:#D5D5D5;color:#D5D5D5;"/>
             {/foreach}

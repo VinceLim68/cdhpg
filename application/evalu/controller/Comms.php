@@ -8,6 +8,7 @@ use app\evalu\model\CommRelateModel;
 use app\evalu\model\SalesModel;
 use app\evalu\logic\PriceLogic;
 use app\evalu\logic\MatchLogic;
+use app\evalu\model\CommhistorypriceModel;
 
 class Comms extends Common {
 	protected $db;
@@ -37,13 +38,14 @@ class Comms extends Common {
 	}
 	
 	/*
-	 * 测试:原始的ace的jgrid页面[路道街巷里园]
+	 * 测试
 	 */
 	public function test() {
 		//$pattern = '/(.*市)?(.*区)?(.*[路道街巷里园])(\d+号(之[三二一四五六七八九十]*)?)(\d+)(室|单元)?/';
+		//测试用正则取地址里的路名、栋号等
 		$pattern = '/(.*市)?(.*区)?(\D*)(\d+号)(之[三二一四五六七八九十]*)?(\d+)(室|单元)?/';
 // 		$pattern = '/(.*u5e02)?(.*u533a)?(.*[u8defu9053u8857u5df7u91cc])(\d+u53f7(u4e4b[u4e09u4e8cu4e00u56dbu4e94u516du4e03u516bu4e5du5341u96f60]*)?)(\d+(u5ba4|u5355u5143))?/';
-		$string = '湖里区梧桐里32号202室住宅房地产抵押价值估价';
+		$string = '湖里区梧桐里32号之十二202室住宅房地产抵押价值估价';
 		$match = [];
 		$result = preg_match($pattern,$string,$match);
 		dump($match);
@@ -459,10 +461,10 @@ class Comms extends Common {
 // 	    return $sales;
 // 	}
 	
-	public function chooseChild($rela_list){
-	    $this->assign('rela_list',$rela_list);
-	    return $this->fetch('chooseChild');
-	}
+// 	public function chooseChild($rela_list){
+// 	    $this->assign('rela_list',$rela_list);
+// 	    return $this->fetch('chooseChild');
+// 	}
 	
 	public function ajaxGetRelaById(){
 	    //以ajax方式来生成一个关联规则的页面
@@ -491,6 +493,7 @@ class Comms extends Common {
 	    $getComm = $this->db->where('comm_id',$rela['community_id'])->find();//->toArray();
 	    $rela_comms = $this->db->where('block_id',$getComm->block_id)->select()->toArray();
 	    $fields = Db::query('SHOW COLUMNS FROM for_sale_property');
+	    $usage_list = (new CommRelateModel())->getDistUsage();
         
         $mystr = '';
         
@@ -500,7 +503,14 @@ class Comms extends Common {
         $mystr .= '<div class="col-md-4 left"><p class="form-control-static">'.$getComm->comm_name.'</p></div></div>';
         
         $mystr .= '<div class="form-group"><label class="col-md-2 control-label left">分类功能</label>';
-        $mystr .= '<div class="col-md-5 right"><input type="text" name="usage" value="'.$rela['usage'].'"></div></div>';
+        $mystr .= '<div class="col-md-5 right"><input type="text" name="usage" value="'.$rela['usage'].'"></div>';
+        $mystr .= '<div class="col-md-4 left">';
+        $mystr .= '<select id="usage_select">';
+        foreach ($usage_list as $usage_item){
+            $mystr .= '<option value = "'.$usage_item['usage'].'">'.$usage_item['usage'].'</option>';
+        }
+        $mystr .= '</select>';
+        $mystr .= '</div></div>';
         
         $mystr .= '<div class="form-group"><label class="col-md-2 control-label left">分类说明</label>';
         $mystr .= '<div class="col-md-9 right"><input type="text" name="memo" value="'.$rela['memo'].'"></div></div>';
@@ -508,7 +518,6 @@ class Comms extends Common {
         $mystr .= '<div class="form-group"><label class="col-md-2 control-label left">关联小区</label>';
         $mystr .= '<div class="col-md-5 right"><input type="text" name="rela_comm_id" value="'.$rela['rela_comm_id'].'"></div>';
         $mystr .= '<div class="col-md-4 left">';
-//         $mystr .= '<input type="text" id="rela_c" list="relacomms"  />';
         $mystr .= '<select id="rela_c">';
     	foreach ($rela_comms as $rela_comm){
             $mystr .= '<option value = "'.$rela_comm["comm_id"].'">'.$rela_comm["comm_name"].'</option>';
@@ -583,5 +592,67 @@ class Comms extends Common {
         $res['str'] = $mystr;
         //halt($res);
 	    return $res;
+	}
+	
+	public function calPriceIndex(){
+	    //批量生成历史价格指数
+	    error_reporting(0);
+	    set_time_limit(0);
+	    
+	    $buffer = ini_get('output_buffering');
+	    echo str_repeat(' ',$buffer+1);
+	    ob_end_flush();
+
+	    $comms = Comm::with('commrelate')->select()->toArray();
+	    //有用的字段是comm_id，关联中的rela_comm_id，where，rela_ratio，rela_weight,usage,rela_id(这个rela的id)
+	    $datas = [];
+	    foreach ($comms as $comm){
+	        if(empty($comm['commrelate'])){
+	            //如果没有关联规则，直接计算
+    	        $data = [];
+                $data['community_id'] = $comm['comm_id'];
+                $datas[] = $data;
+	        }else{
+	            //如果有关联规则，循环取出
+	            foreach ($comm['commrelate'] as $relationship){
+	                $data = [];
+                    $data['community_id'] = $comm['comm_id'];
+	                $data['rela_comm_id'] = $relationship['rela_comm_id'];
+	                $data['where'] = $relationship['where'];
+	                $data['rela_ratio'] = $relationship['rela_ratio'];
+	                $data['rela_weight'] = $relationship['rela_weight'];
+	                $data['usage'] = $relationship['usage'];
+	                $data['rela_id'] = $relationship['id'];
+	                $datas[] = $data;
+	            }
+	        }
+	    }
+	    //批量生成价格指数
+	    $i = 0;
+	    foreach ($datas as $item){
+// 	        $result = SalesModel::getRecordsByCommid($item);
+//             $getPrice_result = (new PriceLogic($result))->calPriceIndex();
+//             $getPrice_result = array_merge ( $getPrice_result, $item);
+//             if($item['community_id']=='1113037'){
+            $i += 1;    
+            $getPrice_result = $this->cal($item);
+            (new CommhistorypriceModel($getPrice_result))->allowField(true)->save();
+            echo '-------------------------'.$i.'-------------------------</br>';
+            dump($getPrice_result);
+            flush();
+//             }
+	    }
+	}
+	
+	private function cal($item){
+	    $result = SalesModel::getRecordsByCommid($item);
+// 	    dump($result);
+	    if($result[1]){
+    	    $getPrice_result = (new PriceLogic($result))->calPriceIndex();
+    	    $result = array_merge ( $item,$getPrice_result);
+	    }else{
+	        $result = $item;
+	    }
+	    return $result;
 	}
 }

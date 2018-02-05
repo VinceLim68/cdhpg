@@ -234,6 +234,12 @@ jQuery(function($) {
 		$("input[name='rela_comm_id']").val(thisval);
 	});
 	
+	jQuery("body").on("change","#usage_select", 		
+			function(){
+		var thisval =  $("#usage_select").val();
+		$("input[name='usage']").val(thisval);
+	});
+	
 //	//利用下拉列表，协助生成order查询
 //	jQuery("#orderfield").on("change", 		
 //		function(){

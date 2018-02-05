@@ -105,6 +105,7 @@ class Index extends Common {
                     $my[] = $item;
                 }
                 $this->assign('fields',$my);
+                //dump($my);
                 return $this->fetch();
             }else{
             //否则直接传递
@@ -126,7 +127,7 @@ class Index extends Common {
         //或者如果有成交记录，也可以重新计算，并把成交记录记入成交表中去
 //         halt(input());
         $data = input();
-//         halt($data);
+        //dump($data);
         if(isset($data['where'])){$data['where'] = base_decode($data['where']);};
         if(isset($data['create_time'])){$data['create_time'] = base_decode($data['create_time']);};
         if(isset($data['usage'])){$data['usage'] = base_decode($data['usage']);};
@@ -144,7 +145,7 @@ class Index extends Common {
         $getComm['usage'] = isset($data['usage'])? $data['usage']:'';
         session('comm.comm_id',$data['community_id']);
         session('comm.comm_name',$getComm['comm_name']);
-
+//         dump($data);
         $result = SalesModel::getRecordsByCommid($data);
 //         $result = SalesModel::getRecordsByCommid($comm_id);
         
