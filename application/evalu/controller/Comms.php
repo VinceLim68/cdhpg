@@ -608,29 +608,50 @@ class Comms extends Common {
 	    //有用的字段是comm_id，关联中的rela_comm_id，where，rela_ratio，rela_weight,usage,rela_id(这个rela的id)
 	    $datas = [];
 	    foreach ($comms as $comm){
-	        if(empty($comm['commrelate'])){
-	            //如果没有关联规则，直接计算
-    	        $data = [];
-                $data['community_id'] = $comm['comm_id'];
-                $datas[] = $data;
-	        }else{
-	            //如果有关联规则，循环取出
+// 	        if(empty($comm['commrelate'])){
+// 	            //如果没有关联规则，直接计算
+//     	        $data = [];
+//                 $data['community_id'] = $comm['comm_id'];
+//                 $datas[] = $data;
+// 	        }else{
+// 	            //如果有关联规则，循环取出
+// 	            foreach ($comm['commrelate'] as $relationship){
+// 	                $data = [];
+//                     $data['community_id'] = $comm['comm_id'];
+// 	                $data['rela_comm_id'] = $relationship['rela_comm_id'];
+// 	                $data['where'] = $relationship['where'];
+// 	                $data['rela_ratio'] = $relationship['rela_ratio'];
+// 	                $data['rela_weight'] = $relationship['rela_weight'];
+// 	                $data['usage'] = $relationship['usage'];
+// 	                $data['rela_id'] = $relationship['id'];
+// 	                $datas[] = $data;
+// 	            }
+// 	        }
+	        $data = [];
+            $data['community_id'] = $comm['comm_id'];
+//             $data['usage'] = '未分类基价';
+            $datas[] = $data;
+            if(!empty($comm['commrelate'])){
 	            foreach ($comm['commrelate'] as $relationship){
-	                $data = [];
-                    $data['community_id'] = $comm['comm_id'];
-	                $data['rela_comm_id'] = $relationship['rela_comm_id'];
-	                $data['where'] = $relationship['where'];
-	                $data['rela_ratio'] = $relationship['rela_ratio'];
-	                $data['rela_weight'] = $relationship['rela_weight'];
-	                $data['usage'] = $relationship['usage'];
-	                $data['rela_id'] = $relationship['id'];
-	                $datas[] = $data;
+	                if($relationship['usage'] != '未分类基价'){
+	                    //未分类基价是每个小区都要计算的，所以这里不再重复计算
+    	                $data = [];
+                        $data['community_id'] = $comm['comm_id'];
+    	                $data['rela_comm_id'] = $relationship['rela_comm_id'];
+    	                $data['where'] = $relationship['where'];
+    	                $data['rela_ratio'] = $relationship['rela_ratio'];
+    	                $data['rela_weight'] = $relationship['rela_weight'];
+    	                $data['usage'] = $relationship['usage'];
+    	                $data['rela_id'] = $relationship['id'];
+    	                $datas[] = $data;
+	                }
 	            }
-	        }
+            }
 	    }
 	    //批量生成价格指数
 	    $i = 0;
 	    foreach ($datas as $item){
+// 	        dump($item);
             $i += 1;    
             $getPrice_result = $this->cal($item);
             (new CommhistorypriceModel($getPrice_result))->allowField(true)->save();
@@ -650,5 +671,9 @@ class Comms extends Common {
 	        $result = $item;
 	    }
 	    return $result;
+	}
+	
+	public function managePriceIndex(){
+	    //基价管理，基价的搜索、排序（按个数、按偏离度、按价格、按涨跌幅）
 	}
 }

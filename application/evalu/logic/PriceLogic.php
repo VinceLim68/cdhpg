@@ -169,21 +169,27 @@ class PriceLogic
     }
     
     private function clearByBox($dots,$item){
+        //利用盒须图原理，在散点图时作清洗
         //先按item排序
         array_multisort(array_column($dots, $item), SORT_ASC, $dots);
-        //取盒子值
-        $value25 = $this->getByPosition($dots, 25);
-        $value75 = $this->getByPosition($dots, 75);
-//         halt($value75);
-        $boxlen = $value75[0][$item] - $value25[0][$item];
-        //重新过滤数组
-        $newdots = [];
-        foreach ($dots as $dot){
-            if($dot[$item] <= ($value75[0][$item]+1.5*$boxlen) and $dot[$item] >= ($value25[0][$item]-1.5*$boxlen)){
-                $newdots[] = $dot;
-            }
-        }
-        return $newdots;
+        return $dots;           //先取消消除异常值，老是会把正常值也消除
+//         if($item !='total_floor'){
+//             //取盒子值
+//             $value25 = $this->getByPosition($dots, 25);
+//             $value75 = $this->getByPosition($dots, 75);
+//             $boxlen = $value75[0][$item] - $value25[0][$item];
+//             //重新过滤数组
+//             $newdots = [];
+//             $times = config('whisker_times');
+//             foreach ($dots as $dot){
+//                 if($dot[$item] <= ($value75[0][$item]+$times*$boxlen) and $dot[$item] >= ($value25[0][$item]-$times*$boxlen)){
+//                     $newdots[] = $dot;
+//                 }
+//             }
+//             return $newdots;
+//         }else{
+//             return $dots;
+//         }
     }
     
     private function scatter($Xitem,$Yitem){
