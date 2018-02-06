@@ -103,10 +103,10 @@
 			</div> 
 	    </div>
 
-		<!-- 面积楼价散点图 -->
+		<!-- 面积楼价散点图style="width:100% ;height:400px"  -->
 		<div role="tabpanel" class="tab-pane" id="scatter_area_price">
 			<div class="panel panel-success">
-				<div class="panel-heading" style="width:100% ;height:400px" >
+				<div class="panel-heading" >
 					<svg xmlns="http://www.w3.org/2000/svg" version="1.1" width="100%" height="100%">
 						{volist name="B['area_price_scatter']['A_line']" id="vo"  }
 							<line x1="{$vo['x0']}%" y1="{$vo['y0']}%" x2="{$vo['x1']}%" y2="{$vo['y1']}%"  class='scatter_line' />
@@ -131,7 +131,7 @@
 		<!-- 楼层楼价散点图 -->
 	    <div role="tabpanel" class="tab-pane" id="scatter_floor_price">
 	    	<div class="panel panel-success">
-				<div class="panel-heading" style="width:100% ;height:400px" >
+				<div class="panel-heading"  >
 					<svg xmlns="http://www.w3.org/2000/svg" version="1.1" width="100%" height="100%">
 						{volist name="B['floor_price_scatter']['A_line']" id="vo"  }
 							<line x1="{$vo['x0']}%" y1="{$vo['y0']}%" x2="{$vo['x1']}%" y2="{$vo['y1']}%"  class='scatter_line' />
@@ -157,7 +157,7 @@
 		<!-- 建成年份楼价散点图 -->
 	    <div role="tabpanel" class="tab-pane" id="scatter_builded_year_price">
 	    	<div class="panel panel-success">
-				<div class="panel-heading" style="width:100% ;height:400px" >
+				<div class="panel-heading"  >
 					<svg xmlns="http://www.w3.org/2000/svg" version="1.1" width="100%" height="100%">
 						{volist name="B['builded_year_price_scatter']['A_line']" id="vo"  }
 							<line x1="{$vo['x0']}%" y1="{$vo['y0']}%" x2="{$vo['x1']}%" y2="{$vo['y1']}%"  class='scatter_line' />
@@ -187,7 +187,7 @@
 			<small style="padding-left:3%">{$B['comm']['region']}-{$B['comm']['block']}</small>
 			</h3>
 			<div class="panel  panel-success">
-			  <div class="panel-heading" style="padding-bottom: 30px;">
+			  <div class="panel-heading" style="padding-bottom: 30px;width:100% ;height:100%">
 				<span class="badge" style="font-size: 16px">
 				{$B['priceByDeal'] > 0?	'二手房评估':'抵押评估价'}
 				</span>
