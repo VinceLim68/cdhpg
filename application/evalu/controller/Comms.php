@@ -378,23 +378,16 @@ class Comms extends Common {
 	    $this->assign('title',$title);
 	    $this->assign('fields',$fields);
 	    $this->assign('data',$data);
+// 	    dump($data);
 	    
 	    return $this->fetch();
 	        
 	}
 	
 	public function ajaxGetSaleslist(){
-	    //$event = controller('Sales', 'event');
 	    $data = input();
-// 	    halt($data);
-	    //dump($data);
-// 	    $data1 = $this->datahandle($data);
 	    $data1 = action('Sales/datahandle',  ['data' => $data]);
 	    $saleslist = action('Sales/getSalesByArray',  ['data' => $data1]);
-// 	    $data1 = $event->datahandle($data);
-// 	    halt($data1);
-        //dump($data1);
-//         $saleslist = $this->getSales($data1);
         $response['page'] = $saleslist->render();
         $response['total'] = $saleslist->total();
 	    $liststring = '';
@@ -411,7 +404,6 @@ class Comms extends Common {
 	    }
 	    $response['items'] = $liststring;
 	    return $response;
-	    //dump($saleslist);
 	}
 	
 // 	private function datahandle($data){
@@ -675,5 +667,59 @@ class Comms extends Common {
 	
 	public function managePriceIndex(){
 	    //基价管理，基价的搜索、排序（按个数、按偏离度、按价格、按涨跌幅）
+	}
+	
+	public function ajaxGetScatter(){
+	    //ajax动态修改散点图
+	    $data = input();
+	    if('' == trim($data['times'])){
+	        $data['times'] = 0;
+	    }
+// 	    dump($data);
+	    $item = explode('_',$data['this_btn']);
+// 	    dump($item);
+	    $result = SalesModel::getRecordsByCommid($data);
+	     
+	    if(count($result[1])>0){
+	        //如果能查询出数据
+	        $PL = new PriceLogic($result);
+// 	        $dots = $PL->scatter($item[2], $item[1],$data['times']);
+	        
+	        //=======================
+            $PL->arr = $PL->firstClearData();
+            $PL->price = array_column ($PL->arr, 'price' );
+            $PL->arr = $PL->secondClearData();
+            if( 'area' == $item[1] ){
+                $actionitem = 'area';
+            }elseif('floor' == $item[1]){
+                $actionitem = 'total_floor';
+            }elseif('builded' == $item[1]){
+                $actionitem = 'builded_year';
+            }
+	        $dots = $PL->scatter('price', $actionitem ,$data['times']);
+
+	        //=========================
+	        $html = '<svg xmlns="http://www.w3.org/2000/svg" version="1.1" width="100%" height="100%">';
+	        foreach( $dots['A_line'] as $vo){
+	           $html .= '<line x1="'.$vo['x0'].'%" y1="'.$vo['y0'].'%" x2="'.$vo['x1'].'%" y2="'.$vo['y1'].'%"  class="scatter_line" />';    
+	           $html .= '<text x="'.$vo['t_x'].'%" y="'.$vo['t_y'].'%" class="'; 
+	           if($vo['t_x'] == 0){
+	               $html .= 'scatter_text_y';
+	           }else{
+	               $html .= 'scatter_text_x';
+	           };
+	           $html .= ' scatter_text" >'.$vo['val'].'</text>';
+	        }
+	        foreach($dots['A'] as $vo){
+	            $html .= '<circle cx="'.$vo['x'].'%" cy="'.$vo['y'].'%" class = "scatter_circle" r="1%"/>';
+	        }
+            $html .= '<line x1="'.$dots['axes'][0]['x0'].'%" y1="'.$dots['axes'][0]['y0'].'%" x2="'.$dots['axes'][0]['x1'].'%" y2="'.$dots['axes'][0]['y1'].'%"  class="scatter_axes" />';    
+            $html .= '<text x="'.$dots['axes'][0]['t_x'].'%" y="'.$dots['axes'][0]['t_y'].'%"  class="XAxesText">'.$dots['axes'][0]['val'].'</text>';    
+            $html .= '<line x1="'.$dots['axes'][1]['x0'].'%" y1="'.$dots['axes'][1]['y0'].'%" x2="'.$dots['axes'][1]['x1'].'%" y2="'.$dots['axes'][1]['y1'].'%"  class="scatter_axes" />';    
+            $html .= '<text x="'.$dots['axes'][1]['t_x'].'%" y="'.$dots['axes'][1]['t_y'].'%" class="YAxesText">'.$dots['axes'][1]['val'].'</text></svg>';    
+	        
+            return $html;
+	    }
+	    
 	}
 }
