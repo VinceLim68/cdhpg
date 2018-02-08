@@ -8,8 +8,8 @@ class PriceLogic
      * $arr2 = array_column($arr, 'name');
      * 
      */
-    private $price = [];
-    private $arr = [];
+    public  $price = [];
+    public  $arr = [];
     private $date;
 //     private $arr_cleared = [];
     
@@ -76,12 +76,6 @@ class PriceLogic
                             $result['priceByDeal'] = $this->dealPrice($price, $result);
                         }
                     }
-                    //覆盖率
-//                     $result['coverage'] = round($result['len']/$result['ori_len']*100,2);
-                    //标准差系数
-//                     $result['std_r'] = round($result['std']/$result['mean']*100,2);
-                    
-                    //dump($result);
                     //计算盒须图
                     $result = $this->plotBox($result);
                     //计算直方图的数据
@@ -143,14 +137,6 @@ class PriceLogic
                     //$result['price'] = $price;
                     //$result['priceByDeal'] = 0;
         
-                    //这里是处理有输入成交价时
-//                     if($price > 0){
-//                         if($price > $result['max'] or $price < $result['min']*0.9){
-//                             $result['priceByDeal'] = -1;           //-1表示异常，0表示没有提供成交价
-//                         }else{
-//                             $result['priceByDeal'] = $this->dealPrice($price, $result);
-//                         }
-//                     }
                     //覆盖率
                     $result['coverage'] = round($result['len']/$result['ori_len']*100,2);
                     //标准差系数
@@ -168,25 +154,32 @@ class PriceLogic
         return array_slice ($arr, $posi, 1 );
     }
     
-    private function clearByBox($dots,$item){
+    private function clearByBox($dots,$item,$times=0){
+        //利用盒须图原理，在散点图时作清洗
         //先按item排序
         array_multisort(array_column($dots, $item), SORT_ASC, $dots);
-        //取盒子值
-        $value25 = $this->getByPosition($dots, 25);
-        $value75 = $this->getByPosition($dots, 75);
-//         halt($value75);
-        $boxlen = $value75[0][$item] - $value25[0][$item];
-        //重新过滤数组
-        $newdots = [];
-        foreach ($dots as $dot){
-            if($dot[$item] <= ($value75[0][$item]+1.5*$boxlen) and $dot[$item] >= ($value25[0][$item]-1.5*$boxlen)){
-                $newdots[] = $dot;
+//         return $dots;           //先取消消除异常值，老是会把正常值也消除
+        if($times > 0){
+            //取盒子值
+            $value25 = $this->getByPosition($dots, 25);
+            $value75 = $this->getByPosition($dots, 75);
+            $boxlen = $value75[0][$item] - $value25[0][$item];
+            //重新过滤数组
+            $newdots = [];
+//             $times = config('whisker_times');
+            foreach ($dots as $dot){
+                if($dot[$item] <= ($value75[0][$item]+$times*$boxlen) and $dot[$item] >= ($value25[0][$item]-$times*$boxlen)){
+                    $newdots[] = $dot;
+                }
             }
+            //echo 'clear';
+            return $newdots;
+        }else{
+            return $dots;
         }
-        return $newdots;
     }
     
-    private function scatter($Xitem,$Yitem){
+    public function scatter($Xitem,$Yitem,$times=0){
         //===========================计算散点图==================================
 //         Xitem表示X轴的参数，$Yitem表示Y轴的参数
 //         $result_arr = $PL->getArr();
@@ -222,12 +215,12 @@ class PriceLogic
         }
         
         //对散点图作两次过滤，把异常值剔除
-        $dots = $this->clearByBox($dots, $Xitem);
+        $dots = $this->clearByBox($dots, $Xitem,$times);
         reset($dots); //第一个
         $XY_scatter['Xmin']  = current($dots)[$Xitem];
         end($dots);  //最后一个
         $XY_scatter['Xmax'] = current($dots)[$Xitem];
-        $dots = $this->clearByBox($dots, $Yitem);
+        $dots = $this->clearByBox($dots, $Yitem,$times);
         reset($dots); //第一个
         $XY_scatter['Ymin']  = current($dots)[$Yitem];
         end($dots);  //最后一个
@@ -358,7 +351,7 @@ class PriceLogic
         return array_slice ($this->price, $posi, 1 )[0];
     }
     
-    private function firstClearData() {
+    public function firstClearData() {
         /* 
          * 初步清洗，使用盒须图原理去除偏离过大的值 
          * 直接作用于$this->arr
@@ -395,7 +388,7 @@ class PriceLogic
         return $res;
     }
     
-    private function secondClearData(){
+    public function secondClearData(){
         /*
          * 做第二次清洗，把设定标准差范围内的数据都清洗掉
          * 直接作用于$this->arr

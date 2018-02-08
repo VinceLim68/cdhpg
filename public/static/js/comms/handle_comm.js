@@ -99,26 +99,17 @@ jQuery(function($) {
 		  //alert('');
 	});
 	$("#search_form").on("submit", function(event) {
+		//关联首页签的小区搜索框，可以跳转另一个小区
 		event.preventDefault();
-//		alert('');
-//		var id = $("#search_form input[name='community_id']").val();  
-//		var name = $("#search_form input[name='commName']").val();  
-//		if( id=='' && name == '') {  
-//			$('#mydialogg div.modal-body').html('数据不能为空,关闭窗口继续');
-//			$('#mydialogg').modal('show');
-//	        return false;  
-//	    } ;
 	    $.ajax({
 	    	url:getcommname,
 	    	data:$(this).serialize(),
 	    	success:function(response){
-//	    		alert(typeof(response));
 	    		console.log(response);
 				if('object' === typeof(response)){
 					var html = '<img src="' + waitingImg + '" /><span style="margin-left:10px;">正在跳转' + response.comm_name + '中......</span>';
 	     			$('#mydialogg div.modal-body').html(html);
 	      			$('#mydialogg').modal('show');
-					//$("#mydialogg div.modal-body").html(response.comm_id);
 					window.location.href= myself + "?community_id=" + response.comm_id;
 				}else{
 					$("#mydialogg div.modal-body").html(response);
@@ -126,9 +117,47 @@ jQuery(function($) {
 				$('#mydialogg').modal('show');
 			  },
 	    })
-	    //$("#search_form").submit();
 		
 	});
+	
+	$('.tab-pane .scatter_btn').on('click',function(event){
+		//散点图的过滤按钮
+//		var data = [];
+//		data['community_id'] = $('#hidden_datas').attr('community_id');
+//		data['rela_comm_id'] = $('#hidden_datas').attr('rela_comm_id');
+//		data['rela_ratio'] = $('#hidden_datas').attr('rela_ratio');
+//		data['where'] = $('#hidden_datas').attr('where');
+//		data['rela_weight'] = $('#hidden_datas').attr('rela_weight');
+//		alert($(this).next().html());
+		var tab_pane = $(this).parent().parent().parent().parent();
+//		alert(btn);
+		var thisinput = $(this).prev().val();
+//		alert(thisinput);
+//		console.log(btn);
+		$.ajax({
+			url:getscatter,
+			data:{
+				community_id 	: $('#hidden_datas').attr('community_id'),
+				rela_comm_id 	: $('#hidden_datas').attr('rela_comm_id'),
+				rela_ratio 		: $('#hidden_datas').attr('rela_ratio'),
+				where 			: $('#hidden_datas').attr('where'),
+				rela_weight 	: $('#hidden_datas').attr('rela_weight'),
+				this_btn		: tab_pane.prop('id'),
+				times			: thisinput,
+			},
+			success:function(response){
+				var name = "#" + tab_pane.prop('id') + ' .panel-heading';
+//				alert(name);
+				$(name).html(response);
+			},
+			
+		});
+		
+//		console.log(data);
+//		console.log(event);
+//		alert(this.id);			//返回scatter_area_price_btn
+//		console.log(this.id);
+	})
 //	//利用下拉列表，协助生成where查询
 //	jQuery("body").on("change",".wherefield", 		
 //		function(){
@@ -143,8 +172,8 @@ jQuery(function($) {
 //			$("textarea[name='where']").val(where);
 //	});
 	
-	jQuery("body").on("change","#sele_field", 		
-			function(){
+	jQuery("body").on("change","#sele_field", function(){
+		//这个是由操作动态生成的展示关联规则详细内容的页面中用到的js
 		var where = $("textarea[name='where']").val();
 		var thisval =  $("#sele_field").val() + ' = ""';
 		if('' == where){
