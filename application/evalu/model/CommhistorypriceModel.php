@@ -14,7 +14,11 @@ class CommhistorypriceModel extends Model
 	
 	public function comm()
 	{  //建立与comm表的一对一关联
-	    return $this->hasOne('comm','Id','id');
+	    return $this->hasOne('comm','comm_id','community_id');
 	}
 	
+	public function relation()
+	{  //建立与comm_relate表的一对一关联
+	    return $this->hasOne('comm_relate_model','id','rela_id');
+	}
 }

@@ -8,7 +8,6 @@
 				<h4 class="modal-title" id="myModalLabel">高级查询</h4>
 			</div>
 			<div class="modal-body">
-				<!-- <form id="bjy-form" class="form-inline"	action="{:url('queryByComm')}" method="post"> -->
 				<form id="myform" class="form-inline"	method="post">
 					<input name="page" type="hidden" value='1'>
 					<input name="community_id" type="hidden" value='{$data["community_id"]|default=""}'> 
@@ -23,10 +22,8 @@
 									<option value="{$v['Field']}">{$v['Field']}</option>
 									{/foreach}
 							</select></td>
-							<td><textarea class="form-control" rows="3" name="where"  placeholder="请使用双引号" style="width: 100%;">{$data["where"]}</textarea></td>
-		<!-- 					<input style="width: 100%;" class="input-medium"
-								type="text" name="where" value='{$data["where"]}'
-								placeholder="请使用双引号"> -->
+							<td><textarea class="form-control" rows="3" name="where"  placeholder="请使用双引号" style="width: 100%;">{$data["where"]|default=""}</textarea></td>
+
 						</tr>
 						<tr>
 							<th style="width: 50px;">ORDER</th>
@@ -37,7 +34,7 @@
 									{/foreach}
 							</select></td>
 							<td><input style="width: 50%;" type="text" name="order"
-								placeholder="请使用双引号" value='{$data["order"]}'> <label
+								placeholder="请使用双引号" value='{$data["order"]|default=""}'> <label
 								class="radio-inline" style="margin-left: 20px"> <input
 									type="radio" name="sort" id="sort1" value="ASC" checked>
 									升序
@@ -48,13 +45,13 @@
 						<tr>
 							<th style="width: 50px;">UPDATE</th>
 							<td style="width: 70px;"><select id="setfield"
-								style="width: 70px; margin-bottom: 2px;"> {foreach
-									name="fields" item="v"}
+								style="width: 70px; margin-bottom: 2px;"> 
+								{foreach name="fields" item="v"}
 									<option value="{$v['Field']}">{$v['Field']}</option>
 									{/foreach}
 							</select></td>
 							<td><input style="width: 100%;" type="text" name="set"
-								placeholder="请使用双引号" value='{$data["set"]}'></td>
+								placeholder="请使用双引号" value='{$data["set"]|default=""}'></td>
 						</tr>
 
 						<tr>

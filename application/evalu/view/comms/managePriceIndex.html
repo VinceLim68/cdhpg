@@ -1,0 +1,169 @@
+{extend name="mainbase" /} {block name="pg_cs"}
+<!-- 以下三个是本页加的CSS -->
+<link rel="stylesheet" href="__CSS__/jquery-ui.min.css" />
+<link rel="stylesheet" href="__CSS__/bootstrap-datepicker3.min.css" />
+<!--    这个是弹出的编辑窗口   -->
+<link rel="stylesheet" href="__CSS__/ui.jqgrid.min.css" />
+<link rel="stylesheet" href="__CSS__/jquery-ui.min.css" />
+{/block} {block name="breadcrumb"}
+<ul class="breadcrumb">
+	<li><i class="ace-icon fa fa-home home-icon"></i> <a href="#">大叔评估后台</a>
+	</li>
+	<li><a href="#">小区管理</a></li>
+	<li><a href="#">基价管理</a></li>
+
+</ul>
+{/block} {block name="main"}
+<div class="widget-box">
+	<div class="widget-header" id='search_div' style='padding-top: 5px; background: #5AA7D6;height: 70px;'>
+		<div id="pager" style="float: left;">{$list->render()}</div>
+		<div class="text-muted" style="color:white;float:left;margin: 25px 10px;">共{$list->total()}条记录</div>
+		<a href="javascript:;" onclick="ActiveMyquery()" class="btn btn-sm btn-info"
+			style="margin: 15px; border-radius: 20px;float:right;">
+			<span class="ace-icon fa fa-search icon-on-right bigger-110"></span>高级查询
+		</a>
+	</div>
+	<div class="widget-body">
+		<div class="widget-main" style='padding: 0;'>
+			<table id="gridtable" class="table table-striped table-bordered table-hover table-condensed">
+				<tr>
+					{foreach name="title" item="t"}
+							<th>{$t}</th> 
+					{/foreach}
+				</tr>
+				{foreach name="list" item="v"}
+				<tr>
+					<td class="hidden-xs">{$v['id']}</td>
+					<td>{$v->comm->comm_name|default=$v['comm_name']}</td>
+					<td blockid="{$v->comm->block_id|default=$v['block_id']}">{$v->comm->block|default=$v['block']}</td>
+					<td>{$v['usage']}</td>
+					<td>{$v['mean']}</td>
+					<td class="hidden-xs">{$v['mortgagePrice']}</td>
+					<td>{$v['dealPrice']}</td>
+					<td class="hidden-xs">{$v['len']}</td>
+					<td class="hidden-xs">{$v['ori_len']}</td>
+					<td>{$v['std_r']}</td>
+					<td class="hidden-xs">{$v['create_time']}</td>
+				</tr>
+				{/foreach}
+			</table>
+			
+		</div>
+	</div>
+</div>
+
+<div class="contextMenu" id="myMenu">
+  <ul>
+    <li id="detail_price">查询完整基价信息</li>
+    <li id="detail_comm">查询相关小区信息</li>
+    <li id="detail_rela">查询关联规则信息</li>
+    <li id="thisblock">只显示当前版块</li>
+  </ul>
+</div> 
+
+<div class="modal fade" tabindex="-1" role="dialog" id="mydialogg">
+  <div class="modal-dialog" role="document">
+    <div class="modal-content">
+      <div class="modal-header">
+        <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+        <h4 class="modal-title">信息</h4>
+      </div>
+      <div class="modal-body">
+      </div>
+      <div class="modal-footer">
+        <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
+      </div>
+    </div><!-- /.modal-content -->
+  </div><!-- /.modal-dialog -->
+</div><!-- /.modal -->
+
+{/block} 
+{block name="pg_js"}
+<script src="__JS__/jquery-ui.min.js"></script>
+<script src="__JS__/jquery.contextmenu.js"></script>
+<script>
+function ActiveMyquery(){
+	$('#myquery').modal('show');
+}
+	jQuery(function($) {
+		$('.modal').draggable();
+		$(".modal").css("overflow", "hidden");//禁止模态对话框的半透明背景滚动
+		 $('#gridtable td').contextMenu('myMenu', 
+	      {
+	         menuStyle:{
+	        	 width:'180px',
+	         },
+	         itemStyle:{
+	        	
+	         },
+			 bindings: 
+	           {
+	             'detail_comm': function(t) {
+	           	 	var id = $(t).parent().find("td").eq(0).html();
+	           	 	var commName = $(t).parent().find("td").eq(1).html();
+	 	           	 $.ajax({
+	 	         		url:'{:url("ajaxGetCommById")}',
+	 	         		data:{
+	 	         			ID:id,
+	 	         		},
+	 	         		success:function(response){  
+	 	         			//alert(response) ; 
+	 	         			$('#mydialogg div.modal-body').html(response);
+	 	         			$('#mydialogg h4.modal-title').html(commName+'小区的详细信息');
+	 	         			$('#mydialogg').modal('show');
+	 	 		        }  
+	 	         		
+	 	         	});
+	             },
+	             'detail_price': function(t) {
+	            	//取出当前行的序号
+	           	 	var id = $(t).parent().find("td").eq(0).html();
+	           	 	var commName = $(t).parent().find("td").eq(1).html();
+	 	           	 $.ajax({
+	 	         		url:'{:url("ajaxGetPriceIndexById")}',
+	 	         		data:{
+	 	         			ID:id,
+	 	         		},
+	 	         		success:function(response){  
+	 	         			//alert(response) ; 
+	 	         			$('#mydialogg div.modal-body').html(response);
+	 	         			$('#mydialogg h4.modal-title').html(commName+'基价的详细信息');
+	 	         			$('#mydialogg').modal('show');
+	 	 		        }  
+	 	         		
+	 	         	});
+	             },
+	             'detail_rela': function(t) {
+	            	 var id = $(t).parent().find("td").eq(0).html();
+	           	 	var commName = $(t).parent().find("td").eq(1).html();
+		 	           	 $.ajax({
+		 	         		url:'{:url("ajaxGetRelationById")}',
+		 	         		data:{
+		 	         			ID:id,
+		 	         		},
+		 	         		success:function(response){  
+		 	         			//alert(response) ; 
+		 	         			$('#mydialogg div.modal-body').html(response);
+		 	         			$('#mydialogg h4.modal-title').html(commName+'的关联规则详细信息');
+		 	         			$('#mydialogg').modal('show');
+		 	 		        }  
+		 	         		
+		 	         	});
+	             },
+	             'thisblock': function(t) {
+            	 	var id = $(t).parent().find("td").eq(0).html();
+           	 		var blockid = $(t).parent().find("td").eq(2).attr('blockid');
+           	 		//alert(blockid);
+           	 		var jumpurl = "{:url('Comms/managePriceIndex')}"+"?block_id="+blockid;
+           	 		alert(jumpurl);
+           	 		window.location.href = (jumpurl);
+	             },
+	            
+	           }
+	     });
+	});
+	</script>
+	{include file="./commhtml/myquery.html"/}
+	{/block}{block name="pg_inline_js"}
+
+{/block}
