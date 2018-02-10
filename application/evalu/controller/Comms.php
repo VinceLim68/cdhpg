@@ -49,27 +49,9 @@ class Comms extends Common {
 // 		$match = [];
 // 		$result = preg_match($pattern,$string,$match);
 // 		dump($match);
-	    $data = input();
-	    $data = action('Sales/datahandle',  ['data' => $data]);
-	    //原来是用price做为order的默认值，这里要改成community_id
-	    if($data['order'] == 'price'){
-	        $data['order'] = 'community_id';
-	    }
-	    $order = $data['order'].' '.$data['sort'];
-	     
-	    //查询记录,无论是否修改，都需要查询
-	    $HPrice = new CommhistorypriceModel();
-	    $list = $HPrice->with('comm')
-	    ->where($data['where'] )
-	    ->order($order)->fetchSql(false)
-	    ->paginate(1,false,[
-	        'query'=>[
-	            'where'=>  $data['where'],
-	            'order'=>  $data['order'],
-	            'set'=>  $data['set'],
-	        ],
-	    ]);
-	    var_dump($list[0]['comm']);
+	   
+	    $item = (new CommhistorypriceModel())->isDuplicate('12100131');
+	    dump($item);
         
 	}
 	
@@ -358,7 +340,6 @@ class Comms extends Common {
 	        $data = $rela_list[0];
 	    }
         $this->assign('rela_list',$rela_list);
-// 	    }
 	    //通过id找小区相关信息
 	    $getComm = Db::table('comm')->where('comm_id',$data['community_id'])->find();
 	    $rela_comms = $this->db->where('block_id',$getComm['block_id'])->select()->toArray();
@@ -620,12 +601,13 @@ class Comms extends Common {
 
 	    $comms = Comm::with('commrelate')->select()->toArray();
 	    //有用的字段是comm_id，关联中的rela_comm_id，where，rela_ratio，rela_weight,usage,rela_id(这个rela的id)
-	    $datas = [];
+	    $datas = [];       //存放需要计算基价的列表（小区，及小区内的功能拆分）
 	    foreach ($comms as $comm){
 	        $data = [];
             $data['community_id'] = $comm['comm_id'];
-            $datas[] = $data;
+            $datas[] = $data;           //每个小区都要计算，当作“未分类基价”
             if(!empty($comm['commrelate'])){
+                //如果小区还有关联规则，再对每个小区规则进行计算，但“未分类基价”不用重复了
 	            foreach ($comm['commrelate'] as $relationship){
 	                if($relationship['usage'] != '未分类基价'){
 	                    //未分类基价是每个小区都要计算的，所以这里不再重复计算
@@ -645,12 +627,17 @@ class Comms extends Common {
 	    //批量生成价格指数
 	    $i = 0;
 	    foreach ($datas as $item){
-// 	        dump($item);
-            $i += 1;    
-            $getPrice_result = $this->cal($item);
-            (new CommhistorypriceModel($getPrice_result))->allowField(true)->save();
+            $i += 1;
             echo '-------------------------'.$i.'-------------------------</br>';
-            dump($getPrice_result);
+            $priceIndex = new CommhistorypriceModel;
+            if($priceIndex->isDuplicate($item['community_id'])){
+                //判断是否已经计算过当月基价
+                echo '====== 数据重复,不再重复  =====';
+            }else{
+                $getPrice_result = $this->cal($item);
+                (new CommhistorypriceModel($getPrice_result))->allowField(true)->save();
+                dump($getPrice_result);
+            }
             flush();
 	    }
 	    ignore_user_abort(false); // 解除后台运行
@@ -659,6 +646,7 @@ class Comms extends Common {
 	private function cal($item){
 	    $result = SalesModel::getRecordsByCommid($item);
 	    if($result[1]){
+	        //如果有数据就计算价格指数
     	    $getPrice_result = (new PriceLogic($result))->calPriceIndex();
     	    $result = array_merge ( $item,$getPrice_result);
 	    }else{

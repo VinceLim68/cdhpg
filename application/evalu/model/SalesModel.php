@@ -26,6 +26,8 @@ class SalesModel extends Model {
 	
 	static private function getById($data,$fields){
 	    //查询范围在最新的30万个记录中，但如果查询结果数量少于100个，则扩大30万个记录
+	    //传入的参数,起作用的是：$data['rela_comm_id'],$data['community_id'],
+	    //$data['where'],$data['rela_ratio'],$data['rela_weight'];
 	    $sele_times = 1;                                                    //计数：查询次数
 	    // 	    $select_records_per_time = config('select_records_per_time');       //每次增加的查询范围
 	    $more_months = config('select_more_months_per_time');

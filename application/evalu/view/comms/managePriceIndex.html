@@ -34,7 +34,7 @@
 				{foreach name="list" item="v"}
 				<tr>
 					<td class="hidden-xs">{$v['id']}</td>
-					<td>{$v->comm->comm_name|default=$v['comm_name']}</td>
+					<td community_id="{$v['community_id']}">{$v->comm->comm_name|default=$v['comm_name']}</td>
 					<td blockid="{$v->comm->block_id|default=$v['block_id']}">{$v->comm->block|default=$v['block']}</td>
 					<td>{$v['usage']}</td>
 					<td>{$v['mean']}</td>
@@ -54,10 +54,11 @@
 
 <div class="contextMenu" id="myMenu">
   <ul>
-    <li id="detail_price">查询完整基价信息</li>
-    <li id="detail_comm">查询相关小区信息</li>
-    <li id="detail_rela">查询关联规则信息</li>
+    <li id="detail_price">查询：完整基价信息</li>
+    <li id="detail_comm">查询：小区信息</li>
+    <li id="detail_rela">查询：关联规则信息</li>
     <li id="thisblock">只显示当前版块</li>
+    <li id="gotohandle">跳转功能拆分模块</li>
   </ul>
 </div> 
 
@@ -91,7 +92,7 @@ function ActiveMyquery(){
 		 $('#gridtable td').contextMenu('myMenu', 
 	      {
 	         menuStyle:{
-	        	 width:'180px',
+	        	 width:'150px',
 	         },
 	         itemStyle:{
 	        	
@@ -151,12 +152,19 @@ function ActiveMyquery(){
 		 	         	});
 	             },
 	             'thisblock': function(t) {
-            	 	var id = $(t).parent().find("td").eq(0).html();
+            	 	//var id = $(t).parent().find("td").eq(0).html();
            	 		var blockid = $(t).parent().find("td").eq(2).attr('blockid');
            	 		//alert(blockid);
            	 		var jumpurl = "{:url('Comms/managePriceIndex')}"+"?block_id="+blockid;
-           	 		alert(jumpurl);
+           	 		//alert(jumpurl);
            	 		window.location.href = (jumpurl);
+	             },
+	             'gotohandle': function(t) {
+            	 	var usage = $(t).parent().find("td").eq(3).html();
+            	 	alert(usage);
+            	 	var community_id = $(t).parent().find("td").eq(1).attr('community_id');
+           	 		//alert(blockid);
+           	 		window.location.href= "{:url('Comms/handle_comm')}"+"?community_id="+community_id+"&usage="+usage;
 	             },
 	            
 	           }
