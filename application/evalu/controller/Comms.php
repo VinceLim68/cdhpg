@@ -50,8 +50,7 @@ class Comms extends Common {
 // 		$result = preg_match($pattern,$string,$match);
 // 		dump($match);
 	   
-	    $item = (new CommhistorypriceModel())->isDuplicate('12100131');
-	    dump($item);
+$this->redirect('managePriceIndex');
         
 	}
 	
@@ -340,8 +339,12 @@ class Comms extends Common {
 	        $data = $rela_list[0];
 	    }
         $this->assign('rela_list',$rela_list);
+	    
 	    //通过id找小区相关信息
 	    $getComm = Db::table('comm')->where('comm_id',$data['community_id'])->find();
+	    $data = array_merge ( $data,$getComm);
+// 	    $data['comm_name'] = $getComm['comm_name'];
+	    //取同一版块的其他小区列表
 	    $rela_comms = $this->db->where('block_id',$getComm['block_id'])->select()->toArray();
 	    $this->assign('rela_comms',$rela_comms);
 	    //如果有关联小区，也取出来
@@ -361,8 +364,15 @@ class Comms extends Common {
 	        $PL = new PriceLogic($result);
 	        $getPrice_result = $PL->getStatic($getComm);
 	        $this->assign('B',$getPrice_result);
-	        $this->assign('result',$result);
+// 	        $this->assign('result',$result);
+	    }else{
+// 	        $PL = new PriceLogic($result);
+// 	        $getPrice_result = $PL->getStatic($getComm);
+// 	        $this->assign('B',$getPrice_result);
+	        $this->assign('B',false);
+	        
 	    }
+	        $this->assign('result',$result);
 	    
 	    //取挂牌数据
 	    if(!isset($data['where']) or trim($data['where'])==''){
@@ -382,6 +392,9 @@ class Comms extends Common {
 	    $this->assign('fields',$fields);
 	    $this->assign('data',$data);
 // 	    dump($data);
+// 	    dump($rela_list);
+// 	    dump($getPrice_result);
+// 	    dump($rela_comms);
 	    
 	    return $this->fetch();
 	        
@@ -632,15 +645,18 @@ class Comms extends Common {
             $priceIndex = new CommhistorypriceModel;
             if($priceIndex->isDuplicate($item['community_id'])){
                 //判断是否已经计算过当月基价
-                echo '====== 数据重复,不再重复  =====';
+                echo '====== 本小区当月基价数据已经存在,不再重复计算  =====</br>';
             }else{
                 $getPrice_result = $this->cal($item);
-                (new CommhistorypriceModel($getPrice_result))->allowField(true)->save();
+                $priceIndex->data($getPrice_result)->allowField(true)->save();
                 dump($getPrice_result);
             }
             flush();
 	    }
 	    ignore_user_abort(false); // 解除后台运行
+	    echo 'jump';
+	    $this->redirect('managePriceIndex');
+	    echo 'Done';
 	}
 	
 	private function cal($item){

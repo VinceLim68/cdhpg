@@ -161,7 +161,7 @@ function ActiveMyquery(){
 	             },
 	             'gotohandle': function(t) {
             	 	var usage = $(t).parent().find("td").eq(3).html();
-            	 	alert(usage);
+            	 	//alert(usage);
             	 	var community_id = $(t).parent().find("td").eq(1).attr('community_id');
            	 		//alert(blockid);
            	 		window.location.href= "{:url('Comms/handle_comm')}"+"?community_id="+community_id+"&usage="+usage;

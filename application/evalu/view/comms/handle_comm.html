@@ -8,7 +8,7 @@
 	<li><i class="ace-icon fa fa-home home-icon"></i> <a href="#">大叔评估后台</a>
 	</li>
 	<li><a href="#">小区管理</a></li>
-	<li><a href="#">{$B['comm']['comm_name']}功能拆分</a></li>
+	<li><a href="#">{$data['comm_name']}功能拆分</a></li>
 
 </ul>
 {/block} 
@@ -26,6 +26,9 @@
 		<li ><a href="#list1" aria-controls="list1" role="tab" data-toggle="tab" >数据列表</a></li>
 	</ul>
 	<div class="tab-content">
+	
+	{if condition="$B"}
+
 		<!-- 盒须图 -->
 	    <div role="tabpanel" class="tab-pane" id="box" >
 		    <div class="panel panel-success">
@@ -202,12 +205,13 @@
 				</div>
 	    	</div>
 		</div>
-		
+
+	{/if}			
 		<!-- 关联设计 --> 
 		<div role="tabpanel" class="tab-pane in active" id="rela">
-  			<h3 style="color: #3c763d;">{$B['comm']['comm_name']}
-			{if condition="$B['comm']['usage']!=''"}-{$B['comm']['usage']}{/if}
-			<small style="padding-left:3%">{$B['comm']['region']}-{$B['comm']['block']}</small>
+  			<h3 style="color: #3c763d;">{$data['comm_name']}
+			{if condition="$data['usage']!=''"}-{$data['usage']}{/if}
+			<small style="padding-left:3%">{$data['region']}-{$data['block']}</small>
 			</h3>
 			<div class="panel  panel-success">
 			  <div class="panel-heading" style="padding-bottom: 30px;width:100% ;height:100%">
@@ -287,9 +291,6 @@
 			</div>						
 		</div>						
 
-		
-		
-		
 		<!-- 数据列表 --> 
 		<div role="tabpanel" class="tab-pane " id="list1">
 			<div class="widget-header" id='search_div' style='padding-top: 5px; background: #5AA7D6;'>
@@ -323,7 +324,7 @@
 			</table>
 		</div>
 		
-		
+
 		
 	</div>
 </div>
