@@ -41,14 +41,17 @@ class Comms extends Common {
 	 * 测试
 	 */
 	public function test() {
-		//$pattern = '/(.*市)?(.*区)?(.*[路道街巷里园])(\d+号(之[三二一四五六七八九十]*)?)(\d+)(室|单元)?/';
-		//测试用正则取地址里的路名、栋号等
-		$pattern = '/(.*市)?(.*区)?(\D*)(\d+号)(之[三二一四五六七八九十]*)?(\d+)(室|单元)?/';
-// 		$pattern = '/(.*u5e02)?(.*u533a)?(.*[u8defu9053u8857u5df7u91cc])(\d+u53f7(u4e4b[u4e09u4e8cu4e00u56dbu4e94u516du4e03u516bu4e5du5341u96f60]*)?)(\d+(u5ba4|u5355u5143))?/';
-		$string = '湖里区梧桐里32号之十二202室住宅房地产抵押价值估价';
-		$match = [];
-		$result = preg_match($pattern,$string,$match);
-		dump($match);
+// 		//$pattern = '/(.*市)?(.*区)?(.*[路道街巷里园])(\d+号(之[三二一四五六七八九十]*)?)(\d+)(室|单元)?/';
+// 		//测试用正则取地址里的路名、栋号等
+// 		$pattern = '/(.*市)?(.*区)?(\D*)(\d+号)(之[三二一四五六七八九十]*)?(\d+)(室|单元)?/';
+// // 		$pattern = '/(.*u5e02)?(.*u533a)?(.*[u8defu9053u8857u5df7u91cc])(\d+u53f7(u4e4b[u4e09u4e8cu4e00u56dbu4e94u516du4e03u516bu4e5du5341u96f60]*)?)(\d+(u5ba4|u5355u5143))?/';
+// 		$string = '湖里区梧桐里32号之十二202室住宅房地产抵押价值估价';
+// 		$match = [];
+// 		$result = preg_match($pattern,$string,$match);
+// 		dump($match);
+	   
+$this->redirect('managePriceIndex');
+        
 	}
 	
 	/**
@@ -336,9 +339,12 @@ class Comms extends Common {
 	        $data = $rela_list[0];
 	    }
         $this->assign('rela_list',$rela_list);
-// 	    }
+	    
 	    //通过id找小区相关信息
 	    $getComm = Db::table('comm')->where('comm_id',$data['community_id'])->find();
+	    $data = array_merge ( $data,$getComm);
+// 	    $data['comm_name'] = $getComm['comm_name'];
+	    //取同一版块的其他小区列表
 	    $rela_comms = $this->db->where('block_id',$getComm['block_id'])->select()->toArray();
 	    $this->assign('rela_comms',$rela_comms);
 	    //如果有关联小区，也取出来
@@ -358,8 +364,15 @@ class Comms extends Common {
 	        $PL = new PriceLogic($result);
 	        $getPrice_result = $PL->getStatic($getComm);
 	        $this->assign('B',$getPrice_result);
-	        $this->assign('result',$result);
+// 	        $this->assign('result',$result);
+	    }else{
+// 	        $PL = new PriceLogic($result);
+// 	        $getPrice_result = $PL->getStatic($getComm);
+// 	        $this->assign('B',$getPrice_result);
+	        $this->assign('B',false);
+	        
 	    }
+	        $this->assign('result',$result);
 	    
 	    //取挂牌数据
 	    if(!isset($data['where']) or trim($data['where'])==''){
@@ -379,6 +392,9 @@ class Comms extends Common {
 	    $this->assign('fields',$fields);
 	    $this->assign('data',$data);
 // 	    dump($data);
+// 	    dump($rela_list);
+// 	    dump($getPrice_result);
+// 	    dump($rela_comms);
 	    
 	    return $this->fetch();
 	        
@@ -598,32 +614,13 @@ class Comms extends Common {
 
 	    $comms = Comm::with('commrelate')->select()->toArray();
 	    //有用的字段是comm_id，关联中的rela_comm_id，where，rela_ratio，rela_weight,usage,rela_id(这个rela的id)
-	    $datas = [];
+	    $datas = [];       //存放需要计算基价的列表（小区，及小区内的功能拆分）
 	    foreach ($comms as $comm){
-// 	        if(empty($comm['commrelate'])){
-// 	            //如果没有关联规则，直接计算
-//     	        $data = [];
-//                 $data['community_id'] = $comm['comm_id'];
-//                 $datas[] = $data;
-// 	        }else{
-// 	            //如果有关联规则，循环取出
-// 	            foreach ($comm['commrelate'] as $relationship){
-// 	                $data = [];
-//                     $data['community_id'] = $comm['comm_id'];
-// 	                $data['rela_comm_id'] = $relationship['rela_comm_id'];
-// 	                $data['where'] = $relationship['where'];
-// 	                $data['rela_ratio'] = $relationship['rela_ratio'];
-// 	                $data['rela_weight'] = $relationship['rela_weight'];
-// 	                $data['usage'] = $relationship['usage'];
-// 	                $data['rela_id'] = $relationship['id'];
-// 	                $datas[] = $data;
-// 	            }
-// 	        }
 	        $data = [];
             $data['community_id'] = $comm['comm_id'];
-//             $data['usage'] = '未分类基价';
-            $datas[] = $data;
+            $datas[] = $data;           //每个小区都要计算，当作“未分类基价”
             if(!empty($comm['commrelate'])){
+                //如果小区还有关联规则，再对每个小区规则进行计算，但“未分类基价”不用重复了
 	            foreach ($comm['commrelate'] as $relationship){
 	                if($relationship['usage'] != '未分类基价'){
 	                    //未分类基价是每个小区都要计算的，所以这里不再重复计算
@@ -643,20 +640,29 @@ class Comms extends Common {
 	    //批量生成价格指数
 	    $i = 0;
 	    foreach ($datas as $item){
-// 	        dump($item);
-            $i += 1;    
-            $getPrice_result = $this->cal($item);
-            (new CommhistorypriceModel($getPrice_result))->allowField(true)->save();
+            $i += 1;
             echo '-------------------------'.$i.'-------------------------</br>';
-            dump($getPrice_result);
+            $priceIndex = new CommhistorypriceModel;
+            if($priceIndex->isDuplicate($item['community_id'])){
+                //判断是否已经计算过当月基价
+                echo '====== 本小区当月基价数据已经存在,不再重复计算  =====</br>';
+            }else{
+                $getPrice_result = $this->cal($item);
+                $priceIndex->data($getPrice_result)->allowField(true)->save();
+                dump($getPrice_result);
+            }
             flush();
 	    }
 	    ignore_user_abort(false); // 解除后台运行
+	    echo 'jump';
+	    $this->redirect('managePriceIndex');
+	    echo 'Done';
 	}
 	
 	private function cal($item){
 	    $result = SalesModel::getRecordsByCommid($item);
 	    if($result[1]){
+	        //如果有数据就计算价格指数
     	    $getPrice_result = (new PriceLogic($result))->calPriceIndex();
     	    $result = array_merge ( $item,$getPrice_result);
 	    }else{
@@ -666,7 +672,102 @@ class Comms extends Common {
 	}
 	
 	public function managePriceIndex(){
-	    //基价管理，基价的搜索、排序（按个数、按偏离度、按价格、按涨跌幅）
+	    //基价管理，基价的搜索、排序（按个数、按偏离度、按价格、按涨跌幅）->field('id,usage,mortgagePrice,dealPrice,len,ori_len,std_r,create_time')
+
+	    $data = input();
+// 	    dump($data);
+	    $data = action('Sales/datahandle',  ['data' => $data]);
+	    //原来是用price做为order的默认值，这里要改成community_id
+	    if($data['order'] == 'price'){
+	        $data['order'] = 'community_id';
+	    }
+	    $order = $data['order'].' '.$data['sort'];
+	    if('' !== $data['set'] and '' != $data['where']){
+	        //修改记录
+	        $sqlstr = 'UPDATE commhistoryprice SET '.$data['set'].' WHERE '.$data['where'];
+	        $data['num'] = Db::execute($sqlstr);
+	    }
+	    
+// 	        dump($data);
+	    //查询记录,无论是否修改，都需要查询
+	    if( isset($data['block_id']) and ('' == $data['where']) ){
+	        //如果给了区块id，就只查询区块id,如果有where值，就清除区块查询
+    	    $list = Db::view('commhistoryprice','id,community_id,usage,create_time,median,mean,mortgagePrice,dealPrice,len,ori_len,std_r')
+    	    ->view('comm','comm_name,block,comm_addr,block_id','comm.comm_id=commhistoryprice.community_id')
+    	    ->where('block_id',$data['block_id'])
+    	    ->order($order)
+    	    ->paginate(100,false,[
+    	        'query'=>[
+    	            'block_id'=> $data['block_id'],
+    	            'order'=>  $data['order'],
+    	        ],
+    	    ]);
+	    }else{
+	        //否则正常查询
+    	    $HPrice = new CommhistorypriceModel();
+    	    $list = $HPrice->with('comm')
+    	    ->where($data['where'] )
+    	    ->order($order)
+    	    ->paginate(100,false,[
+    	        'query'=>[
+    	            'where'=>  $data['where'],
+    	            'order'=>  $data['order'],
+    	            'set'=>  $data['set'],
+    	        ],
+    	    ]);
+	    }
+	    $title = ['序号','小区','区块','分类','均价','抵押价值','二手价值','数据量','原始数据','标准差','计算时间'];
+	    $fields = Db::query('SHOW COLUMNS FROM commhistoryprice');
+	    $this->assign('title',$title);
+	    $this->assign('list',$list);
+	    $this->assign('fields',$fields);
+	    $this->assign('data',$data);
+	    return $this->fetch();
+	    
+	}
+	
+// 	public function getPriceIndexByBlock(){
+// 	    dump(input('block_id'));
+// 	    $this->redirect('managePriceIndex', ['block_id' => input('block_id')]);
+// // 	    dump($list);
+// 	}
+	
+	public function ajaxGetCommById(){
+	    //通过ajax取得鼠标点击小区的详细信息
+	    $record = (new CommhistorypriceModel())->with('comm')->find(input('ID'))->toArray();
+	    $html = '<ul class="list-group">';
+	    foreach ($record['comm'] as $k => $v){
+	        $html .= '<li class="list-group-item col-md-6">'.$k.' : '.$v.'</li>';
+	    }
+	    $html .= '</ul>';
+	    return $html;
+	}
+	public function ajaxGetRelationById(){
+	    //通过ajax取得鼠标点击的详细关联规则信息
+	    $record = (new CommhistorypriceModel())->with('relation')->find(input('ID'))->toArray();
+	    $html = '<ul class="list-group">';
+	    if($record['relation']){
+    	    foreach ($record['relation'] as $k => $v){
+    	        $html .= '<li class="list-group-item col-md-6">'.$k.' : '.$v.'</li>';
+    	    }
+	    }else{
+	        $html .= '<li class="list-group-item col-md-12">没有关联规则</li>';
+	    }
+	    $html .= '</ul>';
+	    return $html;
+	}
+	
+	public function ajaxGetPriceIndexById(){
+	    //通过ajax取得鼠标点击小区基价的详细信息
+	    $HPrice = new CommhistorypriceModel();
+	    $record = $HPrice->find(input('ID'))->toArray();
+	    $html = '<ul class="list-group">';
+	    
+	    foreach ($record as $k => $v){
+            $html .= '<li class="list-group-item col-md-6">'.$k.' : '.$v.'</li>';
+	    }
+	    $html .= '</ul>';
+	    return $html;
 	}
 	
 	public function ajaxGetScatter(){
@@ -675,9 +776,7 @@ class Comms extends Common {
 	    if('' == trim($data['times'])){
 	        $data['times'] = 0;
 	    }
-// 	    dump($data);
 	    $item = explode('_',$data['this_btn']);
-// 	    dump($item);
 	    $result = SalesModel::getRecordsByCommid($data);
 	     
 	    if(count($result[1])>0){

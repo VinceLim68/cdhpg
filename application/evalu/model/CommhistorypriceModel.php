@@ -14,7 +14,20 @@ class CommhistorypriceModel extends Model
 	
 	public function comm()
 	{  //建立与comm表的一对一关联
-	    return $this->hasOne('comm','Id','id');
+	    return $this->hasOne('comm','comm_id','community_id');
 	}
 	
+	public function relation()
+	{  //建立与comm_relate表的一对一关联
+	    return $this->hasOne('comm_relate_model','id','rela_id');
+	}
+	
+	public function getCreateTimeAttr($value){
+	    return date('Y-m', $value);
+	}
+	
+	public function isDuplicate($community_id){
+	    $find = $this->where('community_id',$community_id)->whereTime('create_time', 'month')->find();
+	    return $find;
+	}
 }

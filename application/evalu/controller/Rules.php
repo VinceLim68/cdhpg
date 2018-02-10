@@ -399,57 +399,6 @@ class Rules extends Common {
         return $this->fetch();
     }
     
-//     public function get_enquery_records(){
-//         //获取询价数据，这个应该不需要了，被上面的替代
-//         $page = input ( 'page' ); // 第几页
-//         $limit = input ( 'rows' ); // 每页几条记录
-//         $sidx = input ( 'sidx' ); // 排序字段
-//         $sord = input ( 'sord' ); // 正序还是倒序
-        
-//         if (! $sidx)
-//             $sidx = 1;
-//             $outputs = array ();
-        
-//             $where = '1=1';
-        
-//             if (input ( 'keywords' )) {
-//                 $keywords = input ( 'keywords' );
-//                 $where .= " and (keywords like '%" . $keywords . "%' or comm_name like '%" . $keywords . "%')";
-//             }
-//             ;
-//             if (input ( 'region' )) {
-//                 $region = input ( 'region' );
-//                 $where .= " and region like '%" . $region . "%'";
-//             }
-//             ;
-//             if (input ( 'block' )) {
-//                 $block = input ( 'block' );
-//                 $where .= " and block like '%" . $block . "%'";
-//             }
-//             ;
-//             if (input ( 'address' )) {
-//                 $address = input ( 'address' );
-//                 $where .= " and comm_addr like '%" . $address . "%'";
-//             }
-//             ;
-        
-// //             $sql_count = "SELECT COUNT(*) AS count FROM comm where " . $where;
-// //             $records = $this->db->query ( $sql_count );
-//             $mydb = new QueryRecordsModel();
-//             $rec_nums = $mydb->where($where)->count('id');
-//             $total = ceil ( $rec_nums/ $limit );
-//             $list = $mydb->limit ( $limit )->page ( $page )->where ( $where )->order($sidx.' '.$sord)->select ()->toArray ();
-//             /*
-//              * 返回值：total总页数,page当前页码,records总记录数,
-//              * rows数据集,id每条记录的唯一id,cell具体每条记录的内容
-//              */
-//             $outputs ['total'] = $total;
-//             $outputs ['page'] = $page;
-//             $outputs ['records'] = $rec_nums;
-//             $outputs ['rows'] = $list;
-        
-//             return $outputs;
-//     }
     public function err_comm_list(){
         $mydb = new ErrorCommModel();
         $where = '1=1';
