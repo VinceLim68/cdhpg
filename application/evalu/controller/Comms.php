@@ -12,6 +12,7 @@ use app\evalu\model\CommhistorypriceModel;
 
 class Comms extends Common {
 	protected $db;
+	
 	protected function _initialize() {
 		parent::_initialize ();
 		$this->db = new Comm ();
@@ -24,7 +25,6 @@ class Comms extends Common {
 		$module = request()->module();
 		$act = strtolower($module.'/'.$controller);       //使用模块+控制器来验证
 		$auth = new \Auth();
-// 		halt($act);
 		if(!$auth->check($act,session('user.user_id'))){
 		    $this->error(session('user.user_name').':'.$act.'你不能对小区数据进行操作');
 		}
@@ -50,7 +50,7 @@ class Comms extends Common {
 // 		$result = preg_match($pattern,$string,$match);
 // 		dump($match);
 	   
-$this->redirect('managePriceIndex');
+    $this->redirect('managePriceIndex');
         
 	}
 	
@@ -144,6 +144,8 @@ $this->redirect('managePriceIndex');
 				$this->db->where ( 'Id', $myid )->delete ();
 				//删除之后还要把挂牌信息里相关的commid改成0
 				Db::table('for_sale_property')->where('community_id',$comm_id['comm_id'])->update(['community_id'=>0]);
+				//把小区基价里的历史价格数据删除
+				Db::table('commhistoryprice')->where('community_id',$comm_id['comm_id'])->delete();
 			}
 		}
 	}
@@ -227,6 +229,7 @@ $this->redirect('managePriceIndex');
 		;
 		return $newid ['block_id'];
 	}
+	
 	private function get_newcommkid($block_id) {
 		/* 根据block_id生成新的comm_id */
 		// 先把指定block的所有comm的id取出放到一个数组中去
@@ -253,7 +256,6 @@ $this->redirect('managePriceIndex');
 	
 	public function ajaxGetCommName(){
 	    if (request()->isGet()) {
-//              dump(input());
 	        $result = $this->validate ( input (), [
 	            'commName' => 'require|max:25|min:2',
 	        ],
@@ -315,7 +317,6 @@ $this->redirect('managePriceIndex');
 	    
 	}
 	
-	
 	public function handle_comm(){
 	    //处理拆分小区的模块
         //如果是从异常记录跳转，这里传过来2个参数:community_id,commName
@@ -342,11 +343,6 @@ $this->redirect('managePriceIndex');
 	    
 	    //通过id找小区相关信息
 	    $getComm = Db::table('comm')->where('comm_id',$data['community_id'])->find();
-	    $data = array_merge ( $data,$getComm);
-// 	    $data['comm_name'] = $getComm['comm_name'];
-	    //取同一版块的其他小区列表
-	    $rela_comms = $this->db->where('block_id',$getComm['block_id'])->select()->toArray();
-	    $this->assign('rela_comms',$rela_comms);
 	    //如果有关联小区，也取出来
 	    if(isset($data['rela_comm_id']) and $data['rela_comm_id']>999){
 	        $getComm['rela_comm'] = Db::table('comm')->where('comm_id',$data['rela_comm_id'])->value('comm_name');
@@ -355,6 +351,12 @@ $this->redirect('managePriceIndex');
 	    }
 	    $getComm['rela_ratio'] = isset($data['rela_ratio']) ? $data['rela_ratio'] : 1;
 	    $getComm['usage'] = isset($data['usage'])? $data['usage']:'';
+	    $data = array_merge ( $data,$getComm);
+// 	    dump($data);
+	    
+	    //取同一版块的其他小区列表
+	    $rela_comms = $this->db->where('block_id',$getComm['block_id'])->select()->toArray();
+	    $this->assign('rela_comms',$rela_comms);
 	    
 	    
 	    $result = SalesModel::getRecordsByCommid($data);
@@ -364,15 +366,10 @@ $this->redirect('managePriceIndex');
 	        $PL = new PriceLogic($result);
 	        $getPrice_result = $PL->getStatic($getComm);
 	        $this->assign('B',$getPrice_result);
-// 	        $this->assign('result',$result);
 	    }else{
-// 	        $PL = new PriceLogic($result);
-// 	        $getPrice_result = $PL->getStatic($getComm);
-// 	        $this->assign('B',$getPrice_result);
 	        $this->assign('B',false);
-	        
 	    }
-	        $this->assign('result',$result);
+        $this->assign('result',$result);
 	    
 	    //取挂牌数据
 	    if(!isset($data['where']) or trim($data['where'])==''){
@@ -380,8 +377,6 @@ $this->redirect('managePriceIndex');
 	    }else{
 	        $data['where'] .= ' AND community_id = '.$data['community_id'];
 	    }
-// 	    $data = $this->datahandle($data);
-// 	    $saleslist = $this->getSales($data);
 	    $data = action('Sales/datahandle',  ['data' => $data]);
 	    $saleslist = action('Sales/getSalesByArray',  ['data' => $data]);
 	    
@@ -421,59 +416,7 @@ $this->redirect('managePriceIndex');
 	    $response['items'] = $liststring;
 	    return $response;
 	}
-	
-// 	private function datahandle($data){
-// 	    //对输入的数组进行处理，赋默认值
-// 	    $replace = array('“'=>'"');
-// 	    $replace += array('”' => '"');
-// 	    $replace += array("'" => '"');
-// 	    $replace += array("‘" => '"');
-// 	    $replace += array("’" => '"');
-// 	    if(!isset($data['where']) or trim($data['where'])==''){
-// 	        $data['where'] = '';
-// 	    }else{
-// 	        $data['where'] = strtr($data['where'],$replace);
-// 	    }
-// 	    if(!isset($data['order']) or trim($data['order'])==''){
-// 	        $data['order'] = 'price';
-// 	    }else{
-// 	        $data['order'] = strtr($data['order'],$replace);
-// 	    }
-// 	    if(!isset($data['set']) or trim($data['set'])==''){
-// 	        $data['set'] = '';
-// 	    }
-// 	    return $data;
-// 	}
-	
-// 	private function getSales($data){
-	     
-// 	    if('' !== $data['set']){
-// 	        //修改记录
-// 	        $sqlstr = 'UPDATE for_sale_property SET '.$data['set'].' WHERE '.$data['where'];
-// 	        $data['num'] = Db::execute($sqlstr);
-// 	    }
-// 	    //查询记录,无论是否修改，都需要查询
-// 	    //echo ($data['order']);
-// 	    $sales = Db::table('for_sale_property')->field('id,title,community_id,community_name,price,total_floor,builded_year')
-// 	    ->where($data['where'] )
-// 	    ->order($data['order'])
-// 	    ->paginate(100,false,[
-// 	        'query'=>[
-// 	            'where'=>  $data['where'],
-// 	            'order'=>  $data['order'],
-// 	            'set'=>  $data['set'],
-// 	            'community_id' =>  $data['community_id'],
-// 	        ],
-// 	    ]);
-	    
-// 	    return $sales;
-// 	}
-	
-// 	public function chooseChild($rela_list){
-// 	    $this->assign('rela_list',$rela_list);
-// 	    return $this->fetch('chooseChild');
-// 	}
-	
+		
 	public function ajaxGetRelaById(){
 	    //以ajax方式来生成一个关联规则的页面
 	    //如果传过来的是关联规则的id
@@ -692,7 +635,8 @@ $this->redirect('managePriceIndex');
 	    //查询记录,无论是否修改，都需要查询
 	    if( isset($data['block_id']) and ('' == $data['where']) ){
 	        //如果给了区块id，就只查询区块id,如果有where值，就清除区块查询
-    	    $list = Db::view('commhistoryprice','id,community_id,usage,create_time,median,mean,mortgagePrice,dealPrice,len,ori_len,std_r')
+	        dump($data);
+    	    $list = Db::view('commhistoryprice','id,community_id,usage,create_time,median,mean,min,max,mortgagePrice,dealPrice,len,ori_len,std_r')
     	    ->view('comm','comm_name,block,comm_addr,block_id','comm.comm_id=commhistoryprice.community_id')
     	    ->where('block_id',$data['block_id'])
     	    ->order($order)
@@ -702,6 +646,7 @@ $this->redirect('managePriceIndex');
     	            'order'=>  $data['order'],
     	        ],
     	    ]);
+//     	    dump($list);
 	    }else{
 	        //否则正常查询
     	    $HPrice = new CommhistorypriceModel();
@@ -716,7 +661,7 @@ $this->redirect('managePriceIndex');
     	        ],
     	    ]);
 	    }
-	    $title = ['序号','小区','区块','分类','均价','抵押价值','二手价值','数据量','原始数据','标准差','计算时间'];
+	    $title = ['序号','小区','区块','分类','均价','最小值','最大值','抵押价值','数据量','原始数据','标准差','计算时间'];
 	    $fields = Db::query('SHOW COLUMNS FROM commhistoryprice');
 	    $this->assign('title',$title);
 	    $this->assign('list',$list);
@@ -725,12 +670,6 @@ $this->redirect('managePriceIndex');
 	    return $this->fetch();
 	    
 	}
-	
-// 	public function getPriceIndexByBlock(){
-// 	    dump(input('block_id'));
-// 	    $this->redirect('managePriceIndex', ['block_id' => input('block_id')]);
-// // 	    dump($list);
-// 	}
 	
 	public function ajaxGetCommById(){
 	    //通过ajax取得鼠标点击小区的详细信息
@@ -742,6 +681,7 @@ $this->redirect('managePriceIndex');
 	    $html .= '</ul>';
 	    return $html;
 	}
+	
 	public function ajaxGetRelationById(){
 	    //通过ajax取得鼠标点击的详细关联规则信息
 	    $record = (new CommhistorypriceModel())->with('relation')->find(input('ID'))->toArray();

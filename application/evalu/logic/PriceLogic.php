@@ -232,7 +232,11 @@ class PriceLogic
         $XY_scatter['X0'] = floor($XY_scatter['Xmin']*(1-$scatter_extend_r)/1000)*1000;
         $XY_scatter['X5'] = ceil($XY_scatter['Xmax']*(1+$scatter_extend_r)/1000)*1000;
         $scatter_X_left = config('scatter_X_left');
-        $XY_scatter['Xunit'] = (100 - $scatter_X_left)/($XY_scatter['X5']-$XY_scatter['X0']);
+        if(0 != $XY_scatter['X5']-$XY_scatter['X0']){
+            $XY_scatter['Xunit'] = (100 - $scatter_X_left)/($XY_scatter['X5']-$XY_scatter['X0']);
+        }else{
+            $XY_scatter['Xunit'] = (100 - $scatter_X_left);
+        }
         
         //这是Y轴的最大和最小值
         if($Yitem == 'area'){

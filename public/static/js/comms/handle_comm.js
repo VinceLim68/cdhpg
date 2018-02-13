@@ -328,4 +328,9 @@ jQuery(function($) {
      	});
 	});
 
+	$('#goblock').on("click",function(){
+		var blockid = $('#rela h3 small').attr('blockid');
+		//alert(id);
+		window.location.href= goblodk + "?block_id=" + blockid;
+	});
 })
