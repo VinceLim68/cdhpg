@@ -211,7 +211,7 @@
 		<div role="tabpanel" class="tab-pane in active" id="rela">
   			<h3 style="color: #3c763d;">{$data['comm_name']}
 			{if condition="$data['usage']!=''"}-{$data['usage']}{/if}
-			<small style="padding-left:3%">{$data['region']}-{$data['block']}</small>
+			<small style="padding-left:3%" blockid="{$data['block_id']}">{$data['region']}-{$data['block']}</small>
 			</h3>
 			<div class="panel  panel-success">
 			  <div class="panel-heading" style="padding-bottom: 30px;width:100% ;height:100%">
@@ -252,6 +252,9 @@
 			  		</button>
 			  		<button type="button" class="btn btn-success" id="del_err" style="border-radius: 5px; float: right; padding: 3px 15px; margin-right: 3px;">
 			  			<span class="glyphicon glyphicon-refresh" aria-hidden="true"></span>清理异常记录
+			  		</button>
+			  		<button type="button" class="btn btn-success" id="goblock" style="border-radius: 5px; float: right; padding: 3px 15px; margin-right: 3px;">
+			  			<span class="glyphicon glyphicon-list" aria-hidden="true"></span>同版块小区
 			  		</button>
 			  		<form class="form-inline" id="search_form" style="float:left;">
 					  <div class="form-group">
@@ -385,7 +388,8 @@
 	var modiurl = "{:url('modifyRelation')}";
 	var delurl = "{:url('delRelation')}";
 	var del_err_comm = "{:url('Rules/del_err_comm')}";
-	var thiscomm = "{$B['comm']['comm_name']}";
+	var thiscomm = "{$data['comm_name']}";
+	var goblodk = "{:url('managepriceindex')}";
 	//var sales_geturlbyid = "{:url('Sales/getUrlById')}";
 	//var sales_getfullbyid = "{:url('Sales/getFullById')}";
 	var menuobj = {

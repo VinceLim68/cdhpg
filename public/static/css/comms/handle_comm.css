@@ -135,5 +135,9 @@ table {
 	border-bottom-left-radius: 0px;
 	
  }
+ 
+ #rela .panel-body button span.glyphicon {
+	padding-right:10px;
+ }
 
 
