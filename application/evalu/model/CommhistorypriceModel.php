@@ -26,8 +26,9 @@ class CommhistorypriceModel extends Model
 	    return date('Y-m', $value);
 	}
 	
-	public function isDuplicate($community_id){
-	    $find = $this->where('community_id',$community_id)->whereTime('create_time', 'month')->find();
+	public function isDuplicate($community_id,$whichmonth){
+	    //按月和小区id查询
+	    $find = $this->where('community_id',$community_id)->where($whichmonth)->find();
 	    return $find;
 	}
 }
