@@ -1,0 +1,265 @@
+<!-- 侧栏列表开始 -->
+            <ul class="nav nav-list">
+                <li class="">
+                    <a href="#" class="dropdown-toggle">
+                        <!--  <i class="menu-icon fa fa-desktop"></i> -->
+                        <span class="menu-text"> 小区管理 </span>
+                        <b class="arrow fa fa-angle-down"></b>
+                    </a>
+                    <b class="arrow"></b>
+                    <ul class="submenu">
+                        <li class="">
+                            <a href="{:url('Comms/commslist')}">
+                                <i class="menu-icon fa fa-caret-right"></i>
+                                	小区列表
+                            </a>
+                            <b class="arrow"></b>
+                        </li>
+                        <li class="">
+                            <a href="{:url('Comms/usagesplit')}">
+                                <i class="menu-icon fa fa-caret-right"></i>
+                               		 小区功能拆分
+                            </a>
+                        </li>
+                        <li class="">
+                            <a href="{:url('Comms/calPriceIndex')}">
+                                <i class="menu-icon fa fa-caret-right"></i>
+                               		 计算基价
+                            </a>
+                        </li>
+                        <li class="">
+                            <a href="{:url('Comms/managePriceIndex')}">
+                                <i class="menu-icon fa fa-caret-right"></i>
+                               		 基价管理
+                            </a>
+                        </li>
+                        <li class="">
+                            <a href="{:url('Comms/test')}">
+                                <i class="menu-icon fa fa-caret-right"></i>
+                               		 测试
+                            </a>
+                        </li>
+                    </ul>
+                </li>
+                <li class="">
+                    <a href="#" class="dropdown-toggle">
+                        <!--  <i class="menu-icon fa fa-pencil-square-o"></i> -->
+                        <span class="menu-text"> 挂牌信息 </span>
+                        <b class="arrow fa fa-angle-down"></b>
+                    </a>
+                    <b class="arrow"></b>
+                    <ul class="submenu">
+                        <li class="">
+                            <a href="{:url('Sales/salesList')}">
+                                <i class="menu-icon fa fa-caret-right"></i>
+                                挂牌信息
+                            </a>
+                            <b class="arrow"></b>
+                        </li>
+                        <li class="">
+                            <a href="{:url('Sales/queryByComm')}">
+                                <i class="menu-icon fa fa-caret-right"></i>
+                                按小区查询
+                            </a>
+                            <b class="arrow"></b>
+                        </li>
+                        <li class="">
+                            <a href="{:url('Sales/copyRemoteDbToLocal')}">
+                                <i class="menu-icon fa fa-caret-right"></i>
+                                把远程库复制到本地
+                            </a>
+                            <b class="arrow"></b>
+                        </li>
+                        <li class="">
+                            <a href="{:url('Sales/matchCommIDs')}">
+                                <i class="menu-icon fa fa-caret-right"></i>
+                                匹配小区ID
+                            </a>
+                            <b class="arrow"></b>
+                        </li>
+                       <li class="">
+                            <a href="{:url('Sales/copyCommsToRemote')}">
+                                <i class="menu-icon fa fa-caret-right"></i>
+                                把本地小区列表复制到远端
+                            </a>
+                            <b class="arrow"></b>
+                        </li>
+                    </ul>
+                </li>
+                <li class="">
+                    <a href="#" class="dropdown-toggle">
+                        <!--  <i class="menu-icon fa fa-pencil-square-o"></i> -->
+                        <span class="menu-text">用户及权限管理 </span>
+                        <b class="arrow fa fa-angle-down"></b>
+                    </a>
+                    <b class="arrow"></b>
+                    <ul class="submenu">
+                        <li class="">
+                            <a href="{:url('Rules/user')}">
+                                <i class="menu-icon fa fa-caret-right"></i>
+                              		用户列表
+                            </a>
+                            <b class="arrow"></b>
+                        </li>
+                        <li class="">
+                            <a href="{:url('Rules/group')}">
+                                <i class="menu-icon fa fa-caret-right"></i>
+                              		角色管理
+                            </a>
+                            <b class="arrow"></b>
+                        </li>
+                        <li class="">
+                            <a href="{:url('Rules/rule')}">
+                                <i class="menu-icon fa fa-caret-right"></i>
+                              		权限管理
+                            </a>
+                            <b class="arrow"></b>
+                        </li>
+                        
+                    </ul>
+                </li>
+                <li class="">
+                    <a href="#" class="dropdown-toggle">
+                        <!--  <i class="menu-icon fa fa-pencil-square-o"></i> -->
+                        <span class="menu-text">后台管理 </span>
+                        <b class="arrow fa fa-angle-down"></b>
+                    </a>
+                    <b class="arrow"></b>
+                    <ul class="submenu">
+                        <li class="">
+                            <a href="{:url('Rules/enquery_list')}">
+                                <i class="menu-icon fa fa-caret-right"></i>
+                              		查询记录列表
+                            </a>
+                            <b class="arrow"></b>
+                        </li>
+                        <li class="">
+                            <a href="{:url('Rules/err_comm_list')}">
+                                <i class="menu-icon fa fa-caret-right"></i>
+                              		异常记录列表
+                            </a>
+                            <b class="arrow"></b>
+                        </li>
+                        <li class="">
+                            <a href="{:url('Lists/anti_list')}">
+                                <i class="menu-icon fa fa-caret-right"></i>
+                              		防伪查询列表
+                            </a>
+                            <b class="arrow"></b>
+                        </li>
+                        
+                    </ul>
+                </li>
+                
+                <li class="">
+                    <a href="#" class="dropdown-toggle">
+                        <!--  <i class="menu-icon fa fa-list"></i> -->
+                        <span class="menu-text"> 测试使用的一些临时功能 </span>
+                        <b class="arrow fa fa-angle-down"></b>
+                    </a>
+                    <b class="arrow"></b>
+                    <ul class="submenu">
+                        <li class="">
+                            <a href="{:url('index/geturl')}">
+                                <i class="menu-icon fa fa-caret-right"></i>
+                                获取当前路径信息
+                            </a>
+                            <b class="arrow"></b>
+                        </li>
+                        <li class="">
+                            <a href="{:url('login/login')}" target='_blank'>
+                                <i class="menu-icon fa fa-caret-right"></i>
+                                登录页面
+                            </a>
+                            <b class="arrow"></b>
+                        </li>
+                    </ul>
+                </li>
+                <li class="">
+                    <a href="#" class="dropdown-toggle">
+                        <!-- <i class="menu-icon fa fa-tachometer"></i> -->
+                        <span class="menu-text">备份(多级菜单)</span>
+                        <b class="arrow fa fa-angle-down"></b>
+                    </a>
+                    <b class="arrow"></b>
+                    <ul class="submenu">
+                        <li class="">
+                            <!-- 这个本身带子菜单 -->
+                            <a href="#" class="dropdown-toggle">
+                                <i class="menu-icon fa fa-caret-right"></i>
+                                小区管理
+                                <b class="arrow fa fa-angle-down"></b>
+                            </a>
+                            <b class="arrow"></b>
+                            <ul class="submenu">
+                                <li class="">
+                                    <a href="{:url('Comms/index')}">
+                                        <i class="menu-icon fa fa-caret-right"></i>
+                                        小区列表
+                                    </a>
+                                    <b class="arrow"></b>
+                                </li>
+                                <li class="">
+                                    <a href="two-menu-1.html">
+                                        <i class="menu-icon fa fa-caret-right"></i>
+                                        增加小区
+                                    </a>
+                                    <b class="arrow"></b>
+                                </li>
+                            </ul>
+                        </li>
+                        <li class="">
+                            <!-- 这个本身带子菜单 -->
+                            <a href="#" class="dropdown-toggle">
+                                <i class="menu-icon fa fa-caret-right"></i>
+                                挂牌信息管理
+                                <b class="arrow fa fa-angle-down"></b>
+                            </a>
+                            <b class="arrow"></b>
+                            <ul class="submenu">
+                                <li class="">
+                                    <a href="{:url('Sales/index')}">
+                                        <i class="menu-icon fa fa-caret-right"></i>
+                                        显示挂牌记录
+                                    </a>
+                                    <b class="arrow"></b>
+                                </li>
+                                <li class="">
+                                    <a href="top-menu.html">
+                                        <i class="menu-icon fa fa-caret-right"></i>
+                                        匹配小区id
+                                    </a>
+                                    <b class="arrow"></b>
+                                </li>
+                                <li class="">
+                                    <a href="two-menu-1.html">
+                                        <i class="menu-icon fa fa-caret-right"></i>
+                                        未匹配成功挂牌记录
+                                    </a>
+                                    <b class="arrow"></b>
+                                </li>
+                                <li class="">
+                                    <a href="top-menu.html">
+                                        <i class="menu-icon fa fa-caret-right"></i>
+                                        匹配多个小区挂牌记录
+                                    </a>
+                                    <b class="arrow"></b>
+                                </li>
+                            </ul>
+                        </li>
+                        <li class="">
+                            <a href="jqgrid.html">
+                                <i class="menu-icon fa fa-caret-right"></i>
+                                查看未匹配记录
+                            </a>
+                            <b class="arrow"></b>
+                        </li>
+                    </ul>
+                </li>
+            </ul>
+            <!-- /.nav-list侧栏列表结束 -->
+            <!-- 侧栏收放按钮 -->
+            <div class="sidebar-toggle sidebar-collapse" id="sidebar-collapse">
+                <i id="sidebar-toggle-icon" class="ace-icon fa fa-angle-double-left ace-save-state" data-icon1="ace-icon fa fa-angle-double-left" data-icon2="ace-icon fa fa-angle-double-right"></i>
+            </div>
+            <!-- 侧栏收放按钮结束 -->
