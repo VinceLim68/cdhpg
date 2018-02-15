@@ -21,6 +21,8 @@ class PriceLogic
         $this->price = array_column ($this->arr, 'price' );
         $this->date = $collection[0];
     }
+    
+    
     public function getStatic($getComm,$price=0){
         //获取数据分析的结果
         //1 初步清洗偏离值
