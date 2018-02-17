@@ -673,15 +673,14 @@ class Comms extends Common {
 	    return $result;
 	}
 	
+    //基价管理
 	public function managePriceIndex(){
-	    //基价管理，基价的搜索、排序（按个数、按偏离度、按价格、按涨跌幅）->field('id,usage,mortgagePrice,dealPrice,len,ori_len,std_r,create_time')
-
 	    $data = input();
 // 	    dump($data);
 	    $data = action('Sales/datahandle',  ['data' => $data]);
 	    //原来是用price做为order的默认值，这里要改成community_id
 	    if($data['order'] == 'price'){
-	        $data['order'] = 'community_id';
+	        $data['order'] = 'from_date';
 	    }
 	    $order = $data['order'].' '.$data['sort'];
 	    if('' !== $data['set'] and '' != $data['where']){
@@ -690,12 +689,11 @@ class Comms extends Common {
 	        $data['num'] = Db::execute($sqlstr);
 	    }
 	    
-// 	        dump($data);
 	    //查询记录,无论是否修改，都需要查询
 	    if( isset($data['block_id']) and ('' == $data['where']) ){
 	        //如果给了区块id，就只查询区块id,如果有where值，就清除区块查询
-	        dump($data);
-    	    $list = Db::view('commhistoryprice','id,community_id,usage,create_time,median,mean,min,max,mortgagePrice,dealPrice,len,ori_len,std_r')
+// 	        dump($data);
+    	    $list = Db::view('commhistoryprice','id,community_id,usage,create_time,median,mean,min,max,mortgagePrice,dealPrice,len,ori_len,std_r,from_date')
     	    ->view('comm','comm_name,block,comm_addr,block_id','comm.comm_id=commhistoryprice.community_id')
     	    ->where('block_id',$data['block_id'])
     	    ->order($order)
@@ -708,6 +706,7 @@ class Comms extends Common {
 //     	    dump($list);
 	    }else{
 	        //否则正常查询
+	        //dump($data);
     	    $HPrice = new CommhistorypriceModel();
     	    $list = $HPrice->with('comm')
     	    ->where($data['where'] )
@@ -720,7 +719,7 @@ class Comms extends Common {
     	        ],
     	    ]);
 	    }
-	    $title = ['序号','小区','区块','分类','均价','最小值','最大值','抵押价值','数据量','原始数据','标准差','计算时间'];
+	    $title = ['序号','小区','区块','分类','均价','最小值','最大值','抵押价值','数据量','原始数据','标准差','基价时间'];
 	    $fields = Db::query('SHOW COLUMNS FROM commhistoryprice');
 	    $this->assign('title',$title);
 	    $this->assign('list',$list);
@@ -820,4 +819,64 @@ class Comms extends Common {
 	    }
 	    
 	}
+
+	//使用百度Echarts来生成图表
+    public function echarts(){
+        $priceindex = new CommhistorypriceModel();
+        $list = $priceindex             //Db::table('Commhistoryprice')
+            ->field('mortgagePrice,from_date')
+            ->where('community_id','1001001')
+            ->order('from_date')
+            ->select()->toArray();
+        $list1 = $priceindex             //Db::table('Commhistoryprice')
+            ->field('mortgagePrice,from_date')
+            ->where('community_id','1001002')
+            ->order('from_date')
+            ->select()->toArray();
+//         dump($list);
+        $dtime = json_encode(array_column ($list, 'from_date' ));
+        $this->assign([
+            'dtime' => $dtime,
+            'list'  => $list,
+            'list1'  => $list1,
+        ]);
+        return $this->fetch();
+    }
+    
+    //动态加载百度Echarts,这里其实可以批量查询（比如说列出同一区块的所有小区的走势图）,只要再增加一下判断传入的参数，修改一下查询语句
+    public function getdataforecharts(){
+        $comms = new Comm();
+        $c = $comms->field('comm_id')
+            ->where('comm_id',input('community_id'))
+//             ->where('comm_id','like','1001%')
+            ->select()->toArray();
+        $priceindex = new CommhistorypriceModel();
+        $price = [];
+        $mean = [];
+        $minrecords = config('min_base_records');
+        foreach ($c as $id){
+            $list = $priceindex             //Db::table('Commhistoryprice')
+                ->field('mortgagePrice,from_date,ori_len,mean')
+                ->where('community_id',$id['comm_id'])
+                ->order('from_date')
+                ->select()->toArray();
+            $isvalid = true;
+            foreach ($list as $item){
+                if($item['mortgagePrice']==0 ){
+                    $isvalid = false;
+                    break;
+                }
+            }
+            if($isvalid){
+                $price[] = array_column ($list, 'mortgagePrice' );
+                $mean[] = array_column ($list, 'mean' );
+            }
+        }
+        $data = [];
+        $data['dtime']= array_column ($list, 'from_date' );
+        $data['price'] = $price;
+        $data['mean'] = $mean;
+        return $data;
+        
+    }
 }
