@@ -256,6 +256,9 @@
 			  		<button type="button" class="btn btn-success" id="goblock" style="border-radius: 5px; float: right; padding: 3px 15px; margin-right: 3px;">
 			  			<span class="glyphicon glyphicon-list" aria-hidden="true"></span>同版块小区
 			  		</button>
+			  		<button type="button" class="btn btn-success" id="pricehistory" style="border-radius: 5px; float: right; padding: 3px 15px; margin-right: 3px;">
+			  			<span class="glyphicon glyphicon-stats" aria-hidden="true"></span>小区房价走势图
+			  		</button>
 			  		<form class="form-inline" id="search_form" style="float:left;">
 					  <div class="form-group">
 					    <label >小区名称</label>
@@ -390,7 +393,7 @@
 	var del_err_comm = "{:url('Rules/del_err_comm')}";
 	var thiscomm = "{$data['comm_name']}";
 	var goblodk = "{:url('managepriceindex')}";
-	//var sales_geturlbyid = "{:url('Sales/getUrlById')}";
+	var getpricehistory = "{:url('getdataforecharts')}";
 	//var sales_getfullbyid = "{:url('Sales/getFullById')}";
 	var menuobj = {
 	        bindings: {
@@ -428,6 +431,7 @@
 </script>
 <!-- 挂牌记录查询模态框-->
 {include file="./commhtml/myquery.html"/}
+{include file="./commhtml/common_echarts.html"/}
 <script>
 jQuery(function ($) {
     $('#salestable td').contextMenu('salelistmenu', menuobj);

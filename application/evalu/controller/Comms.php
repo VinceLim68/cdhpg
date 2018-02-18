@@ -336,8 +336,8 @@ class Comms extends Common {
 	    
 	}
 	
+    //处理拆分小区的模块
 	public function handle_comm(){
-	    //处理拆分小区的模块
         //如果是从异常记录跳转，这里传过来2个参数:community_id,commName
 	    $data = input();
 // 	    dump($data);
@@ -820,7 +820,7 @@ class Comms extends Common {
 	    
 	}
 
-	//使用百度Echarts来生成图表
+	//使用百度Echarts来生成图表,测试用
     public function echarts(){
         $priceindex = new CommhistorypriceModel();
         $list = $priceindex             //Db::table('Commhistoryprice')
@@ -861,12 +861,12 @@ class Comms extends Common {
                 ->order('from_date')
                 ->select()->toArray();
             $isvalid = true;
-            foreach ($list as $item){
-                if($item['mortgagePrice']==0 ){
-                    $isvalid = false;
-                    break;
-                }
-            }
+//             foreach ($list as $item){
+//                 if($item['mortgagePrice']==0 ){
+//                     $isvalid = false;
+//                     break;
+//                 }
+//             }
             if($isvalid){
                 $price[] = array_column ($list, 'mortgagePrice' );
                 $mean[] = array_column ($list, 'mean' );

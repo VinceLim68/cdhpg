@@ -178,12 +178,13 @@ function ActiveMyquery(){
 		         			community_id:community_id,
 		         		},
 		         		success:function(response){ 
+		         			setEcharts(response);
 		         			if(response.price.length != 0){
-			         			setEcharts(response);
+			         			$('#Echarts h4.modal-title').html(commName+'房价走势图');
 		         			}else{
-			         			$('#modal_echarts').html('<h3>'+commName+'房价数据不完整，无法展示'+'</h3>');
+			         			$('#Echarts h4.modal-title').html(commName+'房价数据不完整，无法展示');
+			         			//$('#modal_echarts').html('<h3>'+commName+'房价数据不完整，无法展示'+'</h3>');
 		         			}
-		         			$('#Echarts h4.modal-title').html(commName+'房价走势图');
 		         			$('#Echarts').modal('show');
 		         			//$('#modal_echarts').html('');
 		 		        }  
@@ -191,10 +192,16 @@ function ActiveMyquery(){
 	             },
 	             'gotohandle': function(t) {
             	 	var usage = $(t).parent().find("td").eq(3).html();
-            	 	//alert(usage);
+            	 	//alert(usage=='');
             	 	var community_id = $(t).parent().find("td").eq(1).attr('community_id');
            	 		//alert(blockid);
-           	 		window.location.href= "{:url('Comms/handle_comm')}"+"?community_id="+community_id+"&usage="+usage;
+           	 		if(usage==''){
+	           	 		window.location.href= "{:url('Comms/handle_comm')}"+"?community_id="+community_id;
+           	 			
+           	 		}else{
+           	 			
+	           	 		window.location.href= "{:url('Comms/handle_comm')}"+"?community_id="+community_id+"&usage="+usage;
+           	 		}
 	             },
 	            
 	           }
