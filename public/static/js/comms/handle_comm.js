@@ -105,7 +105,7 @@ jQuery(function($) {
 	    	url:getcommname,
 	    	data:$(this).serialize(),
 	    	success:function(response){
-	    		console.log(response);
+	    		//console.log(response);
 				if('object' === typeof(response)){
 					var html = '<img src="' + waitingImg + '" /><span style="margin-left:10px;">正在跳转' + response.comm_name + '中......</span>';
 	     			$('#mydialogg div.modal-body').html(html);

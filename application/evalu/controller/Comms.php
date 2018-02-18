@@ -273,7 +273,12 @@ class Comms extends Common {
 		return $newid;
 	}
 	
+	//通过输入文件名查找id,如果是唯一，返回一个comm对象，如果不是，返回html列表供选择
 	public function ajaxGetCommName(){
+	    //dump(input());
+	    if(null !== input('from')){
+	        $from = input('from');
+	    }
 	    if (request()->isGet()) {
 	        $result = $this->validate ( input (), [
 	            'commName' => 'require|max:25|min:2',
@@ -301,7 +306,11 @@ class Comms extends Common {
                     foreach ($commnames as $comm){
                         $v = Db::table('comm')->where('comm_id',$comm['comm_id'])->find();
                         $mystr .= '<tr>';
-                        $mystr .= '<td><a href="'.url("handle_comm").'?community_id='.$v['comm_id'].'">'.$v['comm_name'].'</a></td>';
+                        if(isset($from)){
+                            $mystr .= '<td><a href="'.url($from).'?community_id='.$v['comm_id'].'">'.$v['comm_name'].'</a></td>';
+                        }else{
+                            $mystr .= '<td><a href="'.url("handle_comm").'?community_id='.$v['comm_id'].'">'.$v['comm_name'].'</a></td>';
+                        }
                         $mystr .= '<td>'.$v['comm_id'].'</td>';
                         $mystr .= '<td>'.$v['region'].'</td>';
                         $mystr .= '<td>'.$v['block'].'</td>';
@@ -704,6 +713,18 @@ class Comms extends Common {
     	        ],
     	    ]);
 //     	    dump($list);
+	    }elseif(isset($data['community_id'])){
+	        //如果有community_id，则按community_id查询，其实是按小区名称查询
+	        $list = (new CommhistorypriceModel())->with('comm')
+	        ->where('community_id',$data['community_id'])
+	        ->order('from_date')
+	        ->paginate(100,false,[
+	            'query'=>[
+	                'where'=>  $data['where'],
+	                'order'=>  $data['order'],
+	                'set'=>  $data['set'],
+	            ],
+	        ]);
 	    }else{
 	        //否则正常查询
 	        //dump($data);
