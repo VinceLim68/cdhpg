@@ -26,9 +26,23 @@ class CommhistorypriceModel extends Model
 	    return date('Y-m', $value);
 	}
 	
-	public function isDuplicate($community_id,$whichmonth){
-	    //按月和小区id查询
-	    $find = $this->where('community_id',$community_id)->where($whichmonth)->find();
+	public function isDuplicate($item,$whichmonth){
+	    //按月和小区id、用途查询
+	    dump($item);
+	    if(!isset($item['usage'])){
+	        $item['usage'] = '';
+	    }
+	    if(isset($item['rela_id'])){
+	        //利用关联规则id来判断对于细分功能是否重复
+	        $find = $this->where('community_id',$item['community_id'])
+	                 ->where('usage',$item['usage'])
+	                 ->where('rela_id',$item['rela_id'])
+	                 ->where($whichmonth)->find();
+	    }else{
+	        $find = $this->where('community_id',$item['community_id'])
+	        ->where('usage',$item['usage'])
+	        ->where($whichmonth)->find();
+	    }
 	    return $find;
 	}
 }

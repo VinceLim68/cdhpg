@@ -573,6 +573,75 @@ class Comms extends Common {
 	    return $res;
 	}
 	
+	//测试获得小区列表，如果有关联规则，每个关联规则算一条
+	public function testgetcommwithrelate(){
+	    ignore_user_abort(true); // 后台运行
+	    error_reporting(0);
+	    set_time_limit(0);
+	     
+	    $buffer = ini_get('output_buffering');
+	    echo str_repeat(' ',$buffer+1);
+	    ob_end_flush();
+	    $comms = Comm::with('commrelate')
+	    ->where('comm_id','1118002')
+	    ->select()->toArray();
+// 	    dump($comms);
+	    $datas = [];
+	    foreach ($comms as $comm){
+	       $data = [];
+            $data['community_id'] = $comm['comm_id'];
+            $datas[] = $data;           //每个小区都要计算，当作“未分类基价”
+            if(!empty($comm['commrelate'])){
+                //如果小区还有关联规则，再对每个小区规则进行计算，但“未分类基价”不用重复了
+                foreach ($comm['commrelate'] as $relationship){
+                    if($relationship['usage'] != '未分类基价'){
+                        //未分类基价是每个小区都要计算的，所以这里不再重复计算
+    	                $data = [];
+                        $data['community_id'] = $comm['comm_id'];
+    	                $data['rela_comm_id'] = $relationship['rela_comm_id'];
+    	                $data['where'] = $relationship['where'];
+    	                $data['rela_ratio'] = $relationship['rela_ratio'];
+    	                $data['rela_weight'] = $relationship['rela_weight'];
+    	                $data['usage'] = $relationship['usage'];
+    	                $data['rela_id'] = $relationship['id'];
+    	                $datas[] = $data;
+                    }
+                }
+           }
+       }
+       $maxdate = Db::table('allsales')->max('first_acquisition_time');
+       $mindate = Db::table('allsales')->min('first_acquisition_time');
+       $firstday = date("Y-m-01",strtotime($mindate));
+       //按日期循环
+       while ($firstday < $maxdate){
+           $lastday = date("Y-m-d",strtotime("$firstday +1 month -1 day"));
+           $whichmonth = "first_acquisition_time BETWEEN '".$firstday."' AND '".$lastday."'";//指定查询的时间范围
+           $whichmonth1 = "from_date BETWEEN '".$firstday."' AND '".$lastday."'";//登记基价的时间，用于判断重复
+           	
+           //每个月再按上面的列表分别计算各小区基价
+           $i = 0;        //计数变量
+           foreach ($datas as $item){
+               $i += 1;
+               echo "========".$firstday."-".$lastday." : ".$i."=======</br>";
+               $priceIndex = new CommhistorypriceModel;
+               if($priceIndex->isDuplicate($item,$whichmonth1)){
+                   //判断是否已经计算过当月基价
+                   echo '====== 本小区当月基价数据已经存在,不再重复计算  =====</br>';
+               }else{
+                   $getPrice_result = $this->cal($item,$whichmonth);
+                   $getPrice_result['from_date'] = $firstday;      //记录基价所对应的日期
+                   $priceIndex->data($getPrice_result)->allowField(true)->save();
+                   dump($getPrice_result);
+               }
+               flush();
+           }
+           $firstday = date("Y-m-01",strtotime("$firstday +1 month"));
+       }
+        
+       ignore_user_abort(false); // 解除后台运行
+	
+	}
+	
 	//生成一次基价
 	public function calPriceIndex(){
 	    //批量生成历史价格指数
@@ -619,8 +688,8 @@ class Comms extends Common {
        //按日期循环
        while ($firstday < $maxdate){
             $lastday = date("Y-m-d",strtotime("$firstday +1 month -1 day"));
-            $whichmonth = "first_acquisition_time BETWEEN '".$firstday."' AND '".$lastday."'";//指定查询月份
-            $whichmonth1 = "from_date BETWEEN '".$firstday."' AND '".$lastday."'";//指定查询月份
+            $whichmonth = "first_acquisition_time BETWEEN '".$firstday."' AND '".$lastday."'";//指定查询的时间范围
+            $whichmonth1 = "from_date BETWEEN '".$firstday."' AND '".$lastday."'";//登记基价的时间，用于判断重复
     	    
             //每个月再按上面的列表分别计算各小区基价
             $i = 0;        //计数变量
@@ -628,12 +697,10 @@ class Comms extends Common {
                 $i += 1;
                 echo "========".$firstday."-".$lastday." : ".$i."=======</br>";
                 $priceIndex = new CommhistorypriceModel;
-                if($priceIndex->isDuplicate($item['community_id'],$whichmonth1)){
+                if($priceIndex->isDuplicate($item,$whichmonth1)){
                     //判断是否已经计算过当月基价
                     echo '====== 本小区当月基价数据已经存在,不再重复计算  =====</br>';
                 }else{
-//                     $getPrice_result = $this->cal($item);
-//                     dump($item);
                     $getPrice_result = $this->cal($item,$whichmonth);
                     $getPrice_result['from_date'] = $firstday;      //记录基价所对应的日期
                     $priceIndex->data($getPrice_result)->allowField(true)->save();
@@ -699,9 +766,10 @@ class Comms extends Common {
 	    }
 	    
 	    //查询记录,无论是否修改，都需要查询
-	    if( isset($data['block_id']) and ('' == $data['where']) ){
+	        dump($data);
+	    if( isset($data['block_id']) and ('' != $data['block_id']) and ('' == $data['where']) ){
 	        //如果给了区块id，就只查询区块id,如果有where值，就清除区块查询
-// 	        dump($data);
+            dump('block');
     	    $list = Db::view('commhistoryprice','id,community_id,usage,create_time,median,mean,min,max,mortgagePrice,dealPrice,len,ori_len,std_r,from_date')
     	    ->view('comm','comm_name,block,comm_addr,block_id','comm.comm_id=commhistoryprice.community_id')
     	    ->where('block_id',$data['block_id'])
@@ -713,8 +781,9 @@ class Comms extends Common {
     	        ],
     	    ]);
 //     	    dump($list);
-	    }elseif(isset($data['community_id'])){
+	    }elseif(isset($data['community_id']) and ('' != $data['community_id']) and ('' == $data['where'])){
 	        //如果有community_id，则按community_id查询，其实是按小区名称查询
+	        dump('community_id');
 	        $list = (new CommhistorypriceModel())->with('comm')
 	        ->where('community_id',$data['community_id'])
 	        ->order('from_date')
@@ -728,6 +797,7 @@ class Comms extends Common {
 	    }else{
 	        //否则正常查询
 	        //dump($data);
+	        dump('search');
     	    $HPrice = new CommhistorypriceModel();
     	    $list = $HPrice->with('comm')
     	    ->where($data['where'] )
@@ -763,7 +833,9 @@ class Comms extends Common {
 	
 	public function ajaxGetRelationById(){
 	    //通过ajax取得鼠标点击的详细关联规则信息
+	    //dump(input());
 	    $record = (new CommhistorypriceModel())->with('relation')->find(input('ID'))->toArray();
+	    //dump($record);
 	    $html = '<ul class="list-group">';
 	    if($record['relation']){
     	    foreach ($record['relation'] as $k => $v){

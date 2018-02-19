@@ -205,14 +205,11 @@ jQuery(function($) {
            	 	var community_id = $(t).parent().find("td").eq(1).attr('community_id');
           	 		//alert(blockid);
           	 		if(usage==''){
-           	 		window.location.href= "{:url('Comms/handle_comm')}"+"?community_id="+community_id;
-          	 			
+           	 			window.location.href= "{:url('Comms/handle_comm')}"+"?community_id="+community_id;
           	 		}else{
-          	 			
-           	 		window.location.href= "{:url('Comms/handle_comm')}"+"?community_id="+community_id+"&usage="+usage;
+           	 			window.location.href= "{:url('Comms/handle_comm')}"+"?community_id="+community_id+"&usage="+usage;
           	 		}
              },
-            
            }
      });
 	$("#search_form").on("submit", function(event) {
@@ -241,8 +238,8 @@ jQuery(function($) {
 	});
 });
 	</script>
-	{include file="./commhtml/myquery.html"/}
-	{include file="./commhtml/common_echarts.html"/}
-	{/block}{block name="pg_inline_js"}
+{include file="./commhtml/myquery.html"/}
+{include file="./commhtml/common_echarts.html"/}
+{/block}{block name="pg_inline_js"}
 
 {/block}
