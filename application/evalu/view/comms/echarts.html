@@ -1,0 +1,113 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="utf-8">
+    <title>ECharts</title>
+    <!-- 引入 echarts.js -->
+    <!-- 这是测试使用Echart的页面，加载了图表，并测试了动态加载 -->
+    
+    <script src="__JS__/jquery-2.1.4.min.js"></script>
+    <script src="__JS__/echarts.js"></script>
+    <!-- <script src="echarts.js"></script> -->
+</head>
+<body>
+    <!-- 为ECharts准备一个具备大小（宽高）的Dom -->
+    <div id="main" style="width: 100%;height:400px;"></div>
+    <button id="ajaxecharts">点击加载</button>
+    <div id="main1" style="width: 600px;height:400px;"></div>
+    <script type="text/javascript">
+        // 基于准备好的dom，初始化echarts实例
+        var myChart = echarts.init(document.getElementById('main'));
+        var myChart1 = echarts.init(document.getElementById('main1'));
+
+        // 指定图表的配置项和数据
+		option = {
+		    title: {
+		        text: '房价走势'
+		    },
+		    tooltip: {
+		        trigger: 'axis'
+		    },
+		    xAxis: {
+		        type: 'category',
+		        data: {$dtime},
+		    },
+		    yAxis: {
+		        type: 'value'
+		    },
+		    series: [
+             {
+		    	data: [
+				        {foreach name="list" item="t"}
+							{$t["mortgagePrice"]},
+						{/foreach}],
+		        //data: [820, 932, 901, 934, 1290, 1330, 1320],
+		        type: 'line'
+		    },
+		    {
+		    	data: [
+				        {foreach name="list1" item="t"}
+							{$t["mortgagePrice"]},
+						{/foreach}],
+		        type: 'line'
+		    }
+		    ]
+		};
+
+        // 使用刚指定的配置项和数据显示图表。
+        myChart.setOption(option);
+        
+        option1 = {
+    		    title: {
+    		        text: '异步加载1'
+    		    },
+    		    tooltip: {
+    		        trigger: 'axis'
+    		    },
+    		    legend: {
+    		    	data:['房价指数']
+    		    },
+    		    xAxis: {
+    		        type: 'category',
+    		        data: [],
+    		    },
+    		    yAxis: {
+    		        type: 'value'
+    		    },
+    		    series: [{
+    		    	name: '房价指数',
+    		    	data: [],
+    		        type: 'line'
+    		    }]
+    		};
+
+            // 使用刚指定的配置项和数据显示图表。
+            myChart1.setOption(option1);
+            $('#ajaxecharts').on('click',function(){
+            	// 异步加载数据
+            	$.get('getdataforecharts').done(function (data) {
+            	    // 填入数据
+            	    //console.log(data);
+            	    var price = [];
+            	    //console.log(data.price);
+            	    for (var x in data.price)
+            	    {
+            	    	//console.log(data.price[x]);
+            	    	var item ={};
+            	    	item.type = 'line';
+            	    	item.data = data.price[x];
+            	    	price.push(item);
+            	    }
+            	    //console.log(price),
+            	    myChart1.setOption({
+            	        xAxis: {
+            	            data: data.dtime
+            	        },
+            	        series: price,
+ 
+            	    });
+            	});
+            })
+    </script>
+</body>
+</html>

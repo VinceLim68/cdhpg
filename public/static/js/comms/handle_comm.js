@@ -105,7 +105,7 @@ jQuery(function($) {
 	    	url:getcommname,
 	    	data:$(this).serialize(),
 	    	success:function(response){
-	    		console.log(response);
+	    		//console.log(response);
 				if('object' === typeof(response)){
 					var html = '<img src="' + waitingImg + '" /><span style="margin-left:10px;">正在跳转' + response.comm_name + '中......</span>';
 	     			$('#mydialogg div.modal-body').html(html);
@@ -122,13 +122,6 @@ jQuery(function($) {
 	
 	$('.tab-pane .scatter_btn').on('click',function(event){
 		//散点图的过滤按钮
-//		var data = [];
-//		data['community_id'] = $('#hidden_datas').attr('community_id');
-//		data['rela_comm_id'] = $('#hidden_datas').attr('rela_comm_id');
-//		data['rela_ratio'] = $('#hidden_datas').attr('rela_ratio');
-//		data['where'] = $('#hidden_datas').attr('where');
-//		data['rela_weight'] = $('#hidden_datas').attr('rela_weight');
-//		alert($(this).next().html());
 		var tab_pane = $(this).parent().parent().parent().parent();
 //		alert(btn);
 		var thisinput = $(this).prev().val();
@@ -152,25 +145,7 @@ jQuery(function($) {
 			},
 			
 		});
-		
-//		console.log(data);
-//		console.log(event);
-//		alert(this.id);			//返回scatter_area_price_btn
-//		console.log(this.id);
 	})
-//	//利用下拉列表，协助生成where查询
-//	jQuery("body").on("change",".wherefield", 		
-//		function(){
-//			alert('');
-//			var where = $("textarea[name='where']").val();
-//			var thisval =  $(".wherefield").val() + ' = ""';
-//			if('' == where){
-//				where = thisval;
-//			}else{
-//				where += ' AND ' + thisval;
-//			}
-//			$("textarea[name='where']").val(where);
-//	});
 	
 	jQuery("body").on("change","#sele_field", function(){
 		//这个是由操作动态生成的展示关联规则详细内容的页面中用到的js
@@ -241,21 +216,6 @@ jQuery(function($) {
 		});
 	});
 	
-	//提交关联规则表单时，提示等候
-//	$('#relaform').on('submit',wait('正在刷新页面中，请稍侯......',true))
-//	
-//	//定义一个提示等候的方法
-//	function wait(message,iswaiting){
-//		var html = '';
-//		if(iswaiting){
-//			html += '<img src="' + waitingImg + '" />';
-//		}
-//		html += '<span style="margin-left:10px;">' + message + '</span>';
-//		$('#relaform').modal('hide');
-//		$('#mydialogg div.modal-body').html(html);
-//		$('#mydialogg').modal('show');
-//	}
-	
 	//利用下拉小区名称列表，获取小区id，
 	jQuery("body").on("change","#rela_c", 		
 			function(){
@@ -269,33 +229,6 @@ jQuery(function($) {
 		$("input[name='usage']").val(thisval);
 	});
 	
-//	//利用下拉列表，协助生成order查询
-//	jQuery("#orderfield").on("change", 		
-//		function(){
-//			var thisval =  $("#orderfield").val() ;
-//			$("input[name='order']").val(thisval);
-//	});
-	
-//	//利用下拉列表，协助生成update查询
-//	jQuery("#setfield").on("change", 		
-//		function(){
-//			var set = $("input[name='set']").val();
-//			var thisval =  $("#setfield").val()+ ' = ""';
-//			if('' == set){
-//				set = thisval ;
-//			}else{
-//				set += ' ,' + thisval ;
-//			}
-//			$("input[name='set']").val(set);
-//	});
-	
-	//重置按钮
-//	jQuery("#reset").on("click", 		
-//		function(){
-//		$("input[name='set']").val('');
-//		$("input[name='order']").val('') ;
-//		$("textarea[name='where']").val('');
-//	});
 	
 	jQuery('#add_rela').on("click",function(){
 		var comm = $('#myquery input[name="community_id"]').val();
@@ -330,7 +263,27 @@ jQuery(function($) {
 
 	$('#goblock').on("click",function(){
 		var blockid = $('#rela h3 small').attr('blockid');
-		//alert(id);
 		window.location.href= goblodk + "?block_id=" + blockid;
+	});
+	
+	
+	$('#pricehistory').on("click",function(){
+ 		var community_id = $('#hidden_datas').attr('community_id');
+ 		//alert(community_id);
+ 		$.ajax({
+ 			url:getpricehistory,
+       	 	data:{
+     			community_id:community_id,
+     		},
+     		success:function(response){ 
+     			setEcharts(response);
+     			if(response.price.length != 0){
+         			$('#Echarts h4.modal-title').html(thiscomm+'房价走势图');
+     			}else{
+         			$('#Echarts h4.modal-title').html(thiscomm+'房价数据不完整，无法展示');
+     			}
+     			$('#Echarts').modal('show');
+	        }  
+ 		});
 	});
 })
