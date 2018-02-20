@@ -28,7 +28,7 @@ class CommhistorypriceModel extends Model
 	
 	public function isDuplicate($item,$whichmonth){
 	    //按月和小区id、用途查询
-	    dump($item);
+// 	    dump($item);
 	    if(!isset($item['usage'])){
 	        $item['usage'] = '';
 	    }

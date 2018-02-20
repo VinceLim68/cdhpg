@@ -611,38 +611,45 @@ class Comms extends Common {
        }
        $maxdate = Db::table('allsales')->max('first_acquisition_time');
        $mindate = Db::table('allsales')->min('first_acquisition_time');
-       $firstday = date("Y-m-01",strtotime($mindate));
+       $basedate = date("Y-m-01",strtotime($mindate));      //$basedate：基价日期，某月的1日
+//        dump($basedate);
+        $month = config('how_long_before_to_start_query')-1;
+       $basedate = date("Y-m-01",strtotime("$basedate +$month month"));      //第一次应该往后退2个月
        //按日期循环
-       while ($firstday < $maxdate){
-           $lastday = date("Y-m-d",strtotime("$firstday +1 month -1 day"));
-           $whichmonth = "first_acquisition_time BETWEEN '".$firstday."' AND '".$lastday."'";//指定查询的时间范围
-           $whichmonth1 = "from_date BETWEEN '".$firstday."' AND '".$lastday."'";//登记基价的时间，用于判断重复
+       while ($basedate < $maxdate){
+           $startday = date("Y-m-d",strtotime("$basedate -$month month"));
+           $lastday = date("Y-m-d",strtotime("$basedate +1 month -1 day"));
+//             dump($basedate);
+//            dump($startday);
+//            halt($lastday);
+           $whichmonth = "first_acquisition_time BETWEEN '".$startday."' AND '".$lastday."'";//指定查询的时间范围
+           $whichmonth1 = "from_date BETWEEN '".$basedate."' AND '".$lastday."'";//登记基价的时间，用于判断重复
            	
            //每个月再按上面的列表分别计算各小区基价
            $i = 0;        //计数变量
            foreach ($datas as $item){
                $i += 1;
-               echo "========".$firstday."-".$lastday." : ".$i."=======</br>";
+               echo "========基期".$basedate." ：自".$startday."----".$lastday." : ".$i."=======</br>";
                $priceIndex = new CommhistorypriceModel;
                if($priceIndex->isDuplicate($item,$whichmonth1)){
                    //判断是否已经计算过当月基价
                    echo '====== 本小区当月基价数据已经存在,不再重复计算  =====</br>';
                }else{
                    $getPrice_result = $this->cal($item,$whichmonth);
-                   $getPrice_result['from_date'] = $firstday;      //记录基价所对应的日期
+                   $getPrice_result['from_date'] = $basedate;      //记录基价所对应的日期
                    $priceIndex->data($getPrice_result)->allowField(true)->save();
                    dump($getPrice_result);
                }
                flush();
            }
-           $firstday = date("Y-m-01",strtotime("$firstday +1 month"));
+           $basedate = date("Y-m-01",strtotime("$basedate +1 month"));
        }
         
        ignore_user_abort(false); // 解除后台运行
 	
 	}
 	
-	//生成一次基价
+	//生成基价
 	public function calPriceIndex(){
 	    //批量生成历史价格指数
 	    ignore_user_abort(true); // 后台运行
@@ -684,36 +691,40 @@ class Comms extends Common {
 	    //先取出最大和最小日期
        $maxdate = Db::table('allsales')->max('first_acquisition_time');
        $mindate = Db::table('allsales')->min('first_acquisition_time');
-       $firstday = date("Y-m-01",strtotime($mindate));
+       $basedate = date("Y-m-01",strtotime($mindate));      //$basedate：基价日期，某月的1日
+       $month = config('how_long_before_to_start_query')-1;         //从配置文件中取出基价计算时用的时段，不采用一月的数据，而用前三月数据来计算
+       $basedate = date("Y-m-01",strtotime("$basedate +$month month"));      //第一月取数不足3个月，应该往后退2个月
        //按日期循环
-       while ($firstday < $maxdate){
-            $lastday = date("Y-m-d",strtotime("$firstday +1 month -1 day"));
-            $whichmonth = "first_acquisition_time BETWEEN '".$firstday."' AND '".$lastday."'";//指定查询的时间范围
-            $whichmonth1 = "from_date BETWEEN '".$firstday."' AND '".$lastday."'";//登记基价的时间，用于判断重复
-    	    
-            //每个月再按上面的列表分别计算各小区基价
-            $i = 0;        //计数变量
-    	    foreach ($datas as $item){
-                $i += 1;
-                echo "========".$firstday."-".$lastday." : ".$i."=======</br>";
-                $priceIndex = new CommhistorypriceModel;
-                if($priceIndex->isDuplicate($item,$whichmonth1)){
-                    //判断是否已经计算过当月基价
-                    echo '====== 本小区当月基价数据已经存在,不再重复计算  =====</br>';
-                }else{
-                    $getPrice_result = $this->cal($item,$whichmonth);
-                    $getPrice_result['from_date'] = $firstday;      //记录基价所对应的日期
-                    $priceIndex->data($getPrice_result)->allowField(true)->save();
-                    dump($getPrice_result);
-                }
-                flush();
-    	    }
-            $firstday = date("Y-m-01",strtotime("$firstday +1 month"));
+       while ($basedate < $maxdate){
+           $startday = date("Y-m-d",strtotime("$basedate -$month month"));          //开始日期，如果2016后8月的基期，其开始为2016-6-1
+           $lastday = date("Y-m-d",strtotime("$basedate +1 month -1 day"));         //结束日期，如果2016后8月的基期，其结束为2016-8-31
+           $whichmonth = "first_acquisition_time BETWEEN '".$startday."' AND '".$lastday."'";//指定查询的时间范围
+           $whichmonth1 = "from_date BETWEEN '".$basedate."' AND '".$lastday."'";            //登记基价的时间，用于判断重复
+           	
+           //每个月再按上面的列表分别计算各小区基价
+           $i = 0;        //计数变量
+           foreach ($datas as $item){
+               $i += 1;
+               echo "========基期".$basedate." ：自".$startday."----".$lastday." : ".$i."=======</br>";
+               $priceIndex = new CommhistorypriceModel;
+               if($priceIndex->isDuplicate($item,$whichmonth1)){
+                   //判断是否已经计算过当月基价
+                   echo '====== 本小区当月基价数据已经存在,不再重复计算  =====</br>';
+               }else{
+                   $getPrice_result = $this->cal($item,$whichmonth);
+                   $getPrice_result['from_date'] = $basedate;      //记录基价所对应的日期
+                   $priceIndex->data($getPrice_result)->allowField(true)->save();
+                   dump($getPrice_result);
+               }
+               flush();
+           }
+           $basedate = date("Y-m-01",strtotime("$basedate +1 month"));
        }
-       
-	    ignore_user_abort(false); // 解除后台运行
+        
+       ignore_user_abort(false); // 解除后台运行
 	}
 	
+	//供调用的基价计算模块
 	private function cal($item,$whichmonth){
 	    if($whichmonth == 1){
 	        //如果是1，表示只计算当前月
@@ -725,7 +736,7 @@ class Comms extends Common {
 	        }else{
 	            $fields = 'id,floor_index,total_floor,price,area,builded_year';
 	        };
-	            //有关联小区就用关联小区的数据，否则取自己的
+            //有关联小区就用关联小区的数据，否则取自己的
             $comm_id = (isset($item['rela_comm_id']) and $item['rela_comm_id']!=0) ? $item['rela_comm_id'] : $item['community_id'];
             $where = isset($item['where']) ? $item['where'] : ' 1=1 ';
             $rela_ratio = isset($item['rela_ratio']) ? $item['rela_ratio'] : 1;
@@ -766,10 +777,10 @@ class Comms extends Common {
 	    }
 	    
 	    //查询记录,无论是否修改，都需要查询
-	        dump($data);
+// 	        dump($data);
 	    if( isset($data['block_id']) and ('' != $data['block_id']) and ('' == $data['where']) ){
 	        //如果给了区块id，就只查询区块id,如果有where值，就清除区块查询
-            dump('block');
+//             dump('block');
     	    $list = Db::view('commhistoryprice','id,community_id,usage,create_time,median,mean,min,max,mortgagePrice,dealPrice,len,ori_len,std_r,from_date')
     	    ->view('comm','comm_name,block,comm_addr,block_id','comm.comm_id=commhistoryprice.community_id')
     	    ->where('block_id',$data['block_id'])
@@ -783,7 +794,7 @@ class Comms extends Common {
 //     	    dump($list);
 	    }elseif(isset($data['community_id']) and ('' != $data['community_id']) and ('' == $data['where'])){
 	        //如果有community_id，则按community_id查询，其实是按小区名称查询
-	        dump('community_id');
+// 	        dump('community_id');
 	        $list = (new CommhistorypriceModel())->with('comm')
 	        ->where('community_id',$data['community_id'])
 	        ->order('from_date')
@@ -797,7 +808,7 @@ class Comms extends Common {
 	    }else{
 	        //否则正常查询
 	        //dump($data);
-	        dump('search');
+// 	        dump('search');
     	    $HPrice = new CommhistorypriceModel();
     	    $list = $HPrice->with('comm')
     	    ->where($data['where'] )
