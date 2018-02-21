@@ -156,15 +156,17 @@ class Comms extends Common {
 		} elseif ($vars ['oper'] == 'edit') { // 修改记录
 			$this->db->allowField ( true )->update ( $vars );
 		} elseif ($vars ['oper'] == 'del') { // 删除记录
+		    halt($vars);
 			$del_id = explode ( ',', $vars ['id'] );
 			foreach ( $del_id as $myid ) {
-// 				echo $myid;
+                //根据小区列表的序号取出小区id
 				$comm_id = $this->db->field('comm_id')->where ( 'Id', $myid )->find();
-				$this->db->where ( 'Id', $myid )->delete ();
-				//删除之后还要把挂牌信息里相关的commid改成0
-				Db::table('for_sale_property')->where('community_id',$comm_id['comm_id'])->update(['community_id'=>0]);
-				//把小区基价里的历史价格数据删除
-				Db::table('commhistoryprice')->where('community_id',$comm_id['comm_id'])->delete();
+				$this->db->delWithRelation($comm_id['comm_id']);
+// 				$this->db->where ( 'Id', $myid )->delete ();
+// 				//删除之后还要把挂牌信息里相关的commid改成0
+// 				Db::table('for_sale_property')->where('community_id',$comm_id['comm_id'])->update(['community_id'=>0]);
+// 				//把小区基价里的历史价格数据删除
+// 				Db::table('commhistoryprice')->where('community_id',$comm_id['comm_id'])->delete();
 			}
 		}
 	}
@@ -179,6 +181,11 @@ class Comms extends Common {
 		return $this->fetch ();
 	}
 	
+	//删除小区及关联
+	public function delecomm($community_id = null){
+	    //dump($community_id);
+        $this->db->delWithRelation($community_id);        
+	}
 	
 	public function matchid() {
 		/*
@@ -841,7 +848,7 @@ class Comms extends Common {
 	    $data = action('Sales/datahandle',  ['data' => $data]);
 	    //原来是用price做为order的默认值，这里要改成community_id
 	    if($data['order'] == 'price'){
-	        $data['order'] = 'ori_len';
+	        $data['order'] = 'sumorilen';
 	    }
 	    $order = $data['order'].' '.$data['sort'];
 	    if('' !== $data['set'] and '' != $data['where']){
@@ -855,7 +862,7 @@ class Comms extends Common {
 	    if( isset($data['block_id']) and ('' != $data['block_id']) and ('' == $data['where']) ){
 	        //如果给了区块id，就只查询区块id,如果有where值，就清除区块查询
 	        //             dump('block');
-	        $list = Db::view('commhistoryprice','id,community_id,usage,create_time,median,mean,min,max,mortgagePrice,dealPrice,len,ori_len,std_r,from_date')
+	        $list = Db::view('commhistoryprice','id,community_id,usage,create_time,median,SUM(ori_len) as sumorilen,sum(len) as sumlen,avg(std_r) as avgstdr,from_date')
 	        ->view('comm','comm_name,block,comm_addr,block_id','comm.comm_id=commhistoryprice.community_id')
 	        ->where('block_id',$data['block_id'])
 	        ->order($order)
@@ -870,6 +877,7 @@ class Comms extends Common {
 	        //如果有community_id，则按community_id查询，其实是按小区名称查询
 	        // 	        dump('community_id');
 	        $list = (new CommhistorypriceModel())->with('comm')
+	        ->field('*,SUM(ori_len) as sumorilen,sum(len) as sumlen,avg(std_r) as avgstdr')
 	        ->where('community_id',$data['community_id'])
 	        ->order('from_date')
 	        ->paginate(100,false,[
@@ -884,7 +892,7 @@ class Comms extends Common {
 // 	        dump($data);
 	        $HPrice = new CommhistorypriceModel();
 	        $list = $HPrice->with('comm')
-	        ->field('*,SUM(ori_len) as sumlen,avg(std_r)')
+	        ->field('*,SUM(ori_len) as sumorilen,sum(len) as sumlen,avg(std_r) as avgstdr')
 	        ->group("community_id,'usage'")
 	        ->where($data['where'] )
 	        ->order($order)
@@ -897,14 +905,16 @@ class Comms extends Common {
 	            ],
 	        ]);
 	        
-	        //dump($list);
+// 	        dump($list);
 	    }
 	    $title = ['序号','小区','区块','分类','抵押价值','有效数合计','原始数据合计','平均标准差','基期时间'];
 	    $fields = Db::query('SHOW COLUMNS FROM commhistoryprice');
-	    $this->assign('title',$title);
-	    $this->assign('list',$list);
-	    $this->assign('fields',$fields);
-	    $this->assign('data',$data);
+	    $this->assign([
+	        'title'=>$title,
+	        'list'=>$list,
+	        'fields'=>$fields,
+	        'data'=>$data,
+	    ]);
 	    return $this->fetch();
 	}
 	

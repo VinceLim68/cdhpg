@@ -3,6 +3,7 @@
 namespace app\evalu\model;
 
 use think\Model;
+use think\Db;
 
 class Comm extends Model {
 	/**
@@ -33,6 +34,25 @@ class Comm extends Model {
 	 * return $pri_level[$value];
 	 * }
 	 */
+	
+    // 	    删除一个小区，要相应删除所有的关联记录，包括：
+	public function delWithRelation($community_id){
+	    // 	    删除当前库中的挂牌记录，把community_id改成0
+	    Db::table('for_sale_property')->where('community_id',$community_id)->update(['community_id'=>0]);
+	    // 	    删除历史库中的挂牌记录，把community_id改成0
+	    Db::table('allsales')->where('community_id',$community_id)->update(['community_id'=>0]);
+	    // 	    删除关联规则表中的相关记录：根据community_id 删除
+	    Db::table('comm_relate')->where('community_id',$community_id)->delete();
+	    // 	    删除小区地址表中的相关记录：把comm_id改成0
+	    Db::table('commaddress')->where('comm_id',$community_id)->update(['comm_id'=>0]);
+	    // 	    删除错误信息里的相关记录：根据comm_id删除
+	    Db::table('error_comm')->where('comm_id',$community_id)->delete();
+	    // 	    删除历史基价里的相关记录：根据community_id删除
+	    Db::table('commhistoryprice')->where('community_id',$community_id)->delete();
+	    // 	    删除小区名称：根据community_id 删除
+	    Db::table('comm')->where('comm_id',$community_id)->delete();
+	}
+	
 	public static function getCommsArr() {
 		/**
 		 * 把小区名按关键字拆分后，按级别形成小区和道路两个数组
