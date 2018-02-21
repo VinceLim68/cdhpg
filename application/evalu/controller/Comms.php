@@ -712,9 +712,12 @@ class Comms extends Common {
                    echo '====== 本小区当月基价数据已经存在,不再重复计算  =====</br>';
                }else{
                    $getPrice_result = $this->cal($item,$whichmonth);
-                   $getPrice_result['from_date'] = $basedate;      //记录基价所对应的日期
-                   $priceIndex->data($getPrice_result)->allowField(true)->save();
-                   dump($getPrice_result);
+                   if($getPrice_result['community_id']!= null){
+                       //如果community有值才保存。不知道为什么有时会得到community_id为空的记录
+                       $getPrice_result['from_date'] = $basedate;      //记录基价所对应的日期
+                       $priceIndex->data($getPrice_result)->allowField(true)->save();
+                       dump($getPrice_result);
+                   }
                }
                flush();
            }
@@ -829,6 +832,80 @@ class Comms extends Common {
 	    $this->assign('data',$data);
 	    return $this->fetch();
 	    
+	}
+	
+	//基价统计信息
+	public function PriceIndexSum(){
+	    $data = input();
+	    // 	    dump($data);
+	    $data = action('Sales/datahandle',  ['data' => $data]);
+	    //原来是用price做为order的默认值，这里要改成community_id
+	    if($data['order'] == 'price'){
+	        $data['order'] = 'ori_len';
+	    }
+	    $order = $data['order'].' '.$data['sort'];
+	    if('' !== $data['set'] and '' != $data['where']){
+	        //修改记录
+	        $sqlstr = 'UPDATE commhistoryprice SET '.$data['set'].' WHERE '.$data['where'];
+	        $data['num'] = Db::execute($sqlstr);
+	    }
+	     
+	    //查询记录,无论是否修改，都需要查询
+	    // 	        dump($data);
+	    if( isset($data['block_id']) and ('' != $data['block_id']) and ('' == $data['where']) ){
+	        //如果给了区块id，就只查询区块id,如果有where值，就清除区块查询
+	        //             dump('block');
+	        $list = Db::view('commhistoryprice','id,community_id,usage,create_time,median,mean,min,max,mortgagePrice,dealPrice,len,ori_len,std_r,from_date')
+	        ->view('comm','comm_name,block,comm_addr,block_id','comm.comm_id=commhistoryprice.community_id')
+	        ->where('block_id',$data['block_id'])
+	        ->order($order)
+	        ->paginate(100,false,[
+	            'query'=>[
+	                'block_id'=> $data['block_id'],
+	                'order'=>  $data['order'],
+	            ],
+	        ]);
+	        //     	    dump($list);
+	    }elseif(isset($data['community_id']) and ('' != $data['community_id']) and ('' == $data['where'])){
+	        //如果有community_id，则按community_id查询，其实是按小区名称查询
+	        // 	        dump('community_id');
+	        $list = (new CommhistorypriceModel())->with('comm')
+	        ->where('community_id',$data['community_id'])
+	        ->order('from_date')
+	        ->paginate(100,false,[
+	            'query'=>[
+	                'where'=>  $data['where'],
+	                'order'=>  $data['order'],
+	                'set'=>  $data['set'],
+	            ],
+	        ]);
+	    }else{
+	        //否则正常查询
+// 	        dump($data);
+	        $HPrice = new CommhistorypriceModel();
+	        $list = $HPrice->with('comm')
+	        ->field('*,SUM(ori_len) as sumlen,avg(std_r)')
+	        ->group("community_id,'usage'")
+	        ->where($data['where'] )
+	        ->order($order)
+// 	        ->fetchSql(true)
+	        ->paginate(100,false,[
+	            'query'=>[
+	                'where'=>  $data['where'],
+	                'order'=>  $data['order'],
+	                'set'=>  $data['set'],
+	            ],
+	        ]);
+	        
+	        //dump($list);
+	    }
+	    $title = ['序号','小区','区块','分类','抵押价值','有效数合计','原始数据合计','平均标准差','基期时间'];
+	    $fields = Db::query('SHOW COLUMNS FROM commhistoryprice');
+	    $this->assign('title',$title);
+	    $this->assign('list',$list);
+	    $this->assign('fields',$fields);
+	    $this->assign('data',$data);
+	    return $this->fetch();
 	}
 	
 	public function ajaxGetCommById(){

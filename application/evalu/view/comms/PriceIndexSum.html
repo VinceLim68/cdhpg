@@ -1,7 +1,6 @@
 {extend name="mainbase" /} {block name="pg_cs"}
 <!-- 以下三个是本页加的CSS -->
 <link rel="stylesheet" href="__CSS__/jquery-ui.min.css" />
-<link rel="stylesheet" href="__CSS__/bootstrap-datepicker3.min.css" />
 <!--    这个是弹出的编辑窗口   -->
 <link rel="stylesheet" href="__CSS__/ui.jqgrid.min.css" />
 <link rel="stylesheet" href="__CSS__/jquery-ui.min.css" />
@@ -18,8 +17,8 @@
 	<div class="tabbable">
 		<ul class="nav nav-tabs padding-12 tab-color-blue background-blue"
 			id="myTab">
-			<li class="active"><a href="#">基价信息列表</a></li>
-			<li><a href="{:url('PriceIndexSum')}">基价数量统计</a></li>
+			<li><a href="{:url('managePriceIndex')}">基价信息列表</a></li>
+			<li  class="active"><a href="#">基价数量统计</a></li>
 		</ul>
 
 		<div class="tab-content">
@@ -57,8 +56,8 @@
 							{foreach name="list" item="v"}
 							<tr>
 								<td class="hidden-xs">{$v['id']}</td>
-								<td community_id="{$v['community_id']}">{$v->comm->comm_name|default=$v['comm_name']}</td>
-								<td blockid="{$v->comm->block_id|default=$v['block_id']}">{$v->comm->block|default=$v['block']}</td>
+								<td community_id="{$v['community_id']}">{$v->comm->comm_name|default='没有'}</td>
+								<td blockid="{$v->comm->block_id|default=''}">{$v->comm->block|default='没有'}</td>
 								<td>{$v['usage']}</td>
 								<td>{$v['mean']}</td>
 								<td class="hidden-xs">{$v['min']}</td>
