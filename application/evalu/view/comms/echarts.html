@@ -23,34 +23,68 @@
         // 指定图表的配置项和数据
 		option = {
 		    title: {
-		        text: '房价走势'
+		        text: '房价走势及挂牌数量'
 		    },
 		    tooltip: {
-		        trigger: 'axis'
+		        trigger: 'axis',
+		        axisPointer: {
+		            type: 'cross',
+		            crossStyle: {
+		                color: '#999'
+		            }
+		        }
 		    },
-		    xAxis: {
-		        type: 'category',
-		        data: {$dtime},
+		    legend: {
+		        data:['挂牌价','评估价','挂牌数量']
 		    },
-		    yAxis: {
-		        type: 'value'
-		    },
+		    xAxis: [
+		        {
+		            type: 'category',
+		            data: {$dtime},
+		            
+		        }
+		    ],
+		    yAxis: [
+		        {
+		            type: 'value',
+		            show:false,
+		            name: '挂牌数量',
+		            position:'right',
+		            max: function(value) {
+		                return value.max * 2;
+		            }
+		        },
+		        {
+		            type: 'value',
+		            name: '单价',
+		            position:'left',
+		        }
+		    ],
+			
 		    series: [
-             {
-		    	data: [
-				        {foreach name="list" item="t"}
-							{$t["mortgagePrice"]},
-						{/foreach}],
-		        //data: [820, 932, 901, 934, 1290, 1330, 1320],
-		        type: 'line'
-		    },
-		    {
-		    	data: [
-				        {foreach name="list1" item="t"}
-							{$t["mortgagePrice"]},
-						{/foreach}],
-		        type: 'line'
-		    }
+		        {
+		            name:'挂牌价',
+		            type:'line',
+		            yAxisIndex: 1,
+		            data:[{foreach name="list" item="t"}
+					{$t["mean"]},
+					{/foreach}]
+		        },
+		        {
+		            name:'评估价',
+		            type:'line',
+		            yAxisIndex: 1,
+		            data:[{foreach name="list" item="t"}
+					{$t["mortgagePrice"]},
+					{/foreach}]
+		        },
+		        {
+		            name:'挂牌数量',
+		            type:'bar',
+		            data:[{foreach name="list" item="t"}
+					{$t["len"]},
+					{/foreach}]
+		        },
 		    ]
 		};
 

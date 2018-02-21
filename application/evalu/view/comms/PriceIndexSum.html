@@ -222,15 +222,21 @@
 	                	data: {
 	                        community_id: community_id,
 	                    },
+	                    beforeSend :function(){
+	                    	var html = '<img src="' + waitingImg + '" /><span style="margin-left:10px;">正在进行关联删除中......</span>';
+							$('#mydialogg div.modal-body').html(html);
+							$('#mydialogg').modal('show'); 
+	                    },
 	                    success: function(response) {
 	                        //alert(response) ; 
+	                        $('#mydialogg').modal('hide'); 
 	                        $('#mydialogg div.modal-body').html('删除成功');
 	                        $('#mydialogg h4.modal-title').html('操作结果');
 	                        $('#mydialogg').modal('show');
 	                    },
 	                    complete: function(){
 	                    	location.reload();
-	                    }
+	                    },
 	                })
 	            },
 	            'gotohandle': function(t) {

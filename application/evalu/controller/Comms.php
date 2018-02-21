@@ -929,8 +929,8 @@ class Comms extends Common {
 	    return $html;
 	}
 	
+    //通过ajax取得鼠标点击的详细关联规则信息
 	public function ajaxGetRelationById(){
-	    //通过ajax取得鼠标点击的详细关联规则信息
 	    //dump(input());
 	    $record = (new CommhistorypriceModel())->with('relation')->find(input('ID'))->toArray();
 	    //dump($record);
@@ -1015,7 +1015,7 @@ class Comms extends Common {
     public function echarts(){
         $priceindex = new CommhistorypriceModel();
         $list = $priceindex             //Db::table('Commhistoryprice')
-            ->field('mortgagePrice,from_date')
+            ->field('mortgagePrice,mean,len,from_date')
             ->where('community_id','1001001')
             ->order('from_date')
             ->select()->toArray();
@@ -1044,7 +1044,8 @@ class Comms extends Common {
         $priceindex = new CommhistorypriceModel();
         $price = [];
         $mean = [];
-        $minrecords = config('min_base_records');
+        $ori_len = [];
+//         $minrecords = config('min_base_records');
         foreach ($c as $id){
             $list = $priceindex             //Db::table('Commhistoryprice')
                 ->field('mortgagePrice,from_date,ori_len,mean')
@@ -1061,12 +1062,15 @@ class Comms extends Common {
             if($isvalid){
                 $price[] = array_column ($list, 'mortgagePrice' );
                 $mean[] = array_column ($list, 'mean' );
+                $ori_len[] = array_column ($list, 'ori_len' );
             }
         }
         $data = [];
         $data['dtime']= array_column ($list, 'from_date' );
         $data['price'] = $price;
         $data['mean'] = $mean;
+        $data['ori_len'] = $ori_len;
+//         dump($data);
         return $data;
         
     }
