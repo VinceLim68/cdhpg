@@ -14,232 +14,249 @@
 
 </ul>
 {/block} {block name="main"}
-<div class="widget-box">
-	<div class="widget-header" id='search_div' style='padding-top: 5px; background: #5AA7D6;height: 70px;'>
-		<div id="pager" style="float: left;">{$list->render()}</div>
-		<div class="text-muted" style="color:white;float:left;margin: 25px 10px;">共{$list->total()}条记录</div>
-		<a href="javascript:;" onclick="ActiveMyquery()" class="btn btn-sm btn-info"
-			style="margin: 15px; border-radius: 20px;float:right;">
-			<span class="ace-icon fa fa-search icon-on-right bigger-110"></span>高级查询
-		</a>
-  		<form class="form-inline" id="search_form" style="float: right; margin: 15px;">
-		    <div class="form-group">
-		    <input class="form-control" name="commName" id="commName"  placeholder="请输入小区名称" >
-		  </div>
-		  <button type="submit" class="btn btn-success" style="border-radius: 5px;padding: 3px 15px;margin-left:-4px;">
-  			<span class="glyphicon glyphicon-search" aria-hidden="true"></span>查询
-			</button>
-		</form>
-	</div>
-	<div class="widget-body">
-		<div class="widget-main" style='padding: 0;'>
-			<table id="gridtable" class="table table-striped table-bordered table-hover table-condensed">
-				<tr>
-					{foreach name="title" item="t"}
-							<th>{$t}</th> 
-					{/foreach}
-				</tr>
-				{foreach name="list" item="v"}
-				<tr>
-					<td class="hidden-xs">{$v['id']}</td>
-					<td community_id="{$v['community_id']}">{$v->comm->comm_name|default=$v['comm_name']}</td>
-					<td blockid="{$v->comm->block_id|default=$v['block_id']}">{$v->comm->block|default=$v['block']}</td>
-					<td>{$v['usage']}</td>
-					<td>{$v['mean']}</td>
-					<td class="hidden-xs">{$v['min']}</td>
-					<td class="hidden-xs">{$v['max']}</td>
-					<td >{$v['mortgagePrice']}</td>
-					<td class="hidden-xs">{$v['len']}</td>
-					<td class="hidden-xs">{$v['ori_len']}</td>
-					<td>{$v['std_r']}</td>
-					<td class="hidden-xs">{$v['from_date']}</td>
-				</tr>
-				{/foreach}
-			</table>
-			
+<div class="col-xs-12">
+	<div class="tabbable">
+		<ul class="nav nav-tabs padding-12 tab-color-blue background-blue"
+			id="myTab">
+			<li class="active"><a href="#">基价信息列表</a></li>
+			<li><a href="{:url('PriceIndexSum')}">基价数量统计</a></li>
+		</ul>
+
+		<div class="tab-content">
+			<div class="widget-box">
+				<div class="widget-header" id='search_div'
+					style='padding-top: 5px; background: #5AA7D6; height: 70px;'>
+					<div id="pager" style="float: left;">{$list->render()}</div>
+					<div class="text-muted"
+						style="color: white; float: left; margin: 25px 10px;">共{$list->total()}条记录</div>
+					<a href="javascript:;" onclick="ActiveMyquery()"
+						class="btn btn-sm btn-info"
+						style="margin: 15px; border-radius: 20px; float: right;"> <span
+						class="ace-icon fa fa-search icon-on-right bigger-110"></span>高级查询
+					</a>
+					<form class="form-inline" id="search_form"
+						style="float: right; margin: 15px;">
+						<div class="form-group">
+							<input class="form-control" name="commName" id="commName"
+								placeholder="请输入小区名称">
+						</div>
+						<button type="submit" class="btn btn-success"
+							style="border-radius: 5px; padding: 3px 15px; margin-left: -4px;">
+							<span class="glyphicon glyphicon-search" aria-hidden="true"></span>查询
+						</button>
+					</form>
+				</div>
+				<div class="widget-body">
+					<div class="widget-main" style='padding: 0;'>
+						<table id="gridtable"
+							class="table table-striped table-bordered table-hover table-condensed">
+							<tr>
+								{foreach name="title" item="t"}
+								<th>{$t}</th> {/foreach}
+							</tr>
+							{foreach name="list" item="v"}
+							<tr>
+								<td class="hidden-xs">{$v['id']}</td>
+								<td community_id="{$v['community_id']}">{$v->comm->comm_name|default=$v['comm_name']}</td>
+								<td blockid="{$v->comm->block_id|default=$v['block_id']}">{$v->comm->block|default=$v['block']}</td>
+								<td>{$v['usage']}</td>
+								<td>{$v['mean']}</td>
+								<td class="hidden-xs">{$v['min']}</td>
+								<td class="hidden-xs">{$v['max']}</td>
+								<td>{$v['mortgagePrice']}</td>
+								<td class="hidden-xs">{$v['len']}</td>
+								<td class="hidden-xs">{$v['ori_len']}</td>
+								<td>{$v['std_r']}</td>
+								<td class="hidden-xs">{$v['from_date']}</td>
+							</tr>
+							{/foreach}
+						</table>
+
+					</div>
+				</div>
+			</div>
+
 		</div>
 	</div>
 </div>
 
 <div class="contextMenu" id="myMenu">
-  <ul>
-    <li id="detail_price">查询：当前基价的完整信息</li>
-    <li id="detail_comm">查询：当前基价相关的小区信息</li>
-    <li id="detail_rela">查询：关联规则信息</li>
-    <li id="detail_history">查询：当前小区的历史价格列表</li>
-    <li id="detail_history_echarts">查询：当前小区的历史价格走势图</li>
-    <li id="thisblock">只显示当前版块</li>
-    <li id="gotohandle">跳转功能拆分模块</li>
-  </ul>
-</div> 
+	<ul>
+		<li id="detail_price">查询：当前基价的完整信息</li>
+		<li id="detail_comm">查询：当前基价相关的小区信息</li>
+		<li id="detail_rela">查询：关联规则信息</li>
+		<li id="detail_history">查询：当前小区的历史价格列表</li>
+		<li id="detail_history_echarts">查询：当前小区的历史价格走势图</li>
+		<li id="thisblock">只显示当前版块</li>
+		<li id="gotohandle">跳转功能拆分模块</li>
+	</ul>
+</div>
 
 <div class="modal fade" tabindex="-1" role="dialog" id="mydialogg">
-  <div class="modal-dialog" role="document">
-    <div class="modal-content">
-      <div class="modal-header">
-        <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
-        <h4 class="modal-title">信息</h4>
-      </div>
-      <div class="modal-body">
-      </div>
-      <div class="modal-footer">
-        <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
-      </div>
-    </div><!-- /.modal-content -->
-  </div><!-- /.modal-dialog -->
-</div><!-- /.modal -->
+	<div class="modal-dialog" role="document">
+		<div class="modal-content">
+			<div class="modal-header">
+				<button type="button" class="close" data-dismiss="modal"
+					aria-label="Close">
+					<span aria-hidden="true">&times;</span>
+				</button>
+				<h4 class="modal-title">信息</h4>
+			</div>
+			<div class="modal-body"></div>
+			<div class="modal-footer">
+				<button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
+			</div>
+		</div>
+	</div>
+</div>
 
-{/block} 
-{block name="pg_js"}
+{/block} {block name="pg_js"}
 <script src="__JS__/jquery-ui.min.js"></script>
 <script src="__JS__/jquery.contextmenu.js"></script>
 <script>
-var waitingImg = "__CSS__/1.gif";
-function ActiveMyquery(){
-	$('#myquery').modal('show');
-}
-jQuery(function($) {
-	$('.modal').draggable();
-	$(".modal").css("overflow", "hidden");//禁止模态对话框的半透明背景滚动
-	 $('#gridtable td').contextMenu('myMenu', 
-      {
-         menuStyle:{
-        	 width:'210px',
-         },
-         itemStyle:{
-        	
-         },
-		 bindings: 
-           {
-             'detail_comm': function(t) {
-           	 	var id = $(t).parent().find("td").eq(0).html();
-           	 	var commName = $(t).parent().find("td").eq(1).html();
- 	           	 $.ajax({
- 	         		url:'{:url("ajaxGetCommById")}',
- 	         		data:{
- 	         			ID:id,
- 	         		},
- 	         		success:function(response){  
- 	         			//alert(response) ; 
- 	         			$('#mydialogg div.modal-body').html(response);
- 	         			$('#mydialogg h4.modal-title').html(commName+'小区的详细信息');
- 	         			$('#mydialogg').modal('show');
- 	 		        }  
- 	         		
- 	         	});
-             },
-             'detail_price': function(t) {
-            	//取出当前行的序号
-           	 	var id = $(t).parent().find("td").eq(0).html();
-           	 	var commName = $(t).parent().find("td").eq(1).html();
- 	           	 $.ajax({
- 	         		url:'{:url("ajaxGetPriceIndexById")}',
- 	         		data:{
- 	         			ID:id,
- 	         		},
- 	         		success:function(response){  
- 	         			//alert(response) ; 
- 	         			$('#mydialogg div.modal-body').html(response);
- 	         			$('#mydialogg h4.modal-title').html(commName+'基价的详细信息');
- 	         			$('#mydialogg').modal('show');
- 	 		        }  
- 	         		
- 	         	});
-             },
-             'detail_rela': function(t) {
-            	var id = $(t).parent().find("td").eq(0).html();
-           	 	var commName = $(t).parent().find("td").eq(1).html();
- 	           	 $.ajax({
- 	         		url:'{:url("ajaxGetRelationById")}',
- 	         		data:{
- 	         			ID:id,
- 	         		},
- 	         		success:function(response){  
- 	         			//alert(response) ; 
- 	         			$('#mydialogg div.modal-body').html(response);
- 	         			$('#mydialogg h4.modal-title').html(commName+'的关联规则详细信息');
- 	         			$('#mydialogg').modal('show');
- 	 		        }  
- 	         		
- 	         	});
-             },
-             'thisblock': function(t) {
-           	 	//var id = $(t).parent().find("td").eq(0).html();
-          	 		var blockid = $(t).parent().find("td").eq(2).attr('blockid');
-          	 		//alert(blockid);
-          	 		var jumpurl = "{:url('Comms/managePriceIndex')}"+"?block_id="+blockid;
-          	 		//alert(jumpurl);
-          	 		window.location.href = (jumpurl);
-             },
-             'detail_history': function(t) {
-          	 		var community_id = $(t).parent().find("td").eq(1).attr('community_id');
-          	 		//alert(community_id);
-          	 		var jumpurl = "{:url('Comms/managePriceIndex')}"+"?where=community_id='"+community_id+"'";
-          	 		window.location.href = (jumpurl);
-             },
-             'detail_history_echarts': function(t) {
-          	 		var community_id = $(t).parent().find("td").eq(1).attr('community_id');
-          	 		var commName = $(t).parent().find("td").eq(1).html();
-          	 		//alert(community_id);
-          	 		$.ajax({
-          	 			url:'getdataforecharts',
-	           	 	data:{
-	         			community_id:community_id,
-	         		},
-	         		success:function(response){ 
-	         			setEcharts(response);
-	         			if(response.price.length != 0){
-		         			$('#Echarts h4.modal-title').html(commName+'房价走势图');
-	         			}else{
-		         			$('#Echarts h4.modal-title').html(commName+'房价数据不完整，无法展示');
-		         			//$('#modal_echarts').html('<h3>'+commName+'房价数据不完整，无法展示'+'</h3>');
-	         			}
-	         			$('#Echarts').modal('show');
-	         			//$('#modal_echarts').html('');
-	 		        }  
-          	 		});
-             },
-             'gotohandle': function(t) {
-           	 	var usage = $(t).parent().find("td").eq(3).html();
-           	 	//alert(usage=='');
-           	 	var community_id = $(t).parent().find("td").eq(1).attr('community_id');
-          	 		//alert(blockid);
-          	 		if(usage==''){
-           	 			window.location.href= "{:url('Comms/handle_comm')}"+"?community_id="+community_id;
-          	 		}else{
-           	 			window.location.href= "{:url('Comms/handle_comm')}"+"?community_id="+community_id+"&usage="+usage;
-          	 		}
-             },
-           }
-     });
-	$("#search_form").on("submit", function(event) {
-		//关联首页签的小区搜索框，可以跳转另一个小区
-		event.preventDefault();
-	    $.ajax({
-	    	url:"{:url('ajaxGetCommName')}",
-	    	data:{
-	    		from:'managePriceIndex',
-	    		commName:$('#commName').val(),
-	    	},
-	    	success:function(response){
-	    		console.log(response);
-				if('object' === typeof(response)){
-					var html = '<img src="' + waitingImg + '" /><span style="margin-left:10px;">正在跳转' + response.comm_name + '中......</span>';
-	     			$('#mydialogg div.modal-body').html(html);
-	      			$('#mydialogg').modal('show');
-					window.location.href= "{:url('managePriceIndex')}" + "?community_id=" + response.comm_id;
-				}else{
-					$("#mydialogg div.modal-body").html(response);
-				}
-				$('#mydialogg').modal('show');
-			  },
-	    })
-		
-	});
-});
-	</script>
-{include file="./commhtml/myquery.html"/}
-{include file="./commhtml/common_echarts.html"/}
-{/block}{block name="pg_inline_js"}
+	var waitingImg = "__CSS__/1.gif";
+	function ActiveMyquery() {
+		$('#myquery').modal('show');
+	}
+	jQuery(function($) {
+		$('.modal').draggable();
+		$(".modal").css("overflow", "hidden"); //禁止模态对话框的半透明背景滚动
+		$('#gridtable td').contextMenu('myMenu', {
+			menuStyle: {
+				width: '210px',
+			},
+			itemStyle: {
 
-{/block}
+},
+			bindings: {
+				'detail_comm': function(t) {
+					var id = $(t).parent().find("td").eq(0).html();
+					var commName = $(t).parent().find("td").eq(1).html();
+					$.ajax({
+						url: '{:url("ajaxGetCommById")}',
+						data: {
+							ID: id,
+						},
+						success: function(response) {
+							//alert(response) ; 
+							$('#mydialogg div.modal-body').html(response);
+							$('#mydialogg h4.modal-title').html(commName + '小区的详细信息');
+							$('#mydialogg').modal('show');
+						}
+
+					});
+				},
+				'detail_price': function(t) {
+					//取出当前行的序号
+					var id = $(t).parent().find("td").eq(0).html();
+					var commName = $(t).parent().find("td").eq(1).html();
+					$.ajax({
+						url: '{:url("ajaxGetPriceIndexById")}',
+						data: {
+							ID: id,
+						},
+						success: function(response) {
+							//alert(response) ; 
+							$('#mydialogg div.modal-body').html(response);
+							$('#mydialogg h4.modal-title').html(commName + '基价的详细信息');
+							$('#mydialogg').modal('show');
+						}
+
+					});
+				},
+				'detail_rela': function(t) {
+					var id = $(t).parent().find("td").eq(0).html();
+					var commName = $(t).parent().find("td").eq(1).html();
+					$.ajax({
+						url: '{:url("ajaxGetRelationById")}',
+						data: {
+							ID: id,
+						},
+						success: function(response) {
+							//alert(response) ; 
+							$('#mydialogg div.modal-body').html(response);
+							$('#mydialogg h4.modal-title').html(commName + '的关联规则详细信息');
+							$('#mydialogg').modal('show');
+						}
+
+					});
+				},
+				'thisblock': function(t) {
+					//var id = $(t).parent().find("td").eq(0).html();
+					var blockid = $(t).parent().find("td").eq(2).attr('blockid');
+					//alert(blockid);
+					var jumpurl = "{:url('Comms/managePriceIndex')}" + "?block_id=" + blockid;
+					//alert(jumpurl);
+					window.location.href = (jumpurl);
+				},
+				'detail_history': function(t) {
+					var community_id = $(t).parent().find("td").eq(1).attr('community_id');
+					//alert(community_id);
+					var jumpurl = "{:url('Comms/managePriceIndex')}" + "?where=community_id='" + community_id + "'";
+					window.location.href = (jumpurl);
+				},
+				'detail_history_echarts': function(t) {
+					var community_id = $(t).parent().find("td").eq(1).attr('community_id');
+					var commName = $(t).parent().find("td").eq(1).html();
+					//alert(community_id);
+					$.ajax({
+						url: 'getdataforecharts',
+						data: {
+							community_id: community_id,
+						},
+						success: function(response) {
+							setEcharts(response);
+							if (response.price.length != 0) {
+								$('#Echarts h4.modal-title').html(commName + '房价走势图');
+							} else {
+								$('#Echarts h4.modal-title').html(commName + '房价数据不完整，无法展示');
+								//$('#modal_echarts').html('<h3>'+commName+'房价数据不完整，无法展示'+'</h3>');
+							}
+							$('#Echarts').modal('show');
+							//$('#modal_echarts').html('');
+						}
+					});
+				},
+				'gotohandle': function(t) {
+					var usage = $(t).parent().find("td").eq(3).html();
+					//alert(usage=='');
+					var community_id = $(t).parent().find("td").eq(1).attr('community_id');
+					//alert(blockid);
+					if (usage == '') {
+						window.location.href = "{:url('Comms/handle_comm')}" + "?community_id=" + community_id;
+					} else {
+						window.location.href = "{:url('Comms/handle_comm')}" + "?community_id=" + community_id + "&usage=" + usage;
+					}
+				},
+			}
+		});
+		$("#search_form").on("submit",
+		function(event) {
+			//关联首页签的小区搜索框，可以跳转另一个小区
+			event.preventDefault();
+			$.ajax({
+				url: "{:url('ajaxGetCommName')}",
+				data: {
+					from: 'managePriceIndex',
+					commName: $('#commName').val(),
+				},
+				success: function(response) {
+					console.log(response);
+					if ('object' === typeof(response)) {
+						var html = '<img src="' + waitingImg + '" /><span style="margin-left:10px;">正在跳转' + response.comm_name + '中......</span>';
+						$('#mydialogg div.modal-body').html(html);
+						$('#mydialogg').modal('show');
+						window.location.href = "{:url('managePriceIndex')}" + "?community_id=" + response.comm_id;
+					} else {
+						$("#mydialogg div.modal-body").html(response);
+					}
+					$('#mydialogg').modal('show');
+				},
+			})
+
+		});
+	});
+</script>
+{include file="./commhtml/myquery.html"/} {include
+file="./commhtml/common_echarts.html"/} {/block}{block
+name="pg_inline_js"} {/block}

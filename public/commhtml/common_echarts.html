@@ -30,7 +30,7 @@
 	    	var item ={};
 	    	item.type = 'line';
 	    	item.data = data.mean[x];
-	    	item.name = '挂牌均价';
+	    	item.name = '挂牌价';
 	    	price.push(item);
 	    }
 	    for (var x in data.price)
@@ -38,30 +38,64 @@
 	    	var item ={};
 	    	item.type = 'line';
 	    	item.data = data.price[x];
-	    	item.name = '抵押评估价';
+	    	item.name = '评估价';
+	    	price.push(item);
+	    }
+	    for (var x in data.ori_len)
+	    {
+	    	var item ={};
+	    	item.type = 'bar';
+	    	item.data = data.ori_len[x];
+	    	
+	    	item.yAxisIndex = 1;
+	    	item.name = '挂牌数量';
 	    	price.push(item);
 	    }
 
-	    //console.log(price);
+	    console.log(price);
 	    //给Echarts使用刚构造的数据并指定配置项显示图表。
 	    myChart.setOption({
     	    //title: {
 		    //    text: '房价走势'
 		    //},
 		    tooltip: {
-		        trigger: 'axis'
+		        trigger: 'axis',
+		        axisPointer: {
+		            type: 'cross',
+		            crossStyle: {
+		                color: '#999'
+		            }
+		        }
 		    },
 		    legend: {
-		        data:['挂牌均价','抵押评估价']
+		        data:['挂牌价','评估价','挂牌数量']
 		    },
 		    xAxis: {
 		        type: 'category',
 		     	data: data.dtime
 		    },
-		    yAxis: {
-		        type: 'value'
-		    },
+		    yAxis: [
+		        {
+		            type: 'value',
+		            //show:false,
+		            name: '单价',
+		            //position:'right',
+		            //max: function(value) {
+		            //    return value.max * 2;
+		            //}
+		        },
+		        {
+		            type: 'value',
+		            name: '挂牌数量',
+		            show:false,
+		            //position:'left',
+		            max: function(value) {
+		                return value.max * 2;
+		            }
+		        }
+		    ],
 	        series: price,
+	        
 	    });
     }
        
