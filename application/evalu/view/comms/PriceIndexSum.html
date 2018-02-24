@@ -2,8 +2,8 @@
 <!-- 以下三个是本页加的CSS -->
 <link rel="stylesheet" href="__CSS__/jquery-ui.min.css" />
 <!--    这个是弹出的编辑窗口   -->
-<link rel="stylesheet" href="__CSS__/ui.jqgrid.min.css" />
-<link rel="stylesheet" href="__CSS__/jquery-ui.min.css" />
+<!-- <link rel="stylesheet" href="__CSS__/ui.jqgrid.min.css" /> -->
+<!-- <link rel="stylesheet" href="__CSS__/jquery-ui.min.css" /> -->
 {/block} {block name="breadcrumb"}
 <ul class="breadcrumb">
 	<li><i class="ace-icon fa fa-home home-icon"></i> <a href="#">大叔评估后台</a>
@@ -19,6 +19,7 @@
 			id="myTab">
 			<li><a href="{:url('managePriceIndex')}">基价信息列表</a></li>
 			<li  class="active"><a href="#">基价数量统计</a></li>
+			<li><a href="{:url('calIndexOfPeriod')}">计算价格指数</a></li>
 		</ul>
 
 		<div class="tab-content">
@@ -37,7 +38,7 @@
 						style="float: right; margin: 15px;">
 						<div class="form-group">
 							<input class="form-control" name="commName" id="commName"
-								placeholder="请输入小区名称">
+								placeholder="请输入小区名称" style="width:150px;">
 						</div>
 						<button type="submit" class="btn btn-success"
 							style="border-radius: 5px; padding: 3px 15px; margin-left: -4px;">
@@ -79,7 +80,7 @@
 <div class="contextMenu" id="myMenu">
 	<ul>
 		<li id="detail_price">查询：当前基价的完整信息</li>
-		<li id="detail_comm">查询：当前基价相关的小区信息</li>
+		<li id="detail_comm">查询：此小区信息</li>
 		<li id="detail_rela">查询：关联规则信息</li>
 		<li id="detail_history">查询：当前小区的历史价格列表</li>
 		<li id="detail_history_echarts">查询：当前小区的历史价格走势图</li>
@@ -124,7 +125,7 @@
 	        },
 	        itemStyle: {
 
-	},
+			},
 	        bindings: {
 	            'detail_comm': function(t) {
 	                var id = $(t).parent().find("td").eq(0).html();
@@ -179,10 +180,8 @@
 	                });
 	            },
 	            'thisblock': function(t) {
-	                //var id = $(t).parent().find("td").eq(0).html();
 	                var blockid = $(t).parent().find("td").eq(2).attr('blockid');
-	                //alert(blockid);
-	                var jumpurl = "{:url('Comms/managePriceIndex')}" + "?block_id=" + blockid;
+	                var jumpurl = "{:url('Comms/PriceIndexSum')}" + "?block_id=" + blockid;
 	                //alert(jumpurl);
 	                window.location.href = (jumpurl);
 	            },
@@ -268,7 +267,7 @@
 	                    var html = '<img src="' + waitingImg + '" /><span style="margin-left:10px;">正在跳转' + response.comm_name + '中......</span>';
 	                    $('#mydialogg div.modal-body').html(html);
 	                    $('#mydialogg').modal('show');
-	                    window.location.href = "{:url('managePriceIndex')}" + "?community_id=" + response.comm_id;
+	                    window.location.href = "{:url('PriceIndexSum')}" + "?community_id=" + response.comm_id;
 	                } else {
 	                    $("#mydialogg div.modal-body").html(response);
 	                }

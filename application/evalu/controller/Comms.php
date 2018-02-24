@@ -734,6 +734,39 @@ class Comms extends Common {
        ignore_user_abort(false); // 解除后台运行
 	}
 	
+	//按指定时间生成价格指数
+	public function calIndexOfPeriod(){
+        $allperiod = $this->getPeriod('allsales');
+        $nowperiod = $this->getPeriod('for_sale_property');
+        //dump($period);
+        $this->assign([
+            'history_period'=>  $allperiod,
+            'now_period'    =>  $nowperiod,  
+            
+        ]);
+	    return $this->fetch();
+	}
+	
+	//根据传入的表名取出可以计算基价的时期
+	private function getPeriod($tablename){
+	    $maxdate = Db::table($tablename)->max('first_acquisition_time');
+	    $mindate = Db::table($tablename)->min('first_acquisition_time');
+	    $month = config('how_long_before_to_start_query')-1;         //从配置文件中取出基价计算时用的时段，不采用一月的数据，而用前三月数据来计算
+        $period_start = date("Y-m-01",strtotime("$mindate +$month month")); 
+        if($period_start < $mindate){
+            //如果取出的开始日期早于本表中的最小日期,即period_start必须在表中，则顺延一月
+            $period_start = date("Y-m-01",strtotime("$period_start +1 month")); 
+        }
+        $period_end1 = date("Y-m-01",strtotime("$maxdate"));
+        $period_end = date("Y-m-d",strtotime("$period_end1 +1 month -1 day")); 
+        //echo $period_end;
+        if($period_end > $maxdate){
+            //如果取出的结束日期晚于本表中的最大日期，则减掉一月
+            $period_end = date("Y-m-01",strtotime("$period_end1 -1 day")); 
+        }
+        return array($period_start,$period_end,$mindate,$maxdate);
+	}
+	
 	//供调用的基价计算模块
 	private function cal($item,$whichmonth){
 	    if($whichmonth == 1){
@@ -756,7 +789,6 @@ class Comms extends Common {
             	        ->where($whichmonth)
             	        ->where($where)
             	        ->select();
-	        
 	        $result[] = $whichmonth;
 	        $result[] = $res;
 	    }
@@ -841,7 +873,7 @@ class Comms extends Common {
 	    
 	}
 	
-	//基价统计信息
+	//展示基价按小区汇总的信息
 	public function PriceIndexSum(){
 	    $data = input();
 	    // 	    dump($data);
@@ -861,15 +893,17 @@ class Comms extends Common {
 	    // 	        dump($data);
 	    if( isset($data['block_id']) and ('' != $data['block_id']) and ('' == $data['where']) ){
 	        //如果给了区块id，就只查询区块id,如果有where值，就清除区块查询
-	        //             dump('block');
-	        $list = Db::view('commhistoryprice','id,community_id,usage,create_time,median,SUM(ori_len) as sumorilen,sum(len) as sumlen,avg(std_r) as avgstdr,from_date')
+	        $list = (new CommhistorypriceModel())->with('comm')
+	        ->field('*,SUM(ori_len) as sumorilen,sum(len) as sumlen,avg(std_r) as avgstdr')
 	        ->view('comm','comm_name,block,comm_addr,block_id','comm.comm_id=commhistoryprice.community_id')
 	        ->where('block_id',$data['block_id'])
-	        ->order($order)
+	        ->group("community_id,'usage'")
+	        ->order('sumlen desc')
 	        ->paginate(100,false,[
 	            'query'=>[
-	                'block_id'=> $data['block_id'],
+	                'where'=>  $data['where'],
 	                'order'=>  $data['order'],
+	                'set'=>  $data['set'],
 	            ],
 	        ]);
 	        //     	    dump($list);
@@ -1074,4 +1108,5 @@ class Comms extends Common {
         return $data;
         
     }
+
 }

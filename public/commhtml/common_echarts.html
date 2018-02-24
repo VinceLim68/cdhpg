@@ -46,13 +46,12 @@
 	    	var item ={};
 	    	item.type = 'bar';
 	    	item.data = data.ori_len[x];
-	    	
 	    	item.yAxisIndex = 1;
 	    	item.name = '挂牌数量';
 	    	price.push(item);
 	    }
 
-	    console.log(price);
+	    //console.log(price);
 	    //给Echarts使用刚构造的数据并指定配置项显示图表。
 	    myChart.setOption({
     	    //title: {
@@ -77,12 +76,7 @@
 		    yAxis: [
 		        {
 		            type: 'value',
-		            //show:false,
 		            name: '单价',
-		            //position:'right',
-		            //max: function(value) {
-		            //    return value.max * 2;
-		            //}
 		        },
 		        {
 		            type: 'value',
