@@ -199,16 +199,18 @@
 				'detail_history_echarts': function(t) {
 					var community_id = $(t).parent().find("td").eq(1).attr('community_id');
 					var commName = $(t).parent().find("td").eq(1).html();
+					var usage = $(t).parent().find("td").eq(3).html();
 					//alert(community_id);
 					$.ajax({
 						url: 'getdataforecharts',
 						data: {
 							community_id: community_id,
+							usage:usage,
 						},
 						success: function(response) {
 							setEcharts(response);
 							if (response.price.length != 0) {
-								$('#Echarts h4.modal-title').html(commName + '房价走势图');
+								$('#Echarts h4.modal-title').html(commName + '(' + usage + ')房价走势图');
 							} else {
 								$('#Echarts h4.modal-title').html(commName + '房价数据不完整，无法展示');
 								//$('#modal_echarts').html('<h3>'+commName+'房价数据不完整，无法展示'+'</h3>');

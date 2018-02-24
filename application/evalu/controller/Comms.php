@@ -280,7 +280,7 @@ class Comms extends Common {
 		return $newid;
 	}
 	
-	//通过输入文件名查找id,如果是唯一，返回一个comm对象，如果不是，返回html列表供选择
+	//小区名-->id,如果是唯一，返回一个comm对象，如果不是，返回html列表供选择
 	public function ajaxGetCommName(){
 	    //dump(input());
 	    if(null !== input('from')){
@@ -331,7 +331,6 @@ class Comms extends Common {
                 }else{
                     //3如果只查到一个，直接返回comm_id
                     return $commnames[0];
-
                 }
 	        }
 	   }
@@ -370,10 +369,10 @@ class Comms extends Common {
         }
 	    
 	    $rela_list = $commrelate->where('community_id',$data['community_id'])->select()->toArray();
-	    if(!empty($rela_list) and !isset($data['usage']) and !isset($data['rela_comm_id'])){
-	        //如果有数据，而且传递过来的数据非关联规则，则把查询出来的把第一条关联规则赋给$data
-	        $data = $rela_list[0];
-	    }
+// 	    if(!empty($rela_list) and !isset($data['usage']) and !isset($data['rela_comm_id'])){
+// 	        //如果有数据，而且传递过来的数据非关联规则，则把查询出来的把第一条关联规则赋给$data
+// 	        $data = $rela_list[0];
+// 	    }
         $this->assign('rela_list',$rela_list);
 	    
 	    //通过id找小区相关信息
@@ -897,7 +896,7 @@ class Comms extends Common {
 	        ->field('*,SUM(ori_len) as sumorilen,sum(len) as sumlen,avg(std_r) as avgstdr')
 	        ->view('comm','comm_name,block,comm_addr,block_id','comm.comm_id=commhistoryprice.community_id')
 	        ->where('block_id',$data['block_id'])
-	        ->group("community_id,'usage'")
+	        ->group("community_id,`usage`")
 	        ->order('sumlen desc')
 	        ->paginate(100,false,[
 	            'query'=>[
@@ -909,11 +908,13 @@ class Comms extends Common {
 	        //     	    dump($list);
 	    }elseif(isset($data['community_id']) and ('' != $data['community_id']) and ('' == $data['where'])){
 	        //如果有community_id，则按community_id查询，其实是按小区名称查询
-	        // 	        dump('community_id');
+// 	        	        halt($data);
 	        $list = (new CommhistorypriceModel())->with('comm')
 	        ->field('*,SUM(ori_len) as sumorilen,sum(len) as sumlen,avg(std_r) as avgstdr')
 	        ->where('community_id',$data['community_id'])
+	        ->group("community_id,`usage`")
 	        ->order('from_date')
+// 	        ->fetchSQL(true)
 	        ->paginate(100,false,[
 	            'query'=>[
 	                'where'=>  $data['where'],
@@ -921,13 +922,14 @@ class Comms extends Common {
 	                'set'=>  $data['set'],
 	            ],
 	        ]);
+// 	        halt($list);
 	    }else{
 	        //否则正常查询
 // 	        dump($data);
 	        $HPrice = new CommhistorypriceModel();
 	        $list = $HPrice->with('comm')
 	        ->field('*,SUM(ori_len) as sumorilen,sum(len) as sumlen,avg(std_r) as avgstdr')
-	        ->group("community_id,'usage'")
+	        ->group("community_id,`usage`")
 	        ->where($data['where'] )
 	        ->order($order)
 // 	        ->fetchSql(true)
@@ -1071,6 +1073,11 @@ class Comms extends Common {
     //动态加载百度Echarts,这里其实可以批量查询（比如说列出同一区块的所有小区的走势图）,只要再增加一下判断传入的参数，修改一下查询语句
     public function getdataforecharts(){
         $comms = new Comm();
+        $inputs = input();
+        //dump($inputs);
+        if(!isset($inputs['usage'])){
+            $inputs['usage'] = '';
+        }
         $c = $comms->field('comm_id')
             ->where('comm_id',input('community_id'))
 //             ->where('comm_id','like','1001%')
@@ -1084,6 +1091,7 @@ class Comms extends Common {
             $list = $priceindex             //Db::table('Commhistoryprice')
                 ->field('mortgagePrice,from_date,ori_len,mean')
                 ->where('community_id',$id['comm_id'])
+                ->where('usage',$inputs['usage'])
                 ->order('from_date')
                 ->select()->toArray();
             $isvalid = true;
