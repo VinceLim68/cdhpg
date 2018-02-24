@@ -31,7 +31,6 @@
 						<div class="widget-header">
 							<h5 class="widget-title bigger lighter">当前数据库</h5>
 						</div>
-
 						<div class="widget-body">
 							<div class="widget-main">
 								<ul class="list-unstyled spaced2">
@@ -46,12 +45,8 @@
 
 									<li><i class="ace-icon fa fa-check green"></i> 可计算基价最大月份 :
 										{$now_period[1]}</li>
-
 								</ul>
-
 								<hr>
-
-								<!-- <p>	日期：<input type="text" id="datepicker" size="20"></p> -->
 								<div class="price">
 									从 <input type="text" id="from" name="from">
 									到 <input type="text" id="to" name="to">
@@ -59,7 +54,7 @@
 							</div>
 
 							<div>
-								<a  href="javascript:void(0)" onclick="cal()" class="btn btn-block btn-inverse"><i
+								<a href="javascript:void(0)" onclick="cal('for_sale_property')" class="btn btn-block btn-inverse"><i
 									class="ace-icon fa fa-calculator " ></i><span>开始计算基价</span> </a>
 							</div>
 						</div>
@@ -90,14 +85,14 @@
 
 								<hr>
 								<div class="price">
-									$25 <small>/month</small>
+									从 <input type="text" id="from1" name="from">
+									到 <input type="text" id="to1" name="to">
 								</div>
 							</div>
 
 							<div>
-								<a href="#" class="btn btn-block btn-success"> <i
-									class="ace-icon fa fa-shopping-cart bigger-110"></i> <span>开始计算基价</span>
-								</a>
+								<a href="javascript:void(0)" onclick="cal('allsales')" class="btn btn-block btn-success"><i
+									class="ace-icon fa fa-calculator " ></i><span>开始计算基价</span> </a>
 							</div>
 						</div>
 					</div>
@@ -132,11 +127,31 @@
 <!-- <script src="__JS__/bootstrap-datepicker.min.js"></script> -->
 
 <script>
-function cal(){
+function cal(tablename){
+	var from;
+	var to;
+	if(tablename == 'for_sale_property'){
+		from = $("#from").val();
+		to = $("#to").val();
+	}else{
+		from = $("#from1").val();
+		to = $("#to1").val();
+		
+	}
+	//console.log(event);
 	//alert($("#from").val());
 	//alert($("#to").val());
 	$.ajax({
 		url:'calIndexOfPeriod',
+		data:{
+			from:from,
+			to:to,
+			table:tablename,
+		},
+		success:function(event){
+			alert('done');
+			console.log(event);
+		}
 	})
 }
 	$(function() {
@@ -164,16 +179,31 @@ function cal(){
 				$("#from").datepicker("option", "maxDate", selectedDate);
 			}
 		});
-	});
-	$(function() {
-
-		$("#datepicker").datepicker({
-			minDate : new Date('{$now_period[0]}'),
-			maxDate : new Date('{$now_period[1]}'),
+		$("#from1").datepicker({
+			defaultDate : "+1w",
+			changeMonth : true,
+			minDate : new Date('{$history_period[0]}'),
+			maxDate : new Date('{$history_period[1]}'),
 			showOtherMonths : true,
 			selectOtherMonths : true,
 			dateFormat : 'yy-mm-dd',
+			onClose : function(selectedDate) {
+				$("#to1").datepicker("option", "minDate", selectedDate);
+			}
+		});
+		$("#to1").datepicker({
+			defaultDate : "+1w",
+			changeMonth : true,
+			minDate : new Date('{$history_period[0]}'),
+			maxDate : new Date('{$history_period[1]}'),
+			showOtherMonths : true,
+			selectOtherMonths : true,
+			dateFormat : 'yy-mm-dd',
+			onClose : function(selectedDate) {
+				$("#from1").datepicker("option", "maxDate", selectedDate);
+			}
 		});
 	});
+
 </script>
 {/block}{block name="pg_inline_js"} {/block}

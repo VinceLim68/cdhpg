@@ -451,8 +451,8 @@ class Comms extends Common {
 	    return $response;
 	}
 		
+    //以ajax方式来生成一个关联规则的页面
 	public function ajaxGetRelaById(){
-	    //以ajax方式来生成一个关联规则的页面
 	    //如果传过来的是关联规则的id
 	    $isADD = false;         //是否增加记录
 	    if(null !== input('id')){
@@ -673,22 +673,19 @@ class Comms extends Common {
 	    foreach ($comms as $comm){
 	        $data = [];
             $data['community_id'] = $comm['comm_id'];
-            $datas[] = $data;           //每个小区都要计算，当作“未分类基价”
+            $datas[] = $data;           //每个小区都要计算，当作“原始数据”
+            //如果有关联规则，再按关联规则进行计算
             if(!empty($comm['commrelate'])){
-                //如果小区还有关联规则，再对每个小区规则进行计算，但“未分类基价”不用重复了
 	            foreach ($comm['commrelate'] as $relationship){
-	                if($relationship['usage'] != '未分类基价'){
-	                    //未分类基价是每个小区都要计算的，所以这里不再重复计算
-    	                $data = [];
-                        $data['community_id'] = $comm['comm_id'];
-    	                $data['rela_comm_id'] = $relationship['rela_comm_id'];
-    	                $data['where'] = $relationship['where'];
-    	                $data['rela_ratio'] = $relationship['rela_ratio'];
-    	                $data['rela_weight'] = $relationship['rela_weight'];
-    	                $data['usage'] = $relationship['usage'];
-    	                $data['rela_id'] = $relationship['id'];
-    	                $datas[] = $data;
-	                }
+	                $data = [];
+                    $data['community_id'] = $comm['comm_id'];
+	                $data['rela_comm_id'] = $relationship['rela_comm_id'];
+	                $data['where'] = $relationship['where'];
+	                $data['rela_ratio'] = $relationship['rela_ratio'];
+	                $data['rela_weight'] = $relationship['rela_weight'];
+	                $data['usage'] = $relationship['usage'];
+	                $data['rela_id'] = $relationship['id'];
+	                $datas[] = $data;
 	            }
             }
 	    }
@@ -736,16 +733,14 @@ class Comms extends Common {
 	//按指定时间生成价格指数
 	public function calIndexOfPeriod(){
 	    if(request()->isAjax()){
-	        halt('aaaaaaaaaaaaaaaaa');
+	        dump(input());
 	    }
-// 	    dump('ccccccccccccccccc');
         $allperiod = $this->getPeriod('allsales');
         $nowperiod = $this->getPeriod('for_sale_property');
         //dump($period);
         $this->assign([
             'history_period'=>  $allperiod,
             'now_period'    =>  $nowperiod,  
-            
         ]);
 	    return $this->fetch();
 	}
@@ -1082,6 +1077,7 @@ class Comms extends Common {
         if(!isset($inputs['usage'])){
             $inputs['usage'] = '';
         }
+//         dump($inputs);
         $c = $comms->field('comm_id')
             ->where('comm_id',input('community_id'))
 //             ->where('comm_id','like','1001%')
@@ -1097,7 +1093,10 @@ class Comms extends Common {
                 ->where('community_id',$id['comm_id'])
                 ->where('usage',$inputs['usage'])
                 ->order('from_date')
-                ->select()->toArray();
+//                 ->fetchSQL(true)
+                ->select()
+                ->toArray();
+//             dump($list);
             $isvalid = true;
 //             foreach ($list as $item){
 //                 if($item['mortgagePrice']==0 ){

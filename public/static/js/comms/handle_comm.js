@@ -288,4 +288,10 @@ jQuery(function($) {
 	        }  
  		});
 	});
+	
+	$('#origin').on('click',function(){
+		var community_id = $('#hidden_datas').attr('community_id');
+//		alert('');
+		window.location.href= myself + "?community_id=" + community_id;
+	})
 })
