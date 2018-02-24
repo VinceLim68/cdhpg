@@ -735,6 +735,10 @@ class Comms extends Common {
 	
 	//按指定时间生成价格指数
 	public function calIndexOfPeriod(){
+	    if(request()->isAjax()){
+	        halt('aaaaaaaaaaaaaaaaa');
+	    }
+// 	    dump('ccccccccccccccccc');
         $allperiod = $this->getPeriod('allsales');
         $nowperiod = $this->getPeriod('for_sale_property');
         //dump($period);
@@ -746,7 +750,7 @@ class Comms extends Common {
 	    return $this->fetch();
 	}
 	
-	//根据传入的表名取出可以计算基价的时期
+	//根据传入的表名取出可以计算基价的时期,返回一个数组（可以用于计算基价的开始、结束时间、表中的最早、最晚时间）
 	private function getPeriod($tablename){
 	    $maxdate = Db::table($tablename)->max('first_acquisition_time');
 	    $mindate = Db::table($tablename)->min('first_acquisition_time');

@@ -1,7 +1,7 @@
 {extend name="mainbase" /} {block name="pg_cs"}
 <!-- 以下三个是本页加的CSS -->
 <link rel="stylesheet" href="__CSS__/jquery-ui.min.css" />
-<link rel="stylesheet" href="__CSS__/font-awesome.min.css" />
+<!-- <link rel="stylesheet" href="__CSS__/font-awesome.min.css" /> -->
 
 <!--    这个是弹出的编辑窗口
 <link rel="stylesheet" href="__CSS__/ui.jqgrid.min.css" />   -->
@@ -53,17 +53,14 @@
 
 								<!-- <p>	日期：<input type="text" id="datepicker" size="20"></p> -->
 								<div class="price">
-									从 <input type="text" id="from" name="from"> <span
-										class="glyphicon glyphicon-ok" style="margin-left: -35px"></span>
-
+									从 <input type="text" id="from" name="from">
 									到 <input type="text" id="to" name="to">
-
 								</div>
 							</div>
 
 							<div>
-								<a href="#" class="btn btn-block btn-inverse"><i
-									class="fa fa-calculator"></i><span>开始计算基价</span> </a>
+								<a  href="javascript:void(0)" onclick="cal()" class="btn btn-block btn-inverse"><i
+									class="ace-icon fa fa-calculator " ></i><span>开始计算基价</span> </a>
 							</div>
 						</div>
 					</div>
@@ -135,6 +132,13 @@
 <!-- <script src="__JS__/bootstrap-datepicker.min.js"></script> -->
 
 <script>
+function cal(){
+	//alert($("#from").val());
+	//alert($("#to").val());
+	$.ajax({
+		url:'calIndexOfPeriod',
+	})
+}
 	$(function() {
 		$("#from").datepicker({
 			defaultDate : "+1w",

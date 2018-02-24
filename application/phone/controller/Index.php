@@ -107,19 +107,24 @@ class Index extends Common {
             $my[] = $ori_item;
             
             //再取出关联规则
-            foreach ($list as $item){
-                $item['where'] = base_encode($item['where']);
-                $item['create_time'] = base_encode($item['create_time']);
-                $item['usage'] = base_encode($item['usage']);
+            foreach ($list as $item1){
+                $item['rela_id'] = $item1['id'];        //把关联规则的id保存下来
+                $item['community_id'] = $item1['community_id'];
+                $item['usage'] = base_encode($item1['usage']);
+//                 dump($item1);
+//                 $item['where'] = base_encode($item1['where']);
+//                 $item['create_time'] = base_encode($item1['create_time']);
+//                 $item['usage'] = base_encode($item1['usage']);
                 $item['price'] = $price;
                 $my[] = $item;
             }
+//             dump($my);
             $this->assign('fields',$my);
             return $this->fetch();
             
             
             //如果有两种以上数据需要手动选择
-//             if(count($list)>=2){
+//             }elseif(count($list)>=2){
 //                 foreach ($list as $item){
 //                     $item['where'] = base_encode($item['where']);
 //                     $item['create_time'] = base_encode($item['create_time']);
@@ -151,15 +156,24 @@ class Index extends Common {
 //         halt(input());
         $data = input();
         //dump($data);
-        if(isset($data['where'])){$data['where'] = base_decode($data['where']);};
-        if(isset($data['create_time'])){$data['create_time'] = base_decode($data['create_time']);};
         if(isset($data['usage'])){$data['usage'] = base_decode($data['usage']);};
         if(!isset($data['price'])){$data['price'] = 0;};
+        
+        if(isset($data['rela_id'])){
+            //如果有传过来关联规则的id,取出具体内容
+            $rela_data = (new CommRelateModel())->where('id',$data['rela_id'])->find()->toArray();
+            $data = array_merge($rela_data,$data);
+//             dump($data);
+//             halt($rela_data);
+        }
+//         if(isset($data['where'])){$data['where'] = base_decode($data['where']);};
+//         if(isset($data['create_time'])){$data['create_time'] = base_decode($data['create_time']);};
         //$comm_id = isset($data['rela_comm_id']) ? $data['rela_comm_id'] : $data['community_id'];
+        
         //通过id找小区名称，写入session中，以便传到前端
         $getComm = Db::table('comm')->where('comm_id',$data['community_id'])->find();
         if(isset($data['rela_comm_id']) and $data['rela_comm_id']>999){
-            //如果有关联小区，取出关联小区
+            //如果有关联小区，取出关联小区的名称
             $getComm['rela_comm'] = Db::table('comm')->where('comm_id',$data['rela_comm_id'])->value('comm_name');
         }else{
             $getComm['rela_comm'] = '';
