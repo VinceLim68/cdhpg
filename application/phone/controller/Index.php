@@ -21,8 +21,10 @@ class Index extends Common {
         return $this->fetch();
     }
     
+    
+    //把输入的小区名称转化成相应的小区编号，如果有多个匹配小区id，则返回页面手工进行选择
+    //得到小区id后，再跳转到getCommChild进行小区内的子分类选择
     public function getCommName(){
-        //把输入的小区名称转化成相应的小区编号
         if (request()->isPost()) {
 //             halt(input());
             $result = $this->validate ( input ( 'param.' ), [
@@ -61,7 +63,7 @@ class Index extends Common {
                     }
                     $this->error('没有查询到叫"'.input('param.comm').'"的地方');
                 }elseif(count($commnames)>1){
-                //4如果查到多个，列表展示，让用户手动挑选后，再转入统计模块
+                //4如果查到多个，列表展示，让用户手动挑选后，再转入子功能分类进行选择
                     $commArr = [];      //取出完整的数据
                     foreach ($commnames as $comm){
                         $commArr[] = Db::table('comm')->where('comm_id',$comm['comm_id'])->find();
@@ -70,7 +72,7 @@ class Index extends Common {
                     $this->assign('price',input('price'));
                     return $this->fetch();
                 }else{
-                //3如果查到一个，转入统计模块
+                //3如果查到一个，转入子功能分类进行选择
                     if(!input('price')){
                         $this->redirect('getCommChild', ['comm_id' => $commnames[0]['comm_id']]);
                     }else{
@@ -82,43 +84,69 @@ class Index extends Common {
         
     }
     
-
-    
+    //处理小区的子分类，如果有子分类进行选择，如果没有则跳转
     public function getCommChild($comm_id ='',$price = 0){
-        //取得小区的子分类
         $commrelate = new CommRelateModel;
         $list = $commrelate->where('community_id',$comm_id)->select()->toArray();
+//         halt($comm_id);
         $my = [];
         if(empty($list)){
+            //没有关联规则就跳转
             $my['community_id'] = $comm_id;
             $my['price'] = $price;
+//             dump($my);
             $this->redirect('getPrice', $my);
         }else{
-            //如果需要关联其他小区查询
-            //如果有两种以上数据需要手动选择
-            if(count($list)>=2){
-                foreach ($list as $item){
-                    $item['where'] = base_encode($item['where']);
-                    $item['create_time'] = base_encode($item['create_time']);
-                    $item['usage'] = base_encode($item['usage']);
-                    $item['price'] = $price;
-                    $my[] = $item;
-                }
-                $this->assign('fields',$my);
-                //dump($my);
-                return $this->fetch();
-            }else{
-            //否则直接传递
-                $item = $list[0];
-                $item['where'] = base_encode($item['where']);
-                $item['create_time'] = base_encode($item['create_time']);
-                $item['usage'] = base_encode($item['usage']);
+            //如果有关联规则则要进行选择，需要关联其他小区查询
+            
+            //先把原始数据当作一个选项
+            $ori_item = [];
+            $ori_item['community_id'] = $comm_id;
+            $ori_item['price'] = $price;
+            $ori_item['usage'] = base_encode('原始数据');
+            $my[] = $ori_item;
+            
+            //再取出关联规则
+            foreach ($list as $item1){
+                $item['rela_id'] = $item1['id'];        //把关联规则的id保存下来
+                $item['community_id'] = $item1['community_id'];
+                $item['usage'] = base_encode($item1['usage']);
+//                 dump($item1);
+//                 $item['where'] = base_encode($item1['where']);
+//                 $item['create_time'] = base_encode($item1['create_time']);
+//                 $item['usage'] = base_encode($item1['usage']);
                 $item['price'] = $price;
-                $this->redirect('getPrice', $item);
-//                 halt($my);
+                $my[] = $item;
             }
+//             dump($my);
+            $this->assign('fields',$my);
+            return $this->fetch();
+            
+            
+            //如果有两种以上数据需要手动选择
+//             }elseif(count($list)>=2){
+//                 foreach ($list as $item){
+//                     $item['where'] = base_encode($item['where']);
+//                     $item['create_time'] = base_encode($item['create_time']);
+//                     $item['usage'] = base_encode($item['usage']);
+//                     $item['price'] = $price;
+//                     $my[] = $item;
+//                 }
+//                 $this->assign('fields',$my);
+//                 //dump($my);
+//                 return $this->fetch();
+//             }else{
+//             //否则直接传递
+//                 $item = $list[0];
+//                 $item['where'] = base_encode($item['where']);
+//                 $item['create_time'] = base_encode($item['create_time']);
+//                 $item['usage'] = base_encode($item['usage']);
+//                 $item['price'] = $price;
+//                 $this->redirect('getPrice', $item);
+//             }
         }
     }
+    
     public function getPrice(){
         //$comm_id ='',$price = 0
         //通过小区编号求取相应的报价参数
@@ -128,15 +156,24 @@ class Index extends Common {
 //         halt(input());
         $data = input();
         //dump($data);
-        if(isset($data['where'])){$data['where'] = base_decode($data['where']);};
-        if(isset($data['create_time'])){$data['create_time'] = base_decode($data['create_time']);};
         if(isset($data['usage'])){$data['usage'] = base_decode($data['usage']);};
         if(!isset($data['price'])){$data['price'] = 0;};
+        
+        if(isset($data['rela_id'])){
+            //如果有传过来关联规则的id,取出具体内容
+            $rela_data = (new CommRelateModel())->where('id',$data['rela_id'])->find()->toArray();
+            $data = array_merge($rela_data,$data);
+//             dump($data);
+//             halt($rela_data);
+        }
+//         if(isset($data['where'])){$data['where'] = base_decode($data['where']);};
+//         if(isset($data['create_time'])){$data['create_time'] = base_decode($data['create_time']);};
         //$comm_id = isset($data['rela_comm_id']) ? $data['rela_comm_id'] : $data['community_id'];
+        
         //通过id找小区名称，写入session中，以便传到前端
         $getComm = Db::table('comm')->where('comm_id',$data['community_id'])->find();
         if(isset($data['rela_comm_id']) and $data['rela_comm_id']>999){
-            //如果有关联小区，取出关联小区
+            //如果有关联小区，取出关联小区的名称
             $getComm['rela_comm'] = Db::table('comm')->where('comm_id',$data['rela_comm_id'])->value('comm_name');
         }else{
             $getComm['rela_comm'] = '';
@@ -338,6 +375,7 @@ class Index extends Common {
         return $cases;
         
     }
+    
     public function creatExcel(){
         //生成excel文件
 //         halt(input());

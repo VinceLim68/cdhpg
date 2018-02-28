@@ -1,0 +1,209 @@
+{extend name="mainbase" /} {block name="pg_cs"}
+<!-- 以下三个是本页加的CSS -->
+<link rel="stylesheet" href="__CSS__/jquery-ui.min.css" />
+<!-- <link rel="stylesheet" href="__CSS__/font-awesome.min.css" /> -->
+
+<!--    这个是弹出的编辑窗口
+<link rel="stylesheet" href="__CSS__/ui.jqgrid.min.css" />   -->
+
+{/block} {block name="breadcrumb"}
+<ul class="breadcrumb">
+	<li><i class="ace-icon fa fa-home home-icon"></i> <a href="#">大叔评估后台</a>
+	</li>
+	<li><a href="#">小区管理</a></li>
+	<li><a href="#">基价管理</a></li>
+
+</ul>
+{/block} {block name="main"}
+<div class="col-xs-12">
+	<div class="tabbable">
+		<ul class="nav nav-tabs padding-12 tab-color-blue background-blue"
+			id="myTab">
+			<li><a href="{:url('managePriceIndex')}">基价信息列表</a></li>
+			<li><a href="{:url('PriceIndexSum')}">基价数量统计</a></li>
+			<li class="active"><a href="#">计算价格指数</a></li>
+		</ul>
+
+		<div class="tab-content">
+			<div class="row">
+				<div class="col-xs-12 col-sm-6 pricing-box">
+					<div class="widget-box widget-color-dark">
+						<div class="widget-header">
+							<h5 class="widget-title bigger lighter">当前数据库</h5>
+						</div>
+						<div class="widget-body">
+							<div class="widget-main">
+								<ul class="list-unstyled spaced2">
+									<li><i class="ace-icon fa fa-check green"></i> 采集数据的最早日期 :
+										{$now_period[2]}</li>
+
+									<li><i class="ace-icon fa fa-check green"></i> 采集数据的最晚日期 :
+										{$now_period[3]}</li>
+
+									<li><i class="ace-icon fa fa-check green"></i> 可计算基价最小月份 :
+										{$now_period[0]}</li>
+
+									<li><i class="ace-icon fa fa-check green"></i> 可计算基价最大月份 :
+										{$now_period[1]}</li>
+								</ul>
+								<hr>
+								<div class="price">
+									从 <input type="text" id="from" name="from">
+									到 <input type="text" id="to" name="to">
+								</div>
+							</div>
+
+							<div>
+								<a href="javascript:void(0)" onclick="cal('for_sale_property')" class="btn btn-block btn-inverse"><i
+									class="ace-icon fa fa-calculator " ></i><span>开始计算基价</span> </a>
+							</div>
+						</div>
+					</div>
+				</div>
+				<div class="col-xs-12 col-sm-6 pricing-box">
+					<div class="widget-box widget-color-green">
+						<div class="widget-header">
+							<h5 class="widget-title bigger lighter">历史数据库</h5>
+						</div>
+
+						<div class="widget-body">
+							<div class="widget-main">
+								<ul class="list-unstyled spaced2">
+									<li><i class="ace-icon fa fa-check green"></i> 采集数据的最早日期 :
+										{$history_period[2]}</li>
+
+									<li><i class="ace-icon fa fa-check green"></i> 采集数据的最晚日期 :
+										{$history_period[3]}</li>
+
+									<li><i class="ace-icon fa fa-check green"></i> 可计算基价最小月份 :
+										{$history_period[0]}</li>
+
+									<li><i class="ace-icon fa fa-check green"></i> 可计算基价最大月份 :
+										{$history_period[1]}</li>
+
+								</ul>
+
+								<hr>
+								<div class="price">
+									从 <input type="text" id="from1" name="from">
+									到 <input type="text" id="to1" name="to">
+								</div>
+							</div>
+
+							<div>
+								<a href="javascript:void(0)" onclick="cal('allsales')" class="btn btn-block btn-success"><i
+									class="ace-icon fa fa-calculator " ></i><span>开始计算基价</span> </a>
+							</div>
+						</div>
+					</div>
+				</div>
+			</div>
+
+		</div>
+	</div>
+</div>
+
+<div class="modal fade" tabindex="-1" role="dialog" id="mydialogg">
+	<div class="modal-dialog" role="document">
+		<div class="modal-content">
+			<div class="modal-header">
+				<button type="button" class="close" data-dismiss="modal"
+					aria-label="Close">
+					<span aria-hidden="true">&times;</span>
+				</button>
+				<h4 class="modal-title">信息</h4>
+			</div>
+			<div class="modal-body"></div>
+			<div class="modal-footer">
+				<button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
+			</div>
+		</div>
+	</div>
+</div>
+
+{/block} {block name="pg_js"}
+<script src="__JS__/jquery-ui.min.js"></script>
+<!-- <script src="__JS__/jquery.contextmenu.js"></script> -->
+<!-- <script src="__JS__/bootstrap-datepicker.min.js"></script> -->
+
+<script>
+function cal(tablename){
+	var from;
+	var to;
+	if(tablename == 'for_sale_property'){
+		from = $("#from").val();
+		to = $("#to").val();
+	}else{
+		from = $("#from1").val();
+		to = $("#to1").val();
+		
+	}
+	//console.log(event);
+	//alert($("#from").val());
+	//alert($("#to").val());
+	$.ajax({
+		url:'calIndexOfPeriod',
+		data:{
+			from:from,
+			to:to,
+			table:tablename,
+		},
+		success:function(event){
+			alert('done');
+			console.log(event);
+		}
+	})
+}
+	$(function() {
+		$("#from").datepicker({
+			defaultDate : "+1w",
+			changeMonth : true,
+			minDate : new Date('{$now_period[0]}'),
+			maxDate : new Date('{$now_period[1]}'),
+			showOtherMonths : true,
+			selectOtherMonths : true,
+			dateFormat : 'yy-mm-dd',
+			onClose : function(selectedDate) {
+				$("#to").datepicker("option", "minDate", selectedDate);
+			}
+		});
+		$("#to").datepicker({
+			defaultDate : "+1w",
+			changeMonth : true,
+			minDate : new Date('{$now_period[0]}'),
+			maxDate : new Date('{$now_period[1]}'),
+			showOtherMonths : true,
+			selectOtherMonths : true,
+			dateFormat : 'yy-mm-dd',
+			onClose : function(selectedDate) {
+				$("#from").datepicker("option", "maxDate", selectedDate);
+			}
+		});
+		$("#from1").datepicker({
+			defaultDate : "+1w",
+			changeMonth : true,
+			minDate : new Date('{$history_period[0]}'),
+			maxDate : new Date('{$history_period[1]}'),
+			showOtherMonths : true,
+			selectOtherMonths : true,
+			dateFormat : 'yy-mm-dd',
+			onClose : function(selectedDate) {
+				$("#to1").datepicker("option", "minDate", selectedDate);
+			}
+		});
+		$("#to1").datepicker({
+			defaultDate : "+1w",
+			changeMonth : true,
+			minDate : new Date('{$history_period[0]}'),
+			maxDate : new Date('{$history_period[1]}'),
+			showOtherMonths : true,
+			selectOtherMonths : true,
+			dateFormat : 'yy-mm-dd',
+			onClose : function(selectedDate) {
+				$("#from1").datepicker("option", "maxDate", selectedDate);
+			}
+		});
+	});
+
+</script>
+{/block}{block name="pg_inline_js"} {/block}

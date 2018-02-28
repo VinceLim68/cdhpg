@@ -280,7 +280,7 @@ class Comms extends Common {
 		return $newid;
 	}
 	
-	//通过输入文件名查找id,如果是唯一，返回一个comm对象，如果不是，返回html列表供选择
+	//小区名-->id,如果是唯一，返回一个comm对象，如果不是，返回html列表供选择
 	public function ajaxGetCommName(){
 	    //dump(input());
 	    if(null !== input('from')){
@@ -331,7 +331,6 @@ class Comms extends Common {
                 }else{
                     //3如果只查到一个，直接返回comm_id
                     return $commnames[0];
-
                 }
 	        }
 	   }
@@ -370,10 +369,10 @@ class Comms extends Common {
         }
 	    
 	    $rela_list = $commrelate->where('community_id',$data['community_id'])->select()->toArray();
-	    if(!empty($rela_list) and !isset($data['usage']) and !isset($data['rela_comm_id'])){
-	        //如果有数据，而且传递过来的数据非关联规则，则把查询出来的把第一条关联规则赋给$data
-	        $data = $rela_list[0];
-	    }
+// 	    if(!empty($rela_list) and !isset($data['usage']) and !isset($data['rela_comm_id'])){
+// 	        //如果有数据，而且传递过来的数据非关联规则，则把查询出来的把第一条关联规则赋给$data
+// 	        $data = $rela_list[0];
+// 	    }
         $this->assign('rela_list',$rela_list);
 	    
 	    //通过id找小区相关信息
@@ -452,8 +451,8 @@ class Comms extends Common {
 	    return $response;
 	}
 		
+    //以ajax方式来生成一个关联规则的页面
 	public function ajaxGetRelaById(){
-	    //以ajax方式来生成一个关联规则的页面
 	    //如果传过来的是关联规则的id
 	    $isADD = false;         //是否增加记录
 	    if(null !== input('id')){
@@ -674,22 +673,19 @@ class Comms extends Common {
 	    foreach ($comms as $comm){
 	        $data = [];
             $data['community_id'] = $comm['comm_id'];
-            $datas[] = $data;           //每个小区都要计算，当作“未分类基价”
+            $datas[] = $data;           //每个小区都要计算，当作“原始数据”
+            //如果有关联规则，再按关联规则进行计算
             if(!empty($comm['commrelate'])){
-                //如果小区还有关联规则，再对每个小区规则进行计算，但“未分类基价”不用重复了
 	            foreach ($comm['commrelate'] as $relationship){
-	                if($relationship['usage'] != '未分类基价'){
-	                    //未分类基价是每个小区都要计算的，所以这里不再重复计算
-    	                $data = [];
-                        $data['community_id'] = $comm['comm_id'];
-    	                $data['rela_comm_id'] = $relationship['rela_comm_id'];
-    	                $data['where'] = $relationship['where'];
-    	                $data['rela_ratio'] = $relationship['rela_ratio'];
-    	                $data['rela_weight'] = $relationship['rela_weight'];
-    	                $data['usage'] = $relationship['usage'];
-    	                $data['rela_id'] = $relationship['id'];
-    	                $datas[] = $data;
-	                }
+	                $data = [];
+                    $data['community_id'] = $comm['comm_id'];
+	                $data['rela_comm_id'] = $relationship['rela_comm_id'];
+	                $data['where'] = $relationship['where'];
+	                $data['rela_ratio'] = $relationship['rela_ratio'];
+	                $data['rela_weight'] = $relationship['rela_weight'];
+	                $data['usage'] = $relationship['usage'];
+	                $data['rela_id'] = $relationship['id'];
+	                $datas[] = $data;
 	            }
             }
 	    }
@@ -734,6 +730,41 @@ class Comms extends Common {
        ignore_user_abort(false); // 解除后台运行
 	}
 	
+	//按指定时间生成价格指数
+	public function calIndexOfPeriod(){
+	    if(request()->isAjax()){
+	        dump(input());
+	    }
+        $allperiod = $this->getPeriod('allsales');
+        $nowperiod = $this->getPeriod('for_sale_property');
+        //dump($period);
+        $this->assign([
+            'history_period'=>  $allperiod,
+            'now_period'    =>  $nowperiod,  
+        ]);
+	    return $this->fetch();
+	}
+	
+	//根据传入的表名取出可以计算基价的时期,返回一个数组（可以用于计算基价的开始、结束时间、表中的最早、最晚时间）
+	private function getPeriod($tablename){
+	    $maxdate = Db::table($tablename)->max('first_acquisition_time');
+	    $mindate = Db::table($tablename)->min('first_acquisition_time');
+	    $month = config('how_long_before_to_start_query')-1;         //从配置文件中取出基价计算时用的时段，不采用一月的数据，而用前三月数据来计算
+        $period_start = date("Y-m-01",strtotime("$mindate +$month month")); 
+        if($period_start < $mindate){
+            //如果取出的开始日期早于本表中的最小日期,即period_start必须在表中，则顺延一月
+            $period_start = date("Y-m-01",strtotime("$period_start +1 month")); 
+        }
+        $period_end1 = date("Y-m-01",strtotime("$maxdate"));
+        $period_end = date("Y-m-d",strtotime("$period_end1 +1 month -1 day")); 
+        //echo $period_end;
+        if($period_end > $maxdate){
+            //如果取出的结束日期晚于本表中的最大日期，则减掉一月
+            $period_end = date("Y-m-01",strtotime("$period_end1 -1 day")); 
+        }
+        return array($period_start,$period_end,$mindate,$maxdate);
+	}
+	
 	//供调用的基价计算模块
 	private function cal($item,$whichmonth){
 	    if($whichmonth == 1){
@@ -756,7 +787,6 @@ class Comms extends Common {
             	        ->where($whichmonth)
             	        ->where($where)
             	        ->select();
-	        
 	        $result[] = $whichmonth;
 	        $result[] = $res;
 	    }
@@ -841,7 +871,7 @@ class Comms extends Common {
 	    
 	}
 	
-	//基价统计信息
+	//展示基价按小区汇总的信息
 	public function PriceIndexSum(){
 	    $data = input();
 	    // 	    dump($data);
@@ -861,25 +891,12 @@ class Comms extends Common {
 	    // 	        dump($data);
 	    if( isset($data['block_id']) and ('' != $data['block_id']) and ('' == $data['where']) ){
 	        //如果给了区块id，就只查询区块id,如果有where值，就清除区块查询
-	        //             dump('block');
-	        $list = Db::view('commhistoryprice','id,community_id,usage,create_time,median,SUM(ori_len) as sumorilen,sum(len) as sumlen,avg(std_r) as avgstdr,from_date')
-	        ->view('comm','comm_name,block,comm_addr,block_id','comm.comm_id=commhistoryprice.community_id')
-	        ->where('block_id',$data['block_id'])
-	        ->order($order)
-	        ->paginate(100,false,[
-	            'query'=>[
-	                'block_id'=> $data['block_id'],
-	                'order'=>  $data['order'],
-	            ],
-	        ]);
-	        //     	    dump($list);
-	    }elseif(isset($data['community_id']) and ('' != $data['community_id']) and ('' == $data['where'])){
-	        //如果有community_id，则按community_id查询，其实是按小区名称查询
-	        // 	        dump('community_id');
 	        $list = (new CommhistorypriceModel())->with('comm')
 	        ->field('*,SUM(ori_len) as sumorilen,sum(len) as sumlen,avg(std_r) as avgstdr')
-	        ->where('community_id',$data['community_id'])
-	        ->order('from_date')
+	        ->view('comm','comm_name,block,comm_addr,block_id','comm.comm_id=commhistoryprice.community_id')
+	        ->where('block_id',$data['block_id'])
+	        ->group("community_id,`usage`")
+	        ->order('sumlen desc')
 	        ->paginate(100,false,[
 	            'query'=>[
 	                'where'=>  $data['where'],
@@ -887,13 +904,31 @@ class Comms extends Common {
 	                'set'=>  $data['set'],
 	            ],
 	        ]);
+	        //     	    dump($list);
+	    }elseif(isset($data['community_id']) and ('' != $data['community_id']) and ('' == $data['where'])){
+	        //如果有community_id，则按community_id查询，其实是按小区名称查询
+// 	        	        halt($data);
+	        $list = (new CommhistorypriceModel())->with('comm')
+	        ->field('*,SUM(ori_len) as sumorilen,sum(len) as sumlen,avg(std_r) as avgstdr')
+	        ->where('community_id',$data['community_id'])
+	        ->group("community_id,`usage`")
+	        ->order('from_date')
+// 	        ->fetchSQL(true)
+	        ->paginate(100,false,[
+	            'query'=>[
+	                'where'=>  $data['where'],
+	                'order'=>  $data['order'],
+	                'set'=>  $data['set'],
+	            ],
+	        ]);
+// 	        halt($list);
 	    }else{
 	        //否则正常查询
 // 	        dump($data);
 	        $HPrice = new CommhistorypriceModel();
 	        $list = $HPrice->with('comm')
 	        ->field('*,SUM(ori_len) as sumorilen,sum(len) as sumlen,avg(std_r) as avgstdr')
-	        ->group("community_id,'usage'")
+	        ->group("community_id,`usage`")
 	        ->where($data['where'] )
 	        ->order($order)
 // 	        ->fetchSql(true)
@@ -1037,6 +1072,12 @@ class Comms extends Common {
     //动态加载百度Echarts,这里其实可以批量查询（比如说列出同一区块的所有小区的走势图）,只要再增加一下判断传入的参数，修改一下查询语句
     public function getdataforecharts(){
         $comms = new Comm();
+        $inputs = input();
+        //dump($inputs);
+        if(!isset($inputs['usage'])){
+            $inputs['usage'] = '';
+        }
+//         dump($inputs);
         $c = $comms->field('comm_id')
             ->where('comm_id',input('community_id'))
 //             ->where('comm_id','like','1001%')
@@ -1050,8 +1091,12 @@ class Comms extends Common {
             $list = $priceindex             //Db::table('Commhistoryprice')
                 ->field('mortgagePrice,from_date,ori_len,mean')
                 ->where('community_id',$id['comm_id'])
+                ->where('usage',$inputs['usage'])
                 ->order('from_date')
-                ->select()->toArray();
+//                 ->fetchSQL(true)
+                ->select()
+                ->toArray();
+//             dump($list);
             $isvalid = true;
 //             foreach ($list as $item){
 //                 if($item['mortgagePrice']==0 ){
@@ -1074,4 +1119,5 @@ class Comms extends Common {
         return $data;
         
     }
+
 }

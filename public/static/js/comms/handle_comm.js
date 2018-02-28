@@ -269,11 +269,13 @@ jQuery(function($) {
 	
 	$('#pricehistory').on("click",function(){
  		var community_id = $('#hidden_datas').attr('community_id');
+ 		var usage = $('#hidden_datas').attr('usage');
  		//alert(community_id);
  		$.ajax({
  			url:getpricehistory,
        	 	data:{
      			community_id:community_id,
+     			usage:usage,
      		},
      		success:function(response){ 
      			setEcharts(response);
@@ -286,4 +288,10 @@ jQuery(function($) {
 	        }  
  		});
 	});
+	
+	$('#origin').on('click',function(){
+		var community_id = $('#hidden_datas').attr('community_id');
+//		alert('');
+		window.location.href= myself + "?community_id=" + community_id;
+	})
 })
