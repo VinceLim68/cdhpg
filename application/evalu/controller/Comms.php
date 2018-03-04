@@ -655,6 +655,34 @@ class Comms extends Common {
 	
 	}
 	
+	//生成需计算基价的小区列表（功能拆分也算一种）
+	public function getCommsForCal(){
+	    $comms = Comm::with('commrelate')->select()->toArray();
+	    //有用的字段是comm_id，关联中的rela_comm_id，where，rela_ratio，rela_weight,usage,rela_id(这个rela的id)
+	    $datas = [];       //存放需要计算基价的列表（小区，及小区内的功能拆分）
+	    //生成需计算基价的小区列表（功能拆分也算一种）
+	    foreach ($comms as $comm){
+	        $data = [];
+	        $data['community_id'] = $comm['comm_id'];
+	        $datas[] = $data;           //每个小区都要计算，当作“原始数据”
+	        //如果有关联规则，再按关联规则进行计算
+	        if(!empty($comm['commrelate'])){
+	            foreach ($comm['commrelate'] as $relationship){
+	                $data = [];
+	                $data['community_id'] = $comm['comm_id'];
+	                $data['rela_comm_id'] = $relationship['rela_comm_id'];
+	                $data['where'] = $relationship['where'];
+	                $data['rela_ratio'] = $relationship['rela_ratio'];
+	                $data['rela_weight'] = $relationship['rela_weight'];
+	                $data['usage'] = $relationship['usage'];
+	                $data['rela_id'] = $relationship['id'];
+	                $datas[] = $data;
+	            }
+	        }
+	    }
+	    return $datas;
+	}
+	
 	//生成基价
 	public function calPriceIndex(){
 	    //批量生成历史价格指数
@@ -665,30 +693,32 @@ class Comms extends Common {
 	    $buffer = ini_get('output_buffering');
 	    echo str_repeat(' ',$buffer+1);
 	    ob_end_flush();
+	    
+	    $datas = $this->getCommsForCal();
 
-	    $comms = Comm::with('commrelate')->select()->toArray();
-	    //有用的字段是comm_id，关联中的rela_comm_id，where，rela_ratio，rela_weight,usage,rela_id(这个rela的id)
-	    $datas = [];       //存放需要计算基价的列表（小区，及小区内的功能拆分）
-	    //生成需计算基价的小区列表（功能拆分也算一种）
-	    foreach ($comms as $comm){
-	        $data = [];
-            $data['community_id'] = $comm['comm_id'];
-            $datas[] = $data;           //每个小区都要计算，当作“原始数据”
-            //如果有关联规则，再按关联规则进行计算
-            if(!empty($comm['commrelate'])){
-	            foreach ($comm['commrelate'] as $relationship){
-	                $data = [];
-                    $data['community_id'] = $comm['comm_id'];
-	                $data['rela_comm_id'] = $relationship['rela_comm_id'];
-	                $data['where'] = $relationship['where'];
-	                $data['rela_ratio'] = $relationship['rela_ratio'];
-	                $data['rela_weight'] = $relationship['rela_weight'];
-	                $data['usage'] = $relationship['usage'];
-	                $data['rela_id'] = $relationship['id'];
-	                $datas[] = $data;
-	            }
-            }
-	    }
+// 	    $comms = Comm::with('commrelate')->select()->toArray();
+// 	    //有用的字段是comm_id，关联中的rela_comm_id，where，rela_ratio，rela_weight,usage,rela_id(这个rela的id)
+// 	    $datas = [];       //存放需要计算基价的列表（小区，及小区内的功能拆分）
+// 	    //生成需计算基价的小区列表（功能拆分也算一种）
+// 	    foreach ($comms as $comm){
+// 	        $data = [];
+//             $data['community_id'] = $comm['comm_id'];
+//             $datas[] = $data;           //每个小区都要计算，当作“原始数据”
+//             //如果有关联规则，再按关联规则进行计算
+//             if(!empty($comm['commrelate'])){
+// 	            foreach ($comm['commrelate'] as $relationship){
+// 	                $data = [];
+//                     $data['community_id'] = $comm['comm_id'];
+// 	                $data['rela_comm_id'] = $relationship['rela_comm_id'];
+// 	                $data['where'] = $relationship['where'];
+// 	                $data['rela_ratio'] = $relationship['rela_ratio'];
+// 	                $data['rela_weight'] = $relationship['rela_weight'];
+// 	                $data['usage'] = $relationship['usage'];
+// 	                $data['rela_id'] = $relationship['id'];
+// 	                $datas[] = $data;
+// 	            }
+//             }
+// 	    }
 	    //根据上面的列表，批量生成价格指数
 	    
 	    //先取出最大和最小日期
@@ -733,7 +763,7 @@ class Comms extends Common {
 	//按指定时间生成价格指数
 	public function calIndexOfPeriod(){
 	    if(request()->isAjax()){
-	        dump(input());
+	        halt(input());
 	    }
         $allperiod = $this->getPeriod('allsales');
         $nowperiod = $this->getPeriod('for_sale_property');
@@ -892,7 +922,7 @@ class Comms extends Common {
 	    if( isset($data['block_id']) and ('' != $data['block_id']) and ('' == $data['where']) ){
 	        //如果给了区块id，就只查询区块id,如果有where值，就清除区块查询
 	        $list = (new CommhistorypriceModel())->with('comm')
-	        ->field('*,SUM(ori_len) as sumorilen,sum(len) as sumlen,avg(std_r) as avgstdr')
+	        ->field('*,SUM(ori_len) as sumorilen,sum(len) as sumlen,avg(std_r) as avgstdr,count(from_date) as datecount')
 	        ->view('comm','comm_name,block,comm_addr,block_id','comm.comm_id=commhistoryprice.community_id')
 	        ->where('block_id',$data['block_id'])
 	        ->group("community_id,`usage`")
@@ -909,7 +939,7 @@ class Comms extends Common {
 	        //如果有community_id，则按community_id查询，其实是按小区名称查询
 // 	        	        halt($data);
 	        $list = (new CommhistorypriceModel())->with('comm')
-	        ->field('*,SUM(ori_len) as sumorilen,sum(len) as sumlen,avg(std_r) as avgstdr')
+	        ->field('*,SUM(ori_len) as sumorilen,sum(len) as sumlen,avg(std_r) as avgstdr,count(from_date) as datecount')
 	        ->where('community_id',$data['community_id'])
 	        ->group("community_id,`usage`")
 	        ->order('from_date')
@@ -927,7 +957,7 @@ class Comms extends Common {
 // 	        dump($data);
 	        $HPrice = new CommhistorypriceModel();
 	        $list = $HPrice->with('comm')
-	        ->field('*,SUM(ori_len) as sumorilen,sum(len) as sumlen,avg(std_r) as avgstdr')
+	        ->field('*,SUM(ori_len) as sumorilen,sum(len) as sumlen,avg(std_r) as avgstdr,count(from_date) as datecount')
 	        ->group("community_id,`usage`")
 	        ->where($data['where'] )
 	        ->order($order)
@@ -942,7 +972,7 @@ class Comms extends Common {
 	        
 // 	        dump($list);
 	    }
-	    $title = ['序号','小区','区块','分类','抵押价值','有效数合计','原始数据合计','平均标准差','基期时间'];
+	    $title = ['序号','小区','区块','分类','抵押价值','有效数合计','原始数据合计','平均标准差','基价期数'];
 	    $fields = Db::query('SHOW COLUMNS FROM commhistoryprice');
 	    $this->assign([
 	        'title'=>$title,

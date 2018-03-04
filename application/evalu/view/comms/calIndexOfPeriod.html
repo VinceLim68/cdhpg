@@ -51,6 +51,14 @@
 									从 <input type="text" id="from" name="from">
 									到 <input type="text" id="to" name="to">
 								</div>
+								<div style="margin-top:10px;text-align:center;">
+									<label class="radio-inline">
+									  <input type="radio" name="isCover"  value="1" checked>  覆盖重复记录
+									</label>
+									<label class="radio-inline">
+									  <input type="radio" name="isCover"  value="2">  忽略重复记录
+									</label>
+								</div>
 							</div>
 
 							<div>
@@ -87,6 +95,17 @@
 								<div class="price">
 									从 <input type="text" id="from1" name="from">
 									到 <input type="text" id="to1" name="to">
+								</div>
+								<div style="margin-top:10px;text-align:center;">
+									<label class="radio-inline">
+									  <input type="radio" name="isCover1"  value="1" checked>  覆盖重复记录
+									</label>
+									<label class="radio-inline">
+									  <input type="radio" name="isCover1"  value="2">  忽略重复记录
+									</label>
+								</div>
+								
+							
 								</div>
 							</div>
 
@@ -133,9 +152,11 @@ function cal(tablename){
 	if(tablename == 'for_sale_property'){
 		from = $("#from").val();
 		to = $("#to").val();
+		iscover = $("input[name='isCover']:checked").val();
 	}else{
 		from = $("#from1").val();
 		to = $("#to1").val();
+		iscover = $("input[name='isCover1']:checked").val();
 		
 	}
 	//console.log(event);
@@ -147,6 +168,7 @@ function cal(tablename){
 			from:from,
 			to:to,
 			table:tablename,
+			iscover:iscover,
 		},
 		success:function(event){
 			alert('done');
@@ -160,6 +182,7 @@ function cal(tablename){
 			changeMonth : true,
 			minDate : new Date('{$now_period[0]}'),
 			maxDate : new Date('{$now_period[1]}'),
+			defaultDate:new Date('{$now_period[0]}'),
 			showOtherMonths : true,
 			selectOtherMonths : true,
 			dateFormat : 'yy-mm-dd',
@@ -179,11 +202,14 @@ function cal(tablename){
 				$("#from").datepicker("option", "maxDate", selectedDate);
 			}
 		});
+		$("#from").val('{$now_period[0]}');
+		$("#to").val('{$now_period[1]}');
 		$("#from1").datepicker({
 			defaultDate : "+1w",
 			changeMonth : true,
 			minDate : new Date('{$history_period[0]}'),
 			maxDate : new Date('{$history_period[1]}'),
+			defaultDate:new Date('{$history_period[0]}'),
 			showOtherMonths : true,
 			selectOtherMonths : true,
 			dateFormat : 'yy-mm-dd',
@@ -196,6 +222,7 @@ function cal(tablename){
 			changeMonth : true,
 			minDate : new Date('{$history_period[0]}'),
 			maxDate : new Date('{$history_period[1]}'),
+			defaultDate:new Date('{$history_period[1]}'),
 			showOtherMonths : true,
 			selectOtherMonths : true,
 			dateFormat : 'yy-mm-dd',
@@ -203,6 +230,8 @@ function cal(tablename){
 				$("#from1").datepicker("option", "maxDate", selectedDate);
 			}
 		});
+		$("#from1").val('{$history_period[0]}');
+		$("#to1").val('{$history_period[1]}');
 	});
 
 </script>
