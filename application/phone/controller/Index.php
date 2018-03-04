@@ -199,6 +199,7 @@ class Index extends Common {
             $getPrice_result['structuer'] = config('structuer');
             
             $this->assign('B',$getPrice_result);
+//             dump($getPrice_result['comm']);
             //===================登记查询记录===============================================
             $ins = QueryRecordsModel::insert_record($getPrice_result);      //返回插入的id,如果是重复数据没有插入，则返回0
             //===================把离散值过大的数据记录error_comm,以备改进=================================

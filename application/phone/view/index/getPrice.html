@@ -12,7 +12,8 @@
 </head>
 <body>
 
-
+<input type="hidden" id="hidefeild" community_id="{$B['comm']['comm_id']}" comm_name="{$B['comm']['comm_name']}"
+usage="{$B['comm']['usage']|default=''}" block="{$B['comm']['block']}">
 	<div class="panel panel-default" style="margin: 0 0;">
 		<div class="panel-heading">
 			<h3 style="color: #3c763d;">{$B['comm']['comm_name']}
@@ -28,6 +29,7 @@
 				      数据 <span class="caret"></span>
 				    </a>
 				    <ul class="dropdown-menu">
+						<li ><a href="#" id="price_histroy" >历史走势图</a></li>
 						<li ><a href="#box" aria-controls="box" role="tab" data-toggle="tab" >盒须图</a></li>
 					    <li ><a href="#scatter_area_price" aria-controls="scatter_area_price" role="tab" data-toggle="tab" >面积/房价散点</a></li>
 					    <li ><a href="#scatter_floor_price" aria-controls="scatter_floor_price" role="tab" data-toggle="tab" >总楼层/房价散点</a></li>
@@ -592,7 +594,39 @@
 		     
 	})
 	</script>
-	
+<script type="text/javascript">
+jQuery(function($) {
+	$('#price_histroy').on('click',function(e){
+		var community_id = $("#hidefeild").attr("community_id");
+		var commName = $("#hidefeild").attr("comm_name");
+		var usage = $("#hidefeild").attr("usage");
+		//alert(community_id);
+		$.ajax({
+			url: '{:url("evalu/comms/getdataforecharts")}',
+			data: {
+				community_id: community_id,
+				usage:usage,
+			},
+			success: function(response) {
+				setEcharts(response);
+				if (response.price.length != 0) {
+					$('#Echarts h4.modal-title').html(commName + '(' + usage + ')房价走势图');
+				} else {
+					$('#Echarts h4.modal-title').html(commName + '房价数据不完整，无法展示');
+					//$('#modal_echarts').html('<h3>'+commName+'房价数据不完整，无法展示'+'</h3>');
+				}
+				$('#Echarts').modal('show');
+				//$('#modal_echarts').html('');
+			}
+		});
+		
+		//alert($("#hidefeild").attr("community_id"));
+		//console.log($("#hidefeild"));
+		//$('#Echarts').modal('show');
+	})
+})
+</script>
+{include file="./commhtml/common_echarts.html"/} 	
 
 </body>
 </html>

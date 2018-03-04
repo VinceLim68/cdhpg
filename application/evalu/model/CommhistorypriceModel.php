@@ -23,7 +23,7 @@ class CommhistorypriceModel extends Model
 	}
 	
 	public function getCreateTimeAttr($value){
-	    return date('Y-m', $value);
+	    return date('Y-m-d', $value);
 	}
 	
 	public function isDuplicate($item,$whichmonth){
