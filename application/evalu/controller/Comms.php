@@ -696,30 +696,6 @@ class Comms extends Common {
 	    
 	    $datas = $this->getCommsForCal();
 
-// 	    $comms = Comm::with('commrelate')->select()->toArray();
-// 	    //有用的字段是comm_id，关联中的rela_comm_id，where，rela_ratio，rela_weight,usage,rela_id(这个rela的id)
-// 	    $datas = [];       //存放需要计算基价的列表（小区，及小区内的功能拆分）
-// 	    //生成需计算基价的小区列表（功能拆分也算一种）
-// 	    foreach ($comms as $comm){
-// 	        $data = [];
-//             $data['community_id'] = $comm['comm_id'];
-//             $datas[] = $data;           //每个小区都要计算，当作“原始数据”
-//             //如果有关联规则，再按关联规则进行计算
-//             if(!empty($comm['commrelate'])){
-// 	            foreach ($comm['commrelate'] as $relationship){
-// 	                $data = [];
-//                     $data['community_id'] = $comm['comm_id'];
-// 	                $data['rela_comm_id'] = $relationship['rela_comm_id'];
-// 	                $data['where'] = $relationship['where'];
-// 	                $data['rela_ratio'] = $relationship['rela_ratio'];
-// 	                $data['rela_weight'] = $relationship['rela_weight'];
-// 	                $data['usage'] = $relationship['usage'];
-// 	                $data['rela_id'] = $relationship['id'];
-// 	                $datas[] = $data;
-// 	            }
-//             }
-// 	    }
-	    //根据上面的列表，批量生成价格指数
 	    
 	    //先取出最大和最小日期
        $maxdate = Db::table('allsales')->max('first_acquisition_time');
@@ -762,9 +738,76 @@ class Comms extends Common {
 	
 	//按指定时间生成价格指数
 	public function calIndexOfPeriod(){
+// 	    传递来的参数形式
+// 	    array (size=4)
+// 	    'from' => string '2018-01-01' (length=10)
+// 	    'to' => string '2018-02-01' (length=10)
+// 	    'table' => string 'for_sale_property' (length=17)
+// 	    'iscover' => string '1' (length=1)
+	    
 	    if(request()->isAjax()){
-	        halt(input());
+	        ignore_user_abort(true); // 后台运行
+	        error_reporting(0);
+	        set_time_limit(0);
+	         
+	        $buffer = ini_get('output_buffering');
+	        echo str_repeat(' ',$buffer+1);
+	        ob_end_flush();
+	         
+	        $datas = $this->getCommsForCal();
+	        
+	        $getdate = input();
+	        $start = $getdate['from'];
+	        $month = config('how_long_before_to_start_query')-1; 
+	        
+	        while ($start <= $getdate['to']){
+	            $startday = date("Y-m-d",strtotime("$start -$month month"));          //开始日期，如果2016后8月的基期，其开始为2016-6-1
+	            $lastday = date("Y-m-d",strtotime("$start +1 month -1 day"));         //结束日期，如果2016后8月的基期，其结束为2016-8-31
+	            $whichmonth = "first_acquisition_time BETWEEN '".$startday."' AND '".$lastday."'";//指定查询的时间范围
+	            $whichmonth1 = "from_date BETWEEN '".$start."' AND '".$lastday."'";
+	            //每个月再按上面的列表分别计算各小区基价
+	            $i = 0;        //计数变量
+	            foreach ($datas as $item){
+	                $i += 1;
+	                echo "========基期".$start." ：自".$startday."----".$lastday." : ".$i."=======</br>";
+	                $priceIndex = new CommhistorypriceModel;
+                    //判断是否已经计算过当月基价
+	                $findrecord = $priceIndex->isDuplicate($item,$whichmonth1);
+// 	                dump($id);
+	                if($findrecord){
+	                    //如果已经有基价的记录
+	                    
+	                    if($getdate['iscover'] == '1'){
+	                        //如果需要覆盖
+    	                    $getPrice_result = $this->cal($item,$whichmonth,$getdate['table']);
+    	                    if($getPrice_result['community_id']!= null){
+    	                        //如果community有值才保存。不知道为什么有时会得到community_id为空的记录
+    	                        $getPrice_result['from_date'] = $start;      //记录基价所对应的日期
+    	                        $priceIndex->allowField(true)->save($getPrice_result,['id' => $findrecord->id]);
+    	                        //$priceIndex->data($getPrice_result)->allowField(true)->save();
+    	                        dump($getPrice_result);
+    	                    }
+	                    }else{
+    	                    echo '====== 本小区当月基价数据已经存在,不再重复计算  =====</br>';
+	                    }
+	                }else{
+	                    //如果没找到覆盖
+	                    $getPrice_result = $this->cal($item,$whichmonth,$getdate['table']);
+	                    if($getPrice_result['community_id']!= null){
+	                        //如果community有值才保存。不知道为什么有时会得到community_id为空的记录
+	                        $getPrice_result['from_date'] = $start;      //记录基价所对应的日期
+	                        $priceIndex->data($getPrice_result)->allowField(true)->save();
+	                        dump($getPrice_result);
+	                    }
+	                }
+	                flush();
+	            }
+	            $start = date("Y-m-d",strtotime("$start +1 month"));
+	            
+	        }
+	        //halt($getdate['to']);
 	    }
+	    
         $allperiod = $this->getPeriod('allsales');
         $nowperiod = $this->getPeriod('for_sale_property');
         //dump($period);
@@ -792,11 +835,11 @@ class Comms extends Common {
             //如果取出的结束日期晚于本表中的最大日期，则减掉一月
             $period_end = date("Y-m-01",strtotime("$period_end1 -1 day")); 
         }
-        return array($period_start,$period_end,$mindate,$maxdate);
+        return array($period_start,$period_end,$mindate,$maxdate,$month);
 	}
 	
 	//供调用的基价计算模块
-	private function cal($item,$whichmonth){
+	private function cal($item,$whichmonth,$tablename="allsales"){
 	    if($whichmonth == 1){
 	        //如果是1，表示只计算当前月
     	    $result = SalesModel::getRecordsByCommid($item);
@@ -812,7 +855,7 @@ class Comms extends Common {
             $where = isset($item['where']) ? $item['where'] : ' 1=1 ';
             $rela_ratio = isset($item['rela_ratio']) ? $item['rela_ratio'] : 1;
             $rela_weight = isset($item['rela_weight']) ? $item['rela_weight'] : 1;
-	        $res = Db::table('allsales')->field($fields)
+	        $res = Db::table($tablename)->field($fields)
             	        ->where('community_id',$comm_id)
             	        ->where($whichmonth)
             	        ->where($where)
