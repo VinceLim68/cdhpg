@@ -43,34 +43,13 @@ class Comms extends Common {
 	public function test() {
 // 		//$pattern = '/(.*市)?(.*区)?(.*[路道街巷里园])(\d+号(之[三二一四五六七八九十]*)?)(\d+)(室|单元)?/';
 // 		//测试用正则取地址里的路名、栋号等
-// 		$pattern = '/(.*市)?(.*区)?(\D*)(\d+号)(之[三二一四五六七八九十]*)?(\d+)(室|单元)?/';
-// // 		$pattern = '/(.*u5e02)?(.*u533a)?(.*[u8defu9053u8857u5df7u91cc])(\d+u53f7(u4e4b[u4e09u4e8cu4e00u56dbu4e94u516du4e03u516bu4e5du5341u96f60]*)?)(\d+(u5ba4|u5355u5143))?/';
-// 		$string = '湖里区梧桐里32号之十二202室住宅房地产抵押价值估价';
-// 		$match = [];
-// 		$result = preg_match($pattern,$string,$match);
-// 		dump($match);
+		$pattern = '/(.*市)?(.*区)?(\D*)(\d+号)(之[三二一四五六七八九十]*)?(\d+)(室|单元)?/';
+// 		$pattern = '/(.*u5e02)?(.*u533a)?(.*[u8defu9053u8857u5df7u91cc])(\d+u53f7(u4e4b[u4e09u4e8cu4e00u56dbu4e94u516du4e03u516bu4e5du5341u96f60]*)?)(\d+(u5ba4|u5355u5143))?/';
+		$string = '湖里区梧桐里32号之十202室住宅房地产抵押价值估价';
+		//$match = [];
+		$result = preg_match($pattern,$string,$match);
+		dump($match);
 
-	    //以下是测试按月份取数据
-       $maxdate = Db::table('allsales')->max('first_acquisition_time');
-       $mindate = Db::table('allsales')->min('first_acquisition_time');
-       $firstday = date("Y-m-01",strtotime($mindate));
-//        $lastday = date("Y-m-d",strtotime("$firstday +1 month -1 day"));
-//        $lastday = date("Y-m-01",strtotime("$firstday +1 month"));
-       dump($maxdate);
-       dump($mindate);
-       while ($firstday < $maxdate){
-           $lastday = date("Y-m-d",strtotime("$firstday +1 month -1 day"));
-           echo $firstday."-".$lastday."</br>";
-           $firstday = date("Y-m-01",strtotime("$firstday +1 month"));
-       }
-       
-//        $month = "first_acquisition_time BETWEEN '".$firstday."' AND '".$lastday."'";
-       
-//        $Datas = Db::table('allsales')
-//             ->field('first_acquisition_time')
-//             ->where($month)
-//             ->select();    
-//        dump($Datas);
 	}
 	
 	/**
@@ -580,7 +559,7 @@ class Comms extends Common {
 	}
 	
 	//测试获得小区列表，如果有关联规则，每个关联规则算一条
-	public function testgetcommwithrelate(){
+	public function _testgetcommwithrelate(){
 	    ignore_user_abort(true); // 后台运行
 	    error_reporting(0);
 	    set_time_limit(0);
@@ -684,7 +663,7 @@ class Comms extends Common {
 	}
 	
 	//生成基价
-	public function calPriceIndex(){
+	public function _calPriceIndex(){
 	    //批量生成历史价格指数
 	    ignore_user_abort(true); // 后台运行
 	    error_reporting(0);
@@ -695,8 +674,6 @@ class Comms extends Common {
 	    ob_end_flush();
 	    
 	    $datas = $this->getCommsForCal();
-
-	    
 	    //先取出最大和最小日期
        $maxdate = Db::table('allsales')->max('first_acquisition_time');
        $mindate = Db::table('allsales')->min('first_acquisition_time');
@@ -738,12 +715,12 @@ class Comms extends Common {
 	
 	//按指定时间生成价格指数
 	public function calIndexOfPeriod(){
-// 	    传递来的参数形式
-// 	    array (size=4)
-// 	    'from' => string '2018-01-01' (length=10)
-// 	    'to' => string '2018-02-01' (length=10)
-// 	    'table' => string 'for_sale_property' (length=17)
-// 	    'iscover' => string '1' (length=1)
+        // 	    传递来的参数形式
+        // 	    array (size=4)
+        // 	    'from' => string '2018-01-01' (length=10)
+        // 	    'to' => string '2018-02-01' (length=10)
+        // 	    'table' => string 'for_sale_property' (length=17)
+        // 	    'iscover' => string '1' (length=1)
 	    
 	    if(request()->isAjax()){
 	        ignore_user_abort(true); // 后台运行
@@ -773,10 +750,8 @@ class Comms extends Common {
 	                $priceIndex = new CommhistorypriceModel;
                     //判断是否已经计算过当月基价
 	                $findrecord = $priceIndex->isDuplicate($item,$whichmonth1);
-// 	                dump($id);
 	                if($findrecord){
 	                    //如果已经有基价的记录
-	                    
 	                    if($getdate['iscover'] == '1'){
 	                        //如果需要覆盖
     	                    $getPrice_result = $this->cal($item,$whichmonth,$getdate['table']);
@@ -784,17 +759,15 @@ class Comms extends Common {
     	                        //如果community有值才保存。不知道为什么有时会得到community_id为空的记录
     	                        $getPrice_result['from_date'] = $start;      //记录基价所对应的日期
     	                        $priceIndex->allowField(true)->save($getPrice_result,['id' => $findrecord->id]);
-    	                        //$priceIndex->data($getPrice_result)->allowField(true)->save();
     	                        dump($getPrice_result);
     	                    }
 	                    }else{
     	                    echo '====== 本小区当月基价数据已经存在,不再重复计算  =====</br>';
 	                    }
 	                }else{
-	                    //如果没找到覆盖
+	                    //如果没有基价
 	                    $getPrice_result = $this->cal($item,$whichmonth,$getdate['table']);
 	                    if($getPrice_result['community_id']!= null){
-	                        //如果community有值才保存。不知道为什么有时会得到community_id为空的记录
 	                        $getPrice_result['from_date'] = $start;      //记录基价所对应的日期
 	                        $priceIndex->data($getPrice_result)->allowField(true)->save();
 	                        dump($getPrice_result);
@@ -805,12 +778,10 @@ class Comms extends Common {
 	            $start = date("Y-m-d",strtotime("$start +1 month"));
 	            
 	        }
-	        //halt($getdate['to']);
 	    }
 	    
         $allperiod = $this->getPeriod('allsales');
         $nowperiod = $this->getPeriod('for_sale_property');
-        //dump($period);
         $this->assign([
             'history_period'=>  $allperiod,
             'now_period'    =>  $nowperiod,  
