@@ -253,18 +253,17 @@
 	            },
 	        }
 	    });
-	    $("#search_form").on("submit",
-	    function(event) {
+	    $("#search_form").on("submit",function(event) {
 	        //关联首页签的小区搜索框，可以跳转另一个小区
 	        event.preventDefault();
 	        $.ajax({
 	            url: "{:url('ajaxGetCommName')}",
 	            data: {
-	                from: 'managePriceIndex',
+	                from: 'PriceIndexSum',
 	                commName: $('#commName').val(),
 	            },
 	            success: function(response) {
-	                console.log(response);
+	                //console.log(response);
 	                if ('object' === typeof(response)) {
 	                    var html = '<img src="' + waitingImg + '" /><span style="margin-left:10px;">正在跳转' + response.comm_name + '中......</span>';
 	                    $('#mydialogg div.modal-body').html(html);
