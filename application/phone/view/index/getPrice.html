@@ -48,16 +48,9 @@ usage="{$B['comm']['usage']|default=''}" block="{$B['comm']['block']}">
 				    	{if condition="$auth['case']"}
 						<li ><a href="#casetab" aria-controls="casetab" role="tab" data-toggle="tab" id="case">成交案例</a></li>
 						{/if}
-<!-- 						{if condition="$auth['history']"}
-						<li ><a href="#historytab" aria-controls="historytab" role="tab" data-toggle="tab" id="history">历史询价记录</a></li>
-		 				{/if} -->
 						{if condition="$auth['insert']"}
 		 				<li ><a href="#query_record" aria-controls="query_record" role="tab" data-toggle="tab" >登记询价记录</a></li> 
 		 				{/if}
-		 				<!-- {if condition="$Think.session.user.user_name == 'admin'"}
-		 				<li ><a href="#query_record" aria-controls="query_record" role="tab" data-toggle="tab" >登记询价记录</a></li> 
-					    {/if} -->
-					    <!-- <li ><a href="{:url('creatExcel',array('comm_id'=>$B['comm']['comm_id'],'comm_name'=>$B['comm']['comm_name']))}"  >导出Excel</a></li> -->
 					    {if condition="$auth['excel']"}
 					    <li ><a href="{:url('creatExcel')}"  >导出Excel</a></li>
 					    {/if}
@@ -101,25 +94,6 @@ usage="{$B['comm']['usage']|default=''}" block="{$B['comm']['block']}">
 							</span>
 							</p>
 						</div> 
-<!-- 						<div class="list-group"	>
-							<li class="list-group-item" >基价内涵</li>
-							<table class="table">
-								<tr>
-									<td class="col-md-4 col-xs-4 left" >面积</td>
-									<td class="col-md-8 col-xs-8 right">{$B['avg_area']}平方米</td>
-			
-								</tr>
-								<tr>
-									<td class="col-md-4 col-xs-4 left" >层次</td>
-									<td class="col-md-8 col-xs-8 right">{$B['avg_floor_index']}层/共{$B['avg_total_floor']}层</td>
-			
-								</tr>
-								<tr>
-									<td class="col-md-4 col-xs-4 left " >建成年份</td>
-									<td class="col-md-8 col-xs-8 right">{$B['avg_builded_year']}年</td>
-								</tr>
-							</table>
-						</div> -->
 						<div class="list-group">
 							<table class="table" id="historytable">
 							</table>
@@ -168,12 +142,6 @@ usage="{$B['comm']['usage']|default=''}" block="{$B['comm']['block']}">
 						</div>
 					</div>
 			    </div>
-				
-				<!-- 历史询价记录 -->
-<!-- 				<div role="tabpanel" class="tab-pane " id="historytab">
-					<table class="table" id="historytable">
-					</table>
-				</div> -->
 				
 				<!-- 案例记录 -->
 				<div role="tabpanel" class="tab-pane " id="casetab">
@@ -227,6 +195,9 @@ usage="{$B['comm']['usage']|default=''}" block="{$B['comm']['block']}">
 	   				<div class="panel panel-success">
 						<div class="panel-heading">
 							<button type="button" class="btn btn-success btn-lg" id='insertQuery'>登记询价记录</button>
+							{if condition="$auth['admin']"}
+								<button type="button" class="btn btn-success btn-lg" id='insertQueryIntoEasyPG'>询价插入新系统</button>
+							{/if}
 						</div>
 						<div class="list-group ">
 							<form class="form-horizontal" id="insertQueryForm">
@@ -522,6 +493,23 @@ usage="{$B['comm']['usage']|default=''}" block="{$B['comm']['block']}">
 /* 				data:$('#insertQueryForm').serialize()+ '&' +$.param({
 					'OfferPeople':'林晓',
 					}), */
+				data:$('#insertQueryForm').serialize(),
+				success: function(msg){
+        			$('#mymodal_header').html(msg['status']);
+    				$('#mymodal-body').html('<p>'+ msg['msg'] + '</p>');
+    				$('#mymodal').modal('show');
+       		   	},	
+			});
+
+		} );
+		{/if}
+		
+		{if condition="$auth['admin']"}
+		jQuery("#insertQueryIntoEasyPG").on('click',function (){
+			var date = new Date();
+			$.ajax({
+				url:'{:url('insertQueryIntoEasyPG')}',
+				type:'POST',
 				data:$('#insertQueryForm').serialize(),
 				success: function(msg){
         			$('#mymodal_header').html(msg['status']);

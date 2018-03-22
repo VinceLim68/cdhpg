@@ -87,10 +87,6 @@ class TEnquiryModel extends Model {
                 ->where('Enquiry_Date','>= time',$day)
                 ->where('OfferPeople',$data['OfferPeople'])
                 ->count();
-//         $sql_count = "SELECT COUNT(Enquiry_CellName) FROM t_enquiry WHERE Enquiry_Date >= '$day' AND OfferPeople = '林晓' ";
-//         $res_count = $this->mysqli->query($sql_count);
-//         $res = $res_count->fetch_all();
-//         return $res[0][0];
         return $res;
     }
 	

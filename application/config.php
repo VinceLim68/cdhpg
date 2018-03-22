@@ -327,6 +327,23 @@ return [
             // 数据库调试模式
             'debug'       => true,
         ],
+    
+    'EasyPG'    =>  [
+            // 数据库类型mssql,sqlserver
+            'type'        => 'Sqlsrv',
+            // 服务器地址
+            'hostname'    => '192.168.1.250',
+            // 数据库名
+            'database'    => 'EasyPG',
+            // 数据库用户名
+            'username'    => 'sa',
+            // 数据库密码
+            'password'    => 'siwing',
+            // 数据库编码默认采用utf8
+            'charset'     => 'utf8',
+            // 数据库调试模式
+            'debug'       => true,
+        ],
         'historyDays'     =>  180,                          //查询历史报价和案例的天数
         'no_enquery_again'  =>  30,                         //30天内不允许重复报价
 		 
