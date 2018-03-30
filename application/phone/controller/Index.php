@@ -13,6 +13,7 @@ use app\phone\model\TCaseCfgModel;
 use app\evalu\logic\CreatExcelLogic;
 use app\phone\model\CPGRecordModel;
 use app\evalu\model\CommRelateModel;
+use app\phone\model\EasyPGXjModel;
 
 class Index extends Common {
     
@@ -163,12 +164,7 @@ class Index extends Common {
             //如果有传过来关联规则的id,取出具体内容
             $rela_data = (new CommRelateModel())->where('id',$data['rela_id'])->find()->toArray();
             $data = array_merge($rela_data,$data);
-//             dump($data);
-//             halt($rela_data);
         }
-//         if(isset($data['where'])){$data['where'] = base_decode($data['where']);};
-//         if(isset($data['create_time'])){$data['create_time'] = base_decode($data['create_time']);};
-        //$comm_id = isset($data['rela_comm_id']) ? $data['rela_comm_id'] : $data['community_id'];
         
         //通过id找小区名称，写入session中，以便传到前端
         $getComm = Db::table('comm')->where('comm_id',$data['community_id'])->find();
@@ -244,17 +240,6 @@ class Index extends Common {
             $auth['look'] = $thisAuth->check('phone/index/look', session('user.user_id'));
             $auth['admin'] = $thisAuth->check('isadmin', session('user.user_id'));
             $auth['dispute'] = $thisAuth->check('phone/index/dispute', session('user.user_id'));
-//             halt($auth);
-//             $userrules = (new \Auth())->getAuthList(session('user.user_id'),1);
-//             $auth['history'] = in_array('phone/index/gethistory',$userrules)?true:false;
-//             $auth['case'] = in_array('phone/index/getcase',$userrules)?true:false;
-//             $auth['insert'] = in_array('phone/index/insertquery',$userrules)?true:false;
-//             $auth['excel'] = in_array('phone/index/createxcel',$userrules)?true:false;
-//             $auth['look'] = in_array('phone/index/look',$userrules)?true:false;
-//             $auth['admin'] = in_array('isadmin',$userrules)?true:false;
-//             $auth['dispute'] = in_array('phone/index/dispute',$userrules)?true:false;
-//             $auth['isadmin'] = (new \Auth())->check('isadmin', session('user.user_id'));
-//             halt($auth['isadmin']);
             $this->assign('auth',$auth);
         }else{
             //如果未查询出数据
@@ -352,6 +337,46 @@ class Index extends Common {
             }
         }
         
+    }
+    
+    public function insertQueryIntoEasyPG(){
+        //把询价记录插入至easyPg的询价库中去
+        $data = input();
+        $result = $this->validate($data,'InsertQueryValidate');
+        if(true !== $result){
+            // 验证失败 输出错误信息
+            return ['status'=>'输入不规范','msg'=> $result];
+        };
+        //根据EasyPG的询价管理库表的字段把内容转换一下
+        $renameData['Xjyjrname'] = $data['OfferPeople'];
+        $renameData['Xjxqname'] = $data['Enquiry_CellName'];
+        $renameData['Xjbjdjms'] = $data['Apprsal_Up'];
+//         $renameData['Xjrname'] = $data['Enquiry_PmName'];
+        $renameData['Xjrname'] = '电话客户';
+        $renameData['Mark'] = $data['Remark'];
+        $renameData['Xjxqaddr'] = $data['PA_Located'];
+        $renameData['Xjyt'] = $data['Apprsal_Use'];
+        $renameData['Xjlcs'] = $data['PA_Level'];
+        $renameData['Xjzlcs'] = $data['Enquiry_Layout'];
+        $renameData['Xjxqjcnf'] = $data['PA_YearBuilt'];
+        $renameData['Xjxqjzjg'] = $data['PA_Structure'];
+        $renameData['Xjynxqdt'] = $data['PA_Elevator'];
+        
+        if(!isset($enq)){
+            $EasyPGXj = new EasyPGXjModel();
+        }
+        //不同估价师，同一小区，同一用途，在一段时间内不允许报相同的价;但管理员不受此限
+        $auth = new \Auth();
+        if($auth->check('isadmin',session('user.user_id'))){
+            //这是管理员
+            if(!$EasyPGXj->findEnqueryByOfferAndDateAndComm($renameData)){
+                $insertEnguery = $EasyPGXj->insertRecord($renameData);
+                $num = $EasyPGXj->getCount($renameData);
+                return ['status'=>'登记成功','msg'=> '已将询价记录成功记入数据库中,本月'.$data['OfferPeople'].'已报价'.$num.'条'];
+            }else{
+                return ['status'=>'重复数据','msg'=> '您在过去的一个月中已经对同一小区、同一用途作过报价，不再重复记录、'];
+            }
+        }
     }
 
     public function getHistory(){

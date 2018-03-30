@@ -27,3 +27,12 @@ function base_decode($str) {
     $new = base64_decode($old);
     return $new;
 }
+
+function getUID(){
+    $charid = strtoupper(md5(uniqid(mt_rand(), true)));
+    $uuid = substr($charid, 0, 8).'-'.substr($charid, 8, 4).'-'
+        .substr($charid,12, 4).'-'.substr($charid,16, 4).'-'
+            .substr($charid,20,12);
+    return $uuid;
+    
+}

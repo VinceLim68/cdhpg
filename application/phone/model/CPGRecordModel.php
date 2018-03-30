@@ -9,7 +9,7 @@ class CPGRecordModel extends Model {
 	protected $table = 'C_PGRecord';
 	// 设置当前模型的数据库连接
 	protected $connection =  [
-        // 数据库类型
+        // 数据库类型mssql,sqlserver
 	    'type'        => 'Sqlsrv',
 	    // 服务器地址
 	    'hostname'    => '192.168.1.3',

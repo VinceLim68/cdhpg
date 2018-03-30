@@ -43,12 +43,36 @@ class Comms extends Common {
 	public function test() {
 // 		//$pattern = '/(.*市)?(.*区)?(.*[路道街巷里园])(\d+号(之[三二一四五六七八九十]*)?)(\d+)(室|单元)?/';
 // 		//测试用正则取地址里的路名、栋号等
-		$pattern = '/(.*市)?(.*区)?(\D*)(\d+号)(之[三二一四五六七八九十]*)?(\d+)(室|单元)?/';
-// 		$pattern = '/(.*u5e02)?(.*u533a)?(.*[u8defu9053u8857u5df7u91cc])(\d+u53f7(u4e4b[u4e09u4e8cu4e00u56dbu4e94u516du4e03u516bu4e5du5341u96f60]*)?)(\d+(u5ba4|u5355u5143))?/';
-		$string = '湖里区梧桐里32号之十202室住宅房地产抵押价值估价';
-		//$match = [];
-		$result = preg_match($pattern,$string,$match);
-		dump($match);
+// 		$pattern = '/(.*市)?(.*区)?(\D*)(\d+号)(之[三二一四五六七八九十]*)?(\d+)(室|单元)?/';
+// 		$string = '湖里区梧桐里32号之十202室住宅房地产抵押价值估价';
+// 		$result = preg_match($pattern,$string,$match);
+// 		dump($match);
+	    //实例化一个world对象
+        $office = new \COM("word.application") or die("Unable to instantiate Word");
+        if( ! $office ){
+         showError(0, "Office 操作错误",true);
+            
+        }
+        //调用Word显示文档
+        $office->Visible = 1;
+        $szFile = "c:1.doc";
+        #打开文档
+        $office->Documents->Open($szFile) or die("无法打开文件");
+        //Word中书签数量
+        $iBookmarks = $office->ActiveDocument->Bookmarks->Count;
+        //对所有书签循环替换
+        for( $i=1; $i<=$iBookmarks; $i++ )
+        {
+         //取书签对象
+         $Bookmark = $office->ActiveDocument->Bookmarks->Item($i);
+         $range = $Bookmark->Range;
+         
+         $szValue = $aBookmarkItem[$Bookmark->Name];
+         
+         if( !$szValue )   //替换书签中的值
+                     $range->Text = trim($szValue);
+        }
+        $office->Quit();
 
 	}
 	
@@ -327,7 +351,6 @@ class Comms extends Common {
 	    //跳转到拆分模块去
 	    
 	    $this->redirect('handle_comm?community_id='.$id);
-	    
 	}
 	
     //处理拆分小区的模块
@@ -742,6 +765,7 @@ class Comms extends Common {
 	            $lastday = date("Y-m-d",strtotime("$start +1 month -1 day"));         //结束日期，如果2016后8月的基期，其结束为2016-8-31
 	            $whichmonth = "first_acquisition_time BETWEEN '".$startday."' AND '".$lastday."'";//指定查询的时间范围
 	            $whichmonth1 = "from_date BETWEEN '".$start."' AND '".$lastday."'";
+// 	            halt($whichmonth);
 	            //每个月再按上面的列表分别计算各小区基价
 	            $i = 0;        //计数变量
 	            foreach ($datas as $item){
