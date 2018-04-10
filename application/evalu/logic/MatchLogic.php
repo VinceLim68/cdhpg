@@ -4,6 +4,7 @@ namespace app\evalu\logic;
 use app\evalu\model\Comm;
 use think\Cache;
 use think\Db;
+use app\evalu\model\CommaddressModel;
 
 class MatchLogic {
 	/*
@@ -17,7 +18,7 @@ class MatchLogic {
 		if (empty(self::$comms)){		
 			if(!Cache::get('commNames')){
 				Cache::set('commNames',Comm::getCommsArr(),7200);
-				echo '从数据库中查询';
+// 				echo '从数据库中查询';
 			}
 			self::$comms = Cache::get('commNames');
 		}
@@ -87,35 +88,6 @@ class MatchLogic {
 		
 	}
 	
-	static private function matching($data){
-	    //这个改动不成功，要删
-        // 	    把返回改成数组形式，匹配多个时即可返回所有的匹配id
-	    $getid = self::getId($data['community_name'],$data['title'],"comms");
-// 	    halt($getid);
-	    $id = [];
-	    if(count($getid) == 1) {
-	        #如果匹配到唯一id
-	        $id[] = $getid[0][2];
-	    }elseif(count($getid) == 0) {
-	        #如果没匹配到comm，就看看按road是否能匹配
-	        $getroad = self::getId($data['community_name'],$data['title'],"roads");
-	        if(count($getroad)==1){
-	            #匹配到唯一road
-	            $id[] = $getroad[0][2];
-	        }elseif (count($getroad)==0){
-	            #如果连road也没匹配成功，空在那里
-	            $id[] = 0;
-	        }elseif (count($getroad) > 1){
-	            #如果匹配到不止一个road,进行处理
-	            $id = array_merge ( $id, self::mul_handle($getroad) );
-	        }
-	    }elseif (count($getid) > 1){
-	        #如果comm匹配到不止一个，进行处理
-	        $id = array_merge ( $id, self::mul_handle($getid) );
-	    }
-	    return $id; 			//这里可能有三种情况，1、成功匹配：返回id；2、多个区配：返回匹配的个数;3、匹配失败：0
-	}
-	
 	static public function matchID($data){
 		//这是最后匹配id的控制器，前面getid可能匹配出多个id,或者没有匹配出id,在这里进行进一步的处理
 		$getid = self::getId($data['community_name'],$data['title'],"comms");
@@ -141,6 +113,29 @@ class MatchLogic {
 			$id = self::mul_handle($getid);
 		}
 		return $id; 			//这里可能有三种情况，1、成功匹配：返回id；2、多个区配：返回匹配的个数;3、匹配失败：0
+	}
+	
+	static public function matchIDByAddress($address){
+	    //这是通过地址来查询小区的ID，传入一个带地址的字串，返回一个comm_id
+	    $pattern = config('pattern');
+	    $result = preg_match($pattern,$address,$match);
+// 	    $region = $match[2];
+// 	    $road = $match[3];
+// 	    $doorplate = $match[4].$match[5].'号'.$match[6];
+	    if($match[2]!= ''){
+	        $map['region'] = $match[2];
+	    }
+	    if($match[3]!= ''){
+	        $map['road'] = $match[3];
+	    }
+	    if($match[4].$match[5].$match[6]!= ''){
+	        $map['doorplate'] = $match[4].$match[5].'号'.$match[6];
+	    }
+        $CA = new CommaddressModel();
+        $res = $CA->where($map)->select()->toArray();
+        return $res;
+	    
+	    
 	}
 	
 	static private function mul_handle($ids){

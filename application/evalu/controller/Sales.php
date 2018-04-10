@@ -178,7 +178,7 @@ class Sales extends Common {
 		/*
 		 * 通过传入的id来匹配小区id,只匹配当前的一条记录
 		 */
-		$byId = input('id');
+// 		$byId = input('id');
 		$commName = input('commName');
 		$title = input('title');
 		$idArr = MatchLogic::getId($commName,$title );

@@ -43,36 +43,42 @@ class Comms extends Common {
 	public function test() {
 // 		//$pattern = '/(.*市)?(.*区)?(.*[路道街巷里园])(\d+号(之[三二一四五六七八九十]*)?)(\d+)(室|单元)?/';
 // 		//测试用正则取地址里的路名、栋号等
-// 		$pattern = '/(.*市)?(.*区)?(\D*)(\d+号)(之[三二一四五六七八九十]*)?(\d+)(室|单元)?/';
-// 		$string = '湖里区梧桐里32号之十202室住宅房地产抵押价值估价';
-// 		$result = preg_match($pattern,$string,$match);
-// 		dump($match);
+// 		$pattern = config('pattern');
+// 	    $pattern = '/(.*市)?(.*区)?(\D*)(\d*)(-\d+)?号(之[三二一四五六七八九十]*)?(\D*)?(\d+)?(室|单元|号车位)?/';
+// 		$string = '湖里区梧桐里32号之二十五202室住宅房地产抵押价值估价';
+// 		$string = '厦门市湖里区后埔东里142号301、401、501室、海沧区马青路5896号102室住宅房地产抵押价值估价';
+// 		$string = '五缘湾1号';
+// 		$string = '同安区环城南路76号之2';
+        $pattern = '/^(\d+)?\.\d{4}$/';
+        $string = '1120.0000';
+		$result = preg_match($pattern,$string,$match);
+		dump($result);
 	    //实例化一个world对象
-        $office = new \COM("word.application") or die("Unable to instantiate Word");
-        if( ! $office ){
-         showError(0, "Office 操作错误",true);
+//         $office = new \COM("word.application") or die("Unable to instantiate Word");
+//         if( ! $office ){
+//          showError(0, "Office 操作错误",true);
             
-        }
-        //调用Word显示文档
-        $office->Visible = 1;
-        $szFile = "c:1.doc";
-        #打开文档
-        $office->Documents->Open($szFile) or die("无法打开文件");
-        //Word中书签数量
-        $iBookmarks = $office->ActiveDocument->Bookmarks->Count;
-        //对所有书签循环替换
-        for( $i=1; $i<=$iBookmarks; $i++ )
-        {
-         //取书签对象
-         $Bookmark = $office->ActiveDocument->Bookmarks->Item($i);
-         $range = $Bookmark->Range;
+//         }
+//         //调用Word显示文档
+//         $office->Visible = 1;
+//         $szFile = "c:1.doc";
+//         #打开文档
+//         $office->Documents->Open($szFile) or die("无法打开文件");
+//         //Word中书签数量
+//         $iBookmarks = $office->ActiveDocument->Bookmarks->Count;
+//         //对所有书签循环替换
+//         for( $i=1; $i<=$iBookmarks; $i++ )
+//         {
+//          //取书签对象
+//          $Bookmark = $office->ActiveDocument->Bookmarks->Item($i);
+//          $range = $Bookmark->Range;
          
-         $szValue = $aBookmarkItem[$Bookmark->Name];
+//          $szValue = $aBookmarkItem[$Bookmark->Name];
          
-         if( !$szValue )   //替换书签中的值
-                     $range->Text = trim($szValue);
-        }
-        $office->Quit();
+//          if( !$szValue )   //替换书签中的值
+//                      $range->Text = trim($szValue);
+//         }
+//         $office->Quit();
 
 	}
 	

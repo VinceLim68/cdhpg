@@ -1,0 +1,127 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta
+	content="width=device-width,minimum-scale=1.0, initial-scale=1.0 ,user-scalable=no"
+	name="viewport">
+
+<meta charset="UTF-8">
+<title>大叔撰稿</title>
+<link rel="stylesheet" href="__CSS__/bootstrap.min.css" />
+<link rel="stylesheet" href="__CSS__/reports/reports.css" />
+</head>
+<body>
+	<div class="panel panel-default">
+		<div class="panel-heading form-inline">
+			<h3 style="display: inline-block;padding-right:10%;">净收益先递增后不变收益法</h3>
+			<div class="form-group">
+			  <label >报告编号</label>
+			  <input type="text" class="form-control" id="report_No"   placeholder="例：DY20180101">
+			</div>
+			<div class="form-group">
+			  <label >估价对象</label>
+			  <select class="form-control" id="select_gjdx" >
+			  </select>
+			</div>
+			<input class="btn btn-primary" type="button" id="import_data" value="导入基础数据">
+			<input class="btn btn-primary" type="button" id="import_income_data" value="导入计算数据">
+			
+		</div>
+		<div class="panel-body">
+			<form method="post" class="form-horizontal" id="income_value_process">
+				<input type="hidden" name="gjxmdetailID"  >
+					<div class="col-md-3"> 
+						<table class="table table-striped table-bordered table-condensed">
+							{volist name="parameter" id="vo"}
+							<tr>
+								<td class="col-md-3">{$vo['caption']}</td>
+								<td class="col-md-6">
+									{present name="$vo['options']"}
+								      	<select name="{$vo['name']}" class="form-control {present name="$vo['class']"}{$vo['class']} {/present}">
+											{volist name="$vo['options']" id="op"}
+												<option value="{$op}">{$op}</option>
+											{/volist}
+										</select>
+									{else /}
+										<input type="text" class="form-control {present name="$vo['class']"}{$vo['class']} {/present}"	
+										name="{$vo['name']}"  placeholder="{$vo['placeholder']|default=''}"
+										{present name="$vo['value']"} value="{$vo['value']}"{/present}
+										{present name="$vo['readonly']"} readonly {/present}>
+									{/present}
+								</td>
+								<td class="col-md-3">
+									{present name="$vo['memo']"}
+										{$vo['memo']}
+									{/present}
+								</td>
+							</tr>
+							{/volist}
+						</table>
+						<table class="table table-striped table-bordered table-condensed">
+							{volist name="reward" id="vo"}
+							<tr>
+								<td class="col-md-3">{$vo['caption']}</td>
+								<td class="col-md-6">
+									{present name="$vo['options']"}
+								      	<select name="{$vo['name']}" class="form-control {present name="$vo['class']"}{$vo['class']} {/present}">
+											{volist name="$vo['options']" id="op"}
+												<option  value="{$op}">{$op}</option>
+											{/volist}
+										</select>
+									{else /}
+										<input type="text" class="form-control {present name="$vo['class']"}{$vo['class']} {/present}"	name="{$vo['name']}" 
+										placeholder="{$vo['placeholder']|default=''}"
+										{present name="$vo['value']"} value="{$vo['value']}"{/present}>
+									{/present}
+								</td>
+								<td class="col-md-3">
+									{present name="$vo['memo']"}
+										{$vo['memo']}
+									{/present}
+								</td>
+							</tr>
+							{/volist}
+						</table>
+					</div>
+					<div class="col-md-9">
+						<table class="table table-striped table-bordered table-condensed">
+							<tr class="success">
+								<th class="col-md-1">序号</th>
+								<th class="col-md-3">内容(元/平方米)</th>
+								<th class="col-md-1">数量</th>
+								<th class="col-md-7">收益价值：<span id="result"></span><small>元/平方米</small></th>
+							</tr>
+							{volist name="fields" id="vo"}
+								<tr>
+									<td {present name="$vo['class']"}class="{$vo['class']}" {/present}>{$vo['serial']}</td>
+									<td {present name="$vo['class']"}class="{$vo['class']}" {/present}>{$vo['caption']}</td>
+									<td><input type="text" class="form-control {present name="$vo['class']"}{$vo['class']} {/present}"	name="{$vo['name']}" 
+										{present name="$vo['readonly']"} readonly {/present}
+										{present name="$vo['value']"} value="{$vo['value']}"{/present}></td>
+									<td>
+									{eq name="$vo['memo']|substr=0,1" value="*"}
+											{$vo['memo']|substr=1}
+									{else/}
+										<textarea class="form-control" rows="1" name="{$vo['memo']}" ></textarea> 
+									{/eq}
+									</td>
+								</tr>
+							{/volist}
+						</table>
+					</div>
+				
+					
+				<input class="btn btn-primary btn-lg" type="button" id="work_done" value="保存收工">
+				<!-- <button type="submit" class="btn btn-primary btn-lg">保存收工</button> -->
+			</form>
+		</div>
+	</div>
+
+	<script src="__JS__/jquery-2.1.4.min.js"></script>
+	<script src="__JS__/bootstrap.min.js"></script>
+	<script type="text/javascript">
+		var getRentTaxRate = "{:url('getRentTaxRate')}";
+	</script>
+	<script src="__JS__/reports/reports.js"></script>
+</body>
+</html>
