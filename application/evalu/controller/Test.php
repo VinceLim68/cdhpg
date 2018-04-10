@@ -4,6 +4,9 @@ namespace app\evalu\controller;
 
 use think\Db;
 use app\phone\model\EasyPGXjModel;
+use app\evalu\model\CommaddressModel;
+use app\evalu\logic\MatchLogic;
+use think\Exception;
 
 class Test extends Common {
     //做一个测试模块,项目完成后删除
@@ -80,5 +83,129 @@ dump(getUID());
         
 	    
 	}
+
+	//匹配地址
+	public function getAddress(){
+	    ignore_user_abort(true); // 后台运行
+	    error_reporting(0);
+	    set_time_limit(0);
+	     
+	    $buffer = ini_get('output_buffering');
+	    echo str_repeat(' ',$buffer+1);
+	    ob_end_flush();
+	    $CA = new CommaddressModel();          //CA=CommAddress
+// 	    $pattern = '/(.*市)?(.*区)?(\D*)(\d*)(-\d+)?号(之[三二一四五六七八九十]*)?(\D*)?(\d+)?(室|单元|号车位)?/';
+	    $CA->field('id,comm_name as community_name,address as title')->chunk(100, function($adds) {
+	        foreach ($adds as $add) {
+                echo $add['id'].$add['title'].'</br>';
+                $id = MatchLogic::matchID($add);
+                echo $id.'</br>';
+//                 $pattern = '/(.*市)?(.*区)?(\D*)(\d+号)(之[三二一四五六七八九十]*)?(\d+)(室|单元)?/';
+                $pattern = config('pattern');
+//                 $pattern = '/(.*市)?(.*区)?(\D*)(\d*)(-\d+)?号(之[三二一四五六七八九十]*)?(\D*)?(\d+)?(室|单元|号车位)?/';
+                $result = preg_match($pattern,$add['title'],$match);
+                dump($match);
+                if($result == 1){
+                    try {
+                        Db::table('commaddress')->where('id', $add['id'])->update([
+                            'city' => $match[1],
+                            'region'=>$match[2],
+                            'road'=>$match[3],
+                            'comm_id'=>$id,
+                            'doorplate'=>$match[4].$match[5].'号'.$match[6],
+                        ]);
+                    }catch (Exception $e){
+                        echo '=======================error===================</br>';
+                        echo $add.',';
+                        echo $add['id'].'</br>';
+                    }
+                }
+	        }
+	    });
+        ignore_user_abort(false); // 解除后台运行
+	}
 	
+	public function getCommIDByAddress(){
+	    //测试解析地址
+	    $address = '海沧区马青路5896号102室住宅房';
+	    $id = MatchLogic::matchIDByAddress($address);
+	    dump($id);
+	}
+	
+	public function copyCommAddress(){
+	    //把commaddress复制一遍，把重复的地址去除
+	    ignore_user_abort(true); // 后台运行
+	    error_reporting(0);
+	    set_time_limit(0);
+	    $buffer = ini_get('output_buffering');
+	    echo str_repeat(' ',$buffer+1);
+	    ob_end_flush();
+// 	    $CA = new CommaddressModel();          //CA=CommAddress
+// 	    $adds = Db::table('commaddress_copy')->limit(50)->select();
+// 	    foreach ($adds as $add) {
+// 	        try {
+// 	            Db::table('commaddress')->insert($add);
+// 	        }catch (Exception $e){
+// 	            echo '=======================error===================</br>';
+// 	            //                     echo $e.'</br>';
+// 	            dump($e->getData()['PDO Error Info']['Driver Error Code']);
+// 	            dump($add);
+// 	            $e->getMessage;
+// 	            $e->
+// 	        }
+// 	    };
+	    Db::table('commaddress_copy')->chunk(100, function($adds) {
+	        foreach ($adds as $add) {
+                try {
+                    Db::table('commaddress')->insert($add);
+                }catch (Exception $e){
+//                     echo '=======================error===================</br>';
+                    if($e->getData()['PDO Error Info']['Driver Error Code']== 1062){
+                        //如果重复，看看有没有新数据
+                        $map['comm_id']=$add['comm_id'];
+                        if($add['region']!= ''){
+                            $map['region'] = $add['region'];
+                        }
+                        if($add['road']!= ''){
+                            $map['road'] = $add['road'];
+                        }
+                        if($add['doorplate']!= ''){
+                            $map['doorplate'] = $add['doorplate'];
+                        }
+                        $old = Db::table('commaddress')->where($map)->find();
+                        $oldstr = $old['buildYear'].$old['floors'].$old['elevator'].$old['structure'];
+                        $nowstr = $add['buildYear'].$add['floors'].$add['elevator'].$add['structure'];
+                        if(strlen($nowstr) > strlen($oldstr)){
+                            Db::table('commaddress')->where('id',$old['id'])->update([
+                                'buildYear' => $add['buildYear'],
+                                'floors' => $add['floors'],
+                                'elevator' => $add['elevator'],
+                                'structure' => $add['structure'],
+                            ]);
+                            echo '====old==='.$oldstr;
+                            echo '====now==='.$oldstr;
+                            echo '=======================updata===================</br>';
+                        }
+                        if($old['comm_id']==null and $add['comm_id']!=null){
+                            Db::table('commaddress')->where('id',$old['id'])->update(['comm_id'=>$add['comm_id']]);
+                        }
+                    }else{
+                        dump($e->getMessage());
+                    }
+//                     dump($add);
+                }
+	        }
+	    }); 
+        ignore_user_abort(false); // 解除后台运行
+	}
+
+	//测试正则
+	public function test_reg(){
+// 	    $pattern = '/^(\d+)?\.\d{4}$/';
+	    $pattern = '/^(\d{4})-(\d{2})-(\d{2}) \d{2}:\d{2}:\d{2}.\d{3}$/';
+	    
+	    $string = '2066-06-05 00:00:00.000';
+	    $result = preg_match($pattern,$string,$match);
+	    dump($match);
+	}
 }

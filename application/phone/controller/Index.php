@@ -48,7 +48,6 @@ class Index extends Common {
                 //1查询数据,把comm存入session中
                 session('user.comm',input('comm'));
                 $commnames = MatchLogic::matchSearch(input('param.comm'));
-//                 halt($commnames);
                 if(!$commnames){
                     //2如果没有查到，记录到miss_comm表中去
                     try{
