@@ -401,7 +401,6 @@ jQuery(function($) {
 			url: "/report/index/ajaxGetLXIncomeFiniteData",
 			datatype:'json',
 			success: function (object) {
-				
 				console.log(object);
 				for(var Key in object){
 					$("textarea[name='"+ Key +"']").val(object[Key]);

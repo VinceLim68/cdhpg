@@ -14,6 +14,7 @@ use app\evalu\logic\CreatExcelLogic;
 use app\phone\model\CPGRecordModel;
 use app\evalu\model\CommRelateModel;
 use app\phone\model\EasyPGXjModel;
+use app\phone\model\EasyCjalkModel;
 
 class Index extends Common {
     
@@ -350,7 +351,6 @@ class Index extends Common {
         $renameData['Xjyjrname'] = $data['OfferPeople'];
         $renameData['Xjxqname'] = $data['Enquiry_CellName'];
         $renameData['Xjbjdjms'] = $data['Apprsal_Up'];
-//         $renameData['Xjrname'] = $data['Enquiry_PmName'];
         $renameData['Xjrname'] = '电话客户';
         $renameData['Mark'] = $data['Remark'];
         $renameData['Xjxqaddr'] = $data['PA_Located'];
@@ -382,22 +382,52 @@ class Index extends Common {
         /*
          * 得到历史的询价记录和案例
          */
+        //从旧系统中查询
         if(!isset($enq)){
             $enq = new TEnquiryModel();
         }
         $historyEnquery = $enq->getEnqueryByCommAndDate();
-        return $historyEnquery;
-//         halt($historyEnquery);
+        
+        //再从新系统中查询
+        $EasyXj = new EasyPGXjModel();
+        $historyEnquery1 = $EasyXj->getEnqueryByCommAndDate();
+        //合并两个数组，再生成html代码
+        $historyEnquery = array_merge ($historyEnquery1,$historyEnquery);
+        $html = '';
+        if(count($historyEnquery)==0){
+            $html .= '<tr><td class="font-small">'.config('historyDays').'天内没有'.session('user.comm').'的询价记录</td></tr>';
+        }else{
+            foreach ($historyEnquery as $rec){
+                $html .= '<tr><td class="font-small">'.$rec['Enquiry_PmName'].'('.date ( 'Y-m-d', strtotime ( $rec['Enquiry_Date']) ).')';
+                $html .= '------'.$rec['Enquiry_CellName'].'-'.$rec['Apprsal_Use'];
+                $html .= '</br>'.$rec['OfferPeople'].'------'.$rec['Apprsal_Up'].',备注:'.$rec['Remark'].'</td></tr>';
+            }
+        }
+        return $html;
+//         return $historyEnquery;
 
         
     }
     
     public function getCase(){
-        if(!isset($case)){
-            $case = new TCaseCfgModel();
-        }
+//         if(!isset($case)){
+//             $case = new TCaseCfgModel();
+//         }
+//         $cases = $case->getCaseByNameAndDate();
+//         return $cases;
+        $case = new EasyCjalkModel();
         $cases = $case->getCaseByNameAndDate();
-        return $cases;
+        $html = '';
+        if(count($cases)==0){
+            $html .= '<tr><td class="font-small">'.config('historyDays').'天内没有'.session('user.comm').'的成交案例</td></tr>';
+        }else{
+            foreach ($cases as $rec){
+                $html .= '<tr><td class="font-small">'.$rec['Case_Name'].'-'.$rec['Case_Type'].':';
+                $html .= '------'.$rec['Case_Located'].'(建成：'.date ( 'Y', strtotime ( $rec['Case_Cmpl_Years']) ).'年)';
+                $html .= '</br>成交价:'.round($rec['Case_TrxPrice']).'(成交日期:'.date ( 'Y-m-d', strtotime ( $rec['Case_TrxDate']) ).')------'.$rec['Opertor'].'</td></tr>';
+            }
+        }
+        return $html;
         
     }
     
