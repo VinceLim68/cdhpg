@@ -48,9 +48,9 @@ usage="{$B['comm']['usage']|default=''}" block="{$B['comm']['block']}">
 				    	{if condition="$auth['case']"}
 						<li ><a href="#casetab" aria-controls="casetab" role="tab" data-toggle="tab" id="case">成交案例</a></li>
 						{/if}
-<!-- 						{if condition="$auth['insert']"}
+ 						{if condition="$auth['insert']"}
 		 				<li ><a href="#query_record" aria-controls="query_record" role="tab" data-toggle="tab" >登记询价记录</a></li> 
-		 				{/if} -->
+		 				{/if} 
 					    {if condition="$auth['excel']"}
 					    <li ><a href="{:url('creatExcel')}"  >导出Excel</a></li>
 					    {/if}
@@ -194,7 +194,7 @@ usage="{$B['comm']['usage']|default=''}" block="{$B['comm']['block']}">
 				<div role="tabpanel" class="tab-pane " id="query_record">
 	   				<div class="panel panel-success">
 						<div class="panel-heading">
-							<button type="button" class="btn btn-success btn-lg" id='insertQuery'>登记询价记录</button>
+							<!-- <button type="button" class="btn btn-success btn-lg" id='insertQuery'>登记询价记录</button> -->
 							{if condition="$auth['admin']"}
 								<button type="button" class="btn btn-success btn-lg" id='insertQueryIntoEasyPG'>询价插入新系统</button>
 							{/if}
