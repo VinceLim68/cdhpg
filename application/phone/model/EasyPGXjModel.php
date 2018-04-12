@@ -14,7 +14,7 @@ class EasyPGXjModel extends Model {
 	protected $field = true; // 忽略非数据表字段而不报错
 	
 	//自定义初始化
-	protected function initialize()
+    protected function initialize()
 	{
 	    //需要调用`Model`的`initialize`方法
 	    parent::initialize();
@@ -90,4 +90,25 @@ class EasyPGXjModel extends Model {
        return $res;
    }
    
+   
+   //通过小区名和日期来查询表中的询价记录
+   public function getEnqueryByCommAndDate(){
+       $records = $this->field([
+           'Xjxqname'=>'Enquiry_CellName',
+           'InputDate'=>'Enquiry_Date',
+           'Xjyt'=>'Apprsal_Use',
+           'InputName'=>'OfferPeople',
+           'Xjbjdjms'=>'Apprsal_Up',
+           'Xjyjremark'=>'Remark',
+           'Xjrname'=>'Enquiry_PmName'
+           ])
+       ->order('Enquiry_Date desc')         //这里可以用别名
+       ->where('InputDate','>= time',date('Y-m-d',strtotime('-'.config('historyDays').' day')))         // 这里不能用别名
+       ->where('Xjxqname','like','%'.session('user.comm').'%')
+       ->select()//;//
+       ->toArray();
+//        halt($records);
+       return $records;
+
+   }
 }
