@@ -15,6 +15,7 @@ use app\phone\model\CPGRecordModel;
 use app\evalu\model\CommRelateModel;
 use app\phone\model\EasyPGXjModel;
 use app\phone\model\EasyCjalkModel;
+use app\evalu\model\Comm;
 
 class Index extends Common {
     
@@ -30,12 +31,12 @@ class Index extends Common {
         if (request()->isPost()) {
 //             halt(input());
             $result = $this->validate ( input ( 'param.' ), [
-                'comm' => 'require|max:25|min:2',
+                'comm' => 'require|max:70|min:2',
                 'price'=>   'number|between:100,12000000',
             ],
             [
                 'comm.require' => '请问您要查询哪个小区？',
-                'comm.max'     => '名称最多不能超过25个字符',
+                'comm.max'     => '名称最多不能超过70个字符',
                 'comm.min'     => '名称最少要两个字',
                 'price.number'  =>'成交价请输入数字',
                 'price.between'  =>'认真一点，把你的成交价填进去',
@@ -48,9 +49,24 @@ class Index extends Common {
             } else {
                 //1查询数据,把comm存入session中
                 session('user.comm',input('comm'));
+                
+                //返回$pickitem数组，每个元素中包含comm_id,comm_name,pri_level,keywords
                 $commnames = MatchLogic::matchSearch(input('param.comm'));
+                
+                //2如果没有查到，转到小区地址表中去查询
                 if(!$commnames){
-                    //2如果没有查到，记录到miss_comm表中去
+                   $address = MatchLogic::matchIDByAddress(input('param.comm'));
+                   if(isset($address['comm_id']) and $address['comm_id']>999 ){
+                        $commnames[] = (new Comm())->field ( "comm_id,comm_name,pri_level,keywords" )
+                            ->where('comm_id', $address['comm_id'])
+                            ->find()
+                            ->toArray();
+                        session('user.comm',$commnames[0]['comm_name']);
+//                        halt($commnames);
+                   }
+                }
+                if(!$commnames){
+                    //如果还是没有查到，记录到miss_comm表中去
                     try{
                         $errorcomm = ErrorCommModel::create([
                             'memo'     =>  '没有小区名',
@@ -89,13 +105,11 @@ class Index extends Common {
     public function getCommChild($comm_id ='',$price = 0){
         $commrelate = new CommRelateModel;
         $list = $commrelate->where('community_id',$comm_id)->select()->toArray();
-//         halt($comm_id);
         $my = [];
         if(empty($list)){
             //没有关联规则就跳转
             $my['community_id'] = $comm_id;
             $my['price'] = $price;
-//             dump($my);
             $this->redirect('getPrice', $my);
         }else{
             //如果有关联规则则要进行选择，需要关联其他小区查询
@@ -112,10 +126,6 @@ class Index extends Common {
                 $item['rela_id'] = $item1['id'];        //把关联规则的id保存下来
                 $item['community_id'] = $item1['community_id'];
                 $item['usage'] = base_encode($item1['usage']);
-//                 dump($item1);
-//                 $item['where'] = base_encode($item1['where']);
-//                 $item['create_time'] = base_encode($item1['create_time']);
-//                 $item['usage'] = base_encode($item1['usage']);
                 $item['price'] = $price;
                 $my[] = $item;
             }
