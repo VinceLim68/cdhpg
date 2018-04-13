@@ -127,7 +127,7 @@ dump(getUID());
 	
 	public function getCommIDByAddress(){
 	    //测试解析地址
-	    $address = '同安区环城西路1033号';
+	    $address = '莲前东路894号';
 	    $id = MatchLogic::matchIDByAddress($address);
 	    dump($id);
 	}

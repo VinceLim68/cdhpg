@@ -165,7 +165,7 @@ class Comms extends Common {
 		} elseif ($vars ['oper'] == 'edit') { // 修改记录
 			$this->db->allowField ( true )->update ( $vars );
 		} elseif ($vars ['oper'] == 'del') { // 删除记录
-		    halt($vars);
+// 		    halt($vars);
 			$del_id = explode ( ',', $vars ['id'] );
 			foreach ( $del_id as $myid ) {
                 //根据小区列表的序号取出小区id
