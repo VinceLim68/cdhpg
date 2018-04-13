@@ -127,7 +127,7 @@ dump(getUID());
 	
 	public function getCommIDByAddress(){
 	    //测试解析地址
-	    $address = '海沧区马青路5896号102室住宅房';
+	    $address = '同安区环城西路1033号';
 	    $id = MatchLogic::matchIDByAddress($address);
 	    dump($id);
 	}
@@ -205,6 +205,7 @@ dump(getUID());
 	    $pattern = '/^(\d{4})-(\d{2})-(\d{2}) \d{2}:\d{2}:\d{2}.\d{3}$/';
 	    
 	    $string = '2066-06-05 00:00:00.000';
+// 	    $string = '思明区洪文七里29号1002室住宅、31号地下一层第9#30号车位、9#48号车位及海沧区滨湖二里208号2802室住宅、327号地下二层第G856号车位房地产抵押价值评估'
 	    $result = preg_match($pattern,$string,$match);
 	    dump($match);
 	}

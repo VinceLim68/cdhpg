@@ -117,11 +117,9 @@ class MatchLogic {
 	
 	static public function matchIDByAddress($address){
 	    //这是通过地址来查询小区的ID，传入一个带地址的字串，返回一个comm_id
+	    //返回一个数组，其中每个元素是小区地址表中的一条记录
 	    $pattern = config('pattern');
 	    $result = preg_match($pattern,$address,$match);
-// 	    $region = $match[2];
-// 	    $road = $match[3];
-// 	    $doorplate = $match[4].$match[5].'号'.$match[6];
 	    if($match[2]!= ''){
 	        $map['region'] = $match[2];
 	    }
@@ -132,10 +130,9 @@ class MatchLogic {
 	        $map['doorplate'] = $match[4].$match[5].'号'.$match[6];
 	    }
         $CA = new CommaddressModel();
-        $res = $CA->where($map)->select()->toArray();
+//         $res = $CA->where($map)->select()->toArray();
+        $res = $CA->where($map)->find()->toArray();
         return $res;
-	    
-	    
 	}
 	
 	static private function mul_handle($ids){
@@ -218,6 +215,7 @@ class MatchLogic {
 	    /**
 	     * 在搜索框中输入一个小区名，从comm表中匹配出相应的记录
 	     * $search:搜索框中输入的字符串
+	     * 返回$pickitem数组，每个元素中包含comm_id,comm_name,pri_level,keywords
 	     */
 	    //==================以下是保存代码====================================
 	    $pickitem = array ();      //存放匹配成功的记录

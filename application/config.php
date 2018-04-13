@@ -286,7 +286,8 @@ return [
     'select_more_months_per_time'   =>  3,               //每次查询增加的月数
     'std_times'                     =>  1.5,            //设定清洗数据时标准差的倍数
     'max_sale'                      =>  63000,          //最大的挂牌价
-    'max_evaluation'                =>  50000,          //最大挂牌价对应的评估价   79%
+//     'max_evaluation'                =>  50000,          //最大挂牌价对应的评估价   79%
+    'max_evaluation'                =>  48000,          //最大挂牌价对应的评估价   2018/4/13调整
     'max_position'                  =>  3,              //最大挂牌价对应的二手房评估价所在的位置，3表示从最小值往上3%
     'min_sale'                      =>  15000,           //最小的挂牌价
     'min_evaluation'                =>  12750,           //最小挂牌价对应的评估价 这个是90%
