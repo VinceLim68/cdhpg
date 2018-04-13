@@ -433,7 +433,8 @@ class Index extends Common {
         }else{
             foreach ($cases as $rec){
                 $html .= '<tr><td class="font-small">'.$rec['Case_Name'].'-'.$rec['Case_Type'].':';
-                $html .= '------'.$rec['Case_Located'].'(建成：'.date ( 'Y', strtotime ( $rec['Case_Cmpl_Years']) ).'年)';
+//                 $html .= '------'.$rec['Case_Located'].'(建成：'.date ( 'Y', strtotime ( $rec['Case_Cmpl_Years']) ).'年)';
+                $html .= '------'.$rec['Case_Located'].'(建成：'.$rec['Case_Cmpl_Years'].'年)';
                 $html .= '</br>成交价:'.round($rec['Case_TrxPrice']).'(成交日期:'.date ( 'Y-m-d', strtotime ( $rec['Case_TrxDate']) ).')------'.$rec['Opertor'].'</td></tr>';
             }
         }
