@@ -33,6 +33,7 @@ class EasyCjalkModel extends Model {
 	        'InputName'=>'Opertor'
 	    ])
 	    ->where('AlName','like','%'.session('user.comm').'%')
+	    ->where('ALlx','成交案例')
 	    ->order('Case_TrxDate desc')
 	    ->where('recdate','> time',date('Y-m-d',strtotime('-'.config('historyDays').' day')))
 	    ->select()->toArray();

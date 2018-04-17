@@ -7,7 +7,7 @@ jQuery(function($) {
 	
 	$('#mydialogg .modal-body').on('click','#sendmodify',function(event){
 		$.ajax({
-			url:"ajaxUpdateCommAddressRecord",
+			url:ajaxUpdateCommAddressRecord,
 			type:'POST',
 			data:$('#modifyCommAddressForm').serialize(),
 			success: function(msg){
