@@ -17,6 +17,7 @@ use app\phone\model\EasyPGXjModel;
 use app\phone\model\EasyCjalkModel;
 use app\evalu\model\Comm;
 
+//手机端的询价系统
 class Index extends Common {
     
     public function index() {

@@ -162,7 +162,9 @@ class Index extends Controller {
     	    }else{
     	        $result[0]['pgyt']='其他用房';
     	    };
-    	    $result[0]['datavalue'] = $result1[0]['datavalue'];
+    	    if(count($result1!=0)){
+        	    $result[0]['datavalue'] = $result1[0]['datavalue'];
+    	    }
         }
         return $result;
 	}

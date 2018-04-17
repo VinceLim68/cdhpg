@@ -278,7 +278,7 @@ class Sales extends Common {
 	    if(!isset($data['where']) or trim($data['where'])==''){
 	        $data['where'] = '';
 	    }else{
-	        $data['where'] = strtr($data['where'],$replace);
+	        $data['where'] = trim(strtr($data['where'],$replace));
 	    }
 	    if(!isset($data['sort'])){
 	        $data['sort'] = '';
@@ -288,7 +288,6 @@ class Sales extends Common {
 	        $data['neworder'] = 'price ASC';
 	    }else{
 	        $data['neworder'] = strtr($data['order'].' '.$data['sort'],$replace);
-	        //$data['order'] = strtr($data['order'].' '.$data['sort'],$replace);
 	    }
 	    if(!isset($data['set']) or trim($data['set'])==''){
 	        $data['set'] = '';
@@ -302,11 +301,7 @@ class Sales extends Common {
 	        $sqlstr = 'UPDATE for_sale_property SET '.$data['set'].' WHERE '.$data['where'];
 	        $data['num'] = Db::execute($sqlstr);
 	    }
-// 	    if(!isset($data['community_id'])){
-// 	        $data['community_id'] = 0;
-// 	    }
 	    //查询记录,无论是否修改，都需要查询
-	    //echo ($data['order']);
 	    $sales = Db::table('for_sale_property')->field('id,title,community_id,community_name,price,total_floor,builded_year')
 	    ->where($data['where'] )
 	    ->order($data['neworder'])
@@ -321,6 +316,7 @@ class Sales extends Common {
 	    $sales['num'] = $data['num']; 
 	    return $sales;
 	}
+	
 	public function queryByComm(){
         $data = input();
 //         dump($data);

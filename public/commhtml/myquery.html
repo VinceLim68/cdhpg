@@ -16,13 +16,20 @@
 
 						<tr>
 							<th style="width: 50px;">WHERE</th>
-							<td style="width: 70px;"><select id="wherefield"
-								style="width: 70px; margin-bottom: 2px;"> {foreach
-									name="fields" item="v"}
-									<option value="{$v['Field']}">{$v['Field']}</option>
-									{/foreach}
-							</select></td>
-							<td><textarea class="form-control" rows="3" name="where"  placeholder="请使用双引号" style="width: 100%;">{$data["where"]|default=""}</textarea></td>
+							<td style="width: 70px;">
+								<select id="wherefield"
+									style="width: 70px; margin-bottom: 2px;"> {foreach
+										name="fields" item="v"}
+										<option value="{$v['Field']}">{$v['Field']}</option>
+										{/foreach}
+								</select>
+								
+							</td>
+							<td style="position: relative;">
+							<textarea class="form-control" rows="3" name="where"  placeholder="请使用双引号" style="width: 100%;padding: 5px 19px 5px 9px;">{$data["where"]|trim|default=""}</textarea>
+							<span id="clearwhere" class="glyphicon glyphicon-remove" aria-hidden="true" 
+							style="margin-top: 8px; position: absolute; right: 10px;cursor: pointer;color:#ccc"></span>
+							</td>
 
 						</tr>
 						<tr>
@@ -33,8 +40,12 @@
 									<option value="{$v['Field']}">{$v['Field']}</option>
 									{/foreach}
 							</select></td>
-							<td><input style="width: 50%;" type="text" name="order"
-								placeholder="请使用双引号" value='{$data["order"]|default=""}'> <label
+							<td style="position: relative;"><input style="width: 50%;" type="text" name="order"
+								placeholder="请使用双引号" value='{$data["order"]|default=""}'> 
+								<span id="clearorder" class="glyphicon glyphicon-remove" aria-hidden="true" 
+								style="margin-top: 12px; position: absolute; right: 220px;cursor: pointer;color:#ccc"></span>
+							
+							<label
 								class="radio-inline" style="margin-left: 20px"> <input
 									type="radio" name="sort" id="sort1" value="ASC" checked>
 									升序
@@ -50,8 +61,11 @@
 									<option value="{$v['Field']}">{$v['Field']}</option>
 									{/foreach}
 							</select></td>
-							<td><input style="width: 100%;" type="text" name="set"
-								placeholder="请使用双引号" value='{$data["set"]|default=""}'></td>
+							<td style="position: relative;"><input style="width: 100%;" type="text" name="set"
+								placeholder="请使用双引号" value='{$data["set"]|default=""}'>
+								<span id="clearset" class="glyphicon glyphicon-remove" aria-hidden="true" 
+								style="margin-top: 12px; position: absolute; right: 10px;cursor: pointer;color:#ccc"></span>
+							</td>
 						</tr>
 
 						<tr>
@@ -72,7 +86,7 @@ jQuery(function ($) {
 	jQuery("body").on("change","#wherefield", 		
 		function(){
 			//alert('');
-			var where = $("textarea[name='where']").val();
+			var where = $.trim($("textarea[name='where']").val());
 			var thisval =  $("#wherefield").val() + ' = ""';
 			if('' == where){
 				where = thisval;
@@ -109,6 +123,17 @@ jQuery(function ($) {
 			$("input[name='order']").val('') ;
 			$("textarea[name='where']").val('');
 		});
+	
+	//清除where
+	jQuery('#clearwhere').on('click',function(){
+		$("textarea[name='where']").val('');
+	});
+	jQuery('#clearorder').on('click',function(){
+		$("input[name='order']").val('');
+	});
+	jQuery('#clearset').on('click',function(){
+		$("input[name='set']").val('');
+	});
 });
 	
 </script>

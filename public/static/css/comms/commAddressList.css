@@ -1,0 +1,10 @@
+@CHARSET "UTF-8";
+ul.pagination{
+	margin: 0px 0px;
+}
+.list-unstyled{
+	margin-left: 20px;
+}
+.form-group {
+    margin-bottom: 5px;
+}
