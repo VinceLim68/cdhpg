@@ -137,7 +137,6 @@ class Index extends Controller {
                             from PG_SE_Gjxmdetail this (nolock)
                                  left join PG_SE_Gjxmglk glk (nolock) on glk.kid=this.kid
                             where GjxmdetailKID =?",[$input['uid']]);
-	    
 	    $result1 = Db::connect('EasyPG')->query("select datavalue from v_data  where tablename like '%收益法%'
                         	    and fieldscaption like '%月租金%'
                         	    and GjxmdetailKID =?",[$input['uid']]);
@@ -162,7 +161,9 @@ class Index extends Controller {
     	    }else{
     	        $result[0]['pgyt']='其他用房';
     	    };
-    	    $result[0]['datavalue'] = $result1[0]['datavalue'];
+    	    if(count($result1)!=0){
+        	    $result[0]['datavalue'] = $result1[0]['datavalue'];
+    	    }
         }
         return $result;
 	}

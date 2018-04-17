@@ -330,7 +330,7 @@ jQuery(function($) {
 		$.ajax({
 		    type: "post",
 		    data: {No:No,},
-		    url: "/report/index/ajaxGetGjxmDetails",
+		    url:ajaxGetGjxmDetails,
 		    datatype:'json',
 		    beforeSend: function () {
 		        if(!isNo){
@@ -357,7 +357,7 @@ jQuery(function($) {
 		$.ajax({
 		    type: "post",
 		    data: {uid:uid,},
-		    url: "/report/index/ajaxGetGjxmDetailsDatas",
+		    url: ajaxGetGjxmDetailsDatas,
 		    datatype:'json',
 		    success: function (data) {
 		    	//console.log(data[0].jzjg);
@@ -370,12 +370,6 @@ jQuery(function($) {
 		    		$("input[name='end_land_period']").val(data[0].tdjsrq);
 		    		$("input[name='builded_year']").val(data[0].jcnf);
 		    		$("input[name='date_of_value']").val(data[0].gjdate);
-		    		//$("select[name='building_struction']").find("option:selected").removeAttr("selected");
-		    		//$("select[name='building_struction']").find("option[value = '"+data[0].jzjg+"']").attr("selected","selected");
-		    		//$("select[name='property_type']").find("option[value = '"+data[0].pgyt+"']").attr("selected","selected");
-		    		//$("select[name='authority_type']").find("option[value = '"+data[0].qsrlx+"']").attr("selected","selected");
-		    		//$("select[name='location_type']").find("option[value = '"+data[0].szqy+"']").attr("selected","selected");
-		    		//$("select[name='over_2_year']").find("option[value = '"+data[0].IsTwoY+"']").attr("selected","selected");
 		    		$("select[name='building_struction']").val(data[0].jzjg);
 		    		$("select[name='property_type']").val(data[0].pgyt);
 		    		$("select[name='authority_type']").val(data[0].qsrlx);
@@ -398,7 +392,7 @@ jQuery(function($) {
 		$.ajax({
 			type: "post",
 			data: {uid:uid,},
-			url: "/report/index/ajaxGetLXIncomeFiniteData",
+			url: ajaxGetLXIncomeFiniteData,
 			datatype:'json',
 			success: function (object) {
 				console.log(object);
@@ -416,7 +410,7 @@ jQuery(function($) {
 			type:'post',
 			data:$('#income_value_process').serializeArray(),
 			dataType:'json',
-			url:'/report/index/ajaxSaveIncomeValueProcess',
+			url:ajaxSaveIncomeValueProcess,
 			success:function(rep){
 				
 			}

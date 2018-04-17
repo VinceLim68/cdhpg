@@ -120,18 +120,31 @@ class MatchLogic {
 	    //返回一个数组，其中每个元素是小区地址表中的一条记录
 	    $pattern = config('pattern');
 	    $result = preg_match($pattern,$address,$match);
-	    if($match[2]!= ''){
-	        $map['region'] = $match[2];
+	    if(!$result){
+    	    //如果传进来的地址末位是一个数字，认为他是门牌号缺一个“号”字，帮他补上再匹配一次
+    	    if(preg_match('/\d$/',$address,$match)){
+    	        $address .= '号';
+    	        $result = preg_match($pattern,$address,$match);
+    	    }
 	    }
-	    if($match[3]!= ''){
-	        $map['road'] = $match[3];
+	    if($result){
+    	    if($match[2]!= ''){
+    	        $map['region'] = $match[2];
+    	    }
+    	    if($match[3]!= ''){
+    	        $map['road'] = $match[3];
+    	    }
+    	    if($match[4].$match[5].$match[6]!= ''){
+    	        $map['doorplate'] = $match[4].$match[5].'号'.$match[6];
+    	    }
+            $CA = new CommaddressModel();
+            $res = $CA->where($map)->find();//->toArray();
+            if($res){
+                $res = $res->toArray();
+            }
+	    }else{
+	        $res = 0;
 	    }
-	    if($match[4].$match[5].$match[6]!= ''){
-	        $map['doorplate'] = $match[4].$match[5].'号'.$match[6];
-	    }
-        $CA = new CommaddressModel();
-//         $res = $CA->where($map)->select()->toArray();
-        $res = $CA->where($map)->find()->toArray();
         return $res;
 	}
 	

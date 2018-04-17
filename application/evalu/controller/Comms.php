@@ -9,6 +9,7 @@ use app\evalu\model\SalesModel;
 use app\evalu\logic\PriceLogic;
 use app\evalu\logic\MatchLogic;
 use app\evalu\model\CommhistorypriceModel;
+use app\evalu\model\CommaddressModel;
 
 class Comms extends Common {
 	protected $db;
@@ -291,7 +292,7 @@ class Comms extends Common {
 	
 	//小区名-->id,如果是唯一，返回一个comm对象，如果不是，返回html列表供选择
 	public function ajaxGetCommName(){
-	    //dump(input());
+// 	    dump(input());
 	    if(null !== input('from')){
 	        $from = input('from');
 	    }
@@ -372,15 +373,10 @@ class Comms extends Common {
                 //如果没有相同community_id和用途的记录，才能追加
                 // 过滤post数组中的非数据表字段数据
                 $see = $commrelate->data($data)->allowField(true)->save();
-                //dump($see);
             }
         }
 	    
 	    $rela_list = $commrelate->where('community_id',$data['community_id'])->select()->toArray();
-// 	    if(!empty($rela_list) and !isset($data['usage']) and !isset($data['rela_comm_id'])){
-// 	        //如果有数据，而且传递过来的数据非关联规则，则把查询出来的把第一条关联规则赋给$data
-// 	        $data = $rela_list[0];
-// 	    }
         $this->assign('rela_list',$rela_list);
 	    
 	    //通过id找小区相关信息
@@ -428,10 +424,6 @@ class Comms extends Common {
 	    $this->assign('title',$title);
 	    $this->assign('fields',$fields);
 	    $this->assign('data',$data);
-// 	    dump($data);
-// 	    dump($rela_list);
-// 	    dump($getPrice_result);
-// 	    dump($rela_comms);
 	    
 	    return $this->fetch();
 	        
@@ -1194,4 +1186,85 @@ class Comms extends Common {
         
     }
 
+    //小区地址列表管理
+    public function commAddressList(){
+        $data = input();
+        if (request()->isPost()){
+//             halt($data);
+            if(isset($data['community_id'])){
+//                 input('get.community_id')=null;
+                unset($data['community_id']);
+            }
+        };
+        dump($data);
+        $data['num'] = 0;
+        $replace = array('“'=>'"');
+        $replace += array('”' => '"');
+        $replace += array("'" => '"');
+        $replace += array("‘" => '"');
+        $replace += array("’" => '"');
+        if(!isset($data['where']) or trim($data['where'])==''){
+            if(isset($data['community_id']) and trim($data['community_id'])!=''){
+                $data['where']= ' comm_id = '.$data["community_id"];
+            }else{
+                $data['where'] = '';
+            }
+        }else{
+            $data['where'] = trim(strtr($data['where'],$replace));
+        }
+        if(!isset($data['sort'])){
+            $data['sort'] = '';
+        }
+        if(!isset($data['order']) or trim($data['order'])==''){
+            $data['order'] = 'comm_id';
+            $data['neworder'] = 'comm_id ASC';
+        }else{
+            $data['neworder'] = strtr($data['order'].' '.$data['sort'],$replace);
+        }
+        if(!isset($data['set']) or trim($data['set'])==''){
+            $data['set'] = '';
+        }
+        $title = ['序号','小区编码','小区','城市','行政区','路','门牌号','类型','建成','总层','电梯','结构'];
+//         halt($data);
+        $list = (new CommaddressModel())->getListByFormdata($data);
+//         halt($list->toArray());
+        $fields = Db::query('SHOW COLUMNS FROM commaddress');
+        $this->assign([
+            'title'  => $title,
+            'list' => $list,
+            'fields'=>$fields,
+            'data'=>$data,
+        ]);
+        return $this->fetch();
+    }
+    
+    public function ajaxDelCommAddressRecord(){
+        //使用ajax删除小区地址表中的一条记录
+        //传入id
+        $data = input();
+        $ca = new CommaddressModel();
+        $record = $ca->findById($data['ID']);
+        $isdel = $ca->where('id',$data['ID'])->delete();
+        return $record;
+    }
+    
+    public function ajaxGetCommAddressRecord(){
+        $data = input();
+        $ca = new CommaddressModel();
+        $record = $ca->findById($data['ID']);
+        return $record;
+    }
+    
+    public function ajaxUpdateCommAddressRecord(){
+        $data = input();
+        foreach ($data as $key => $value){
+            if($value == 'null'){
+                $data[$key] = "";
+            }
+//             if()
+        }
+        $ca = new CommaddressModel();
+        $res = $ca->allowField(true)->save($data,['id' => $data['id']]);
+        return $res;
+    }
 }

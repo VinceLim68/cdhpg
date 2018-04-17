@@ -1,0 +1,187 @@
+{extend name="mainbase" /} 
+{block name="pg_cs"}
+<link rel="stylesheet" href="__CSS__/jquery-ui.min.css" />
+<link rel="stylesheet" type="text/css" href="__CSS__/comms/commAddressList.css">
+{/block} 
+{block name="breadcrumb"}
+<ul class="breadcrumb">
+	<li><i class="ace-icon fa fa-home home-icon"></i> <a href="#">大叔评估后台</a>
+	</li>
+	<li><a href="#">小区管理</a></li>
+	<li><a href="#">小区地址列表</a></li>
+
+</ul>
+{/block} 
+{block name="main"}
+<div class="tabbable">
+	<ul class="nav nav-tabs padding-12 tab-color-blue background-blue" id="myTab">
+		<li class="active"><a href="#list1" aria-controls="list1" role="tab" data-toggle="tab" >数据列表</a></li>
+	</ul>
+	<div class="tab-content">
+
+		<!-- 数据列表 --> 
+		<div role="tabpanel" class="tab-pane in active" id="list1">
+			<div class="widget-header" id='search_div' style='padding-top: 5px; background: #5AA7D6;'>
+				<div class="text-muted" style="color:white;float:left;margin:auto 0;margin-top: 6px;">共{$list->total()}条记录</div>
+				<div id="pages" style="float:left;margin-left:5px;">{$list->render()}</div>
+				<form class="form-inline" id="search_form" style="float:left;">
+				  <div class="form-group">
+				    <label >小区名称</label>
+				    <input class="form-control" name="commName" id="commName"  placeholder="请输入小区名称" >
+				  </div>
+				  <button type="submit" class="btn btn-success" style="border-radius: 5px;padding: 3px 15px;">
+		  			<span class="glyphicon glyphicon-search" aria-hidden="true"></span>查询
+	  				</button>
+				</form>
+				<a href="javascript:;" onclick="ActiveMyquery()" class="btn btn-sm btn-info"
+					style="margin-right: 20px; border-radius: 20px; margin-bottom: 3px;float:right;">
+					<span class="ace-icon fa fa-search icon-on-right bigger-110"></span>高级查询
+				</a>
+			</div>
+				
+			<table	class="table table-striped table-bordered table-hover table-condensed">
+				<thead>
+					{foreach name="title" item="v"}
+					<th>{$v}</th>
+					{/foreach}
+				</thead>
+				<tbody id="salestable">
+				{foreach name="list" item="v"}
+				<tr >
+					<td>{$v['id']}</td>
+					<td>{$v['comm_id']}</td>
+					<td>{$v['comm_name']}</td>
+					<td>{$v['city']}</td>
+					<td>{$v['region']}</td>
+					<td>{$v['road']}</td>
+					<td>{$v['doorplate']}</td>
+					<td>{$v['type']}</td>
+					<td>{$v['buildYear']}</td>
+					<td>{$v['floors']}</td>
+					<td>{$v['elevator']}</td>
+					<td>{$v['structure']}</td>
+				</tr>
+				{/foreach}
+				</tbody>
+			</table>
+		</div>
+		
+	</div>
+</div>
+
+
+<!-- 模态框 -->
+<div class="modal fade" tabindex="-1" role="dialog" id="mydialogg">
+  <div class="modal-dialog" role="document">
+    <div class="modal-content">
+      <div class="modal-header">
+        <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+      <!--   <h4 class="modal-title">信息</h4> -->
+        <h4 class="widget-title grey lighter">
+			<i class="ace-icon fa fa-leaf green"></i>
+			<span id="modal-title">信息</span>
+		</h3>
+      </div>
+      <div class="modal-body">
+
+      </div>
+    </div><!-- /.modal-content -->
+  </div><!-- /.modal-dialog -->
+</div><!-- /.modal -->
+
+<!-- 挂牌信息列表右键菜单 -->
+<div class="contextMenu" id="salelistmenu">
+	<ul>
+		<li id="modifyrecord" style="margin-left: 20px">修改</li>
+		<li id="delrecord">删除</li>
+	</ul>
+</div>
+
+{/block} {block name="pg_js"}
+<script src="__JS__/jquery-ui.min.js"></script>
+<script src="__JS__/jquery.contextmenu.js"></script>
+<script type="text/javascript">
+	var waitingImg = "__CSS__/1.gif";
+	var getcommname = "{:url('ajaxGetCommName')}";
+	var myself = "{:url('commAddressList')}";
+	var menuobj = {
+	        bindings: {
+	            'modifyrecord': function (t) {
+	                    //取出当前行的序号 
+	                    var id = $(t).parent().find("td").eq(0).html(); //alert(id);
+	                    //$('#mydialogg ').modal('show');
+	                    $.ajax({
+	                        url: "{:url('ajaxGetCommAddressRecord')}",
+	                        data: {
+	                            ID: id,
+	                        },
+	                        datatype:'json',
+	                        success: function (response) {
+	                        	$('#mydialogg ').modal('hide');
+	                        	if(response){
+		                            var jsonstring = '<form class="form-horizontal" id="modifyCommAddressForm">';
+		                            for(var key in response){
+		                            	jsonstring += 
+		                            		'<div class="form-group"><label class="col-sm-2 control-label input-sm">'
+		                            		+ key + '</label><div class="col-sm-10">'
+		                            		+'<input type="text" class="form-control input-sm " name="' + key 
+		                            		+ '" value="' + response[key] + '"></div></div>';
+	                            	}
+		                            jsonstring += '</form><button class="btn btn-primary btn-sm" id="sendmodify"'
+		                            		+ 'style="width: 100%;">修改数据</button>';
+		                            $('#modal-title').html('修改数据')
+		                            $('#mydialogg  div.modal-body').html(jsonstring); 
+	                        	}else{
+	                        		$('#modal-title').html('信息')
+		                            $('#mydialogg  div.modal-body').html('未找到数据'); 
+	                        	}
+	                            $('#mydialogg ').modal('show');
+
+	                        }
+
+	                    });
+	                },
+                'delrecord': function (t) { //取出当前行的序号 var
+                    id = $(t).parent().find("td").eq(0).html(); 
+                	//alert(id); 
+                    $.ajax({
+                        url: "{:url('ajaxDelCommAddressRecord')}",
+                        data: {
+                            ID: id,
+                        },
+                        datatype:'json',
+                        success: function (response) {
+                        	if(response){
+	                            var jsonstring = '<div><ul class="list-unstyled spaced">';
+	                            for(var key in response){
+	                            	jsonstring += '<li><i class="ace-icon fa fa-caret-right blue"></i>'
+	                            				+key+'  :  '+response[key]+'</li>';
+                            	}
+	                            jsonstring += '</ul></div>';
+	                            $('#modal-title').html('如下数据被删除')
+	                            $('#mydialogg  div.modal-body').html(jsonstring); 
+                        	}else{
+                        		$('#modal-title').html('信息')
+	                            $('#mydialogg  div.modal-body').html('记录未被成功删除'); 
+                        	}
+                            $('#mydialogg ').modal('show');
+                            window.location.reload();
+                        }
+                    });
+                },
+	        }
+	    };
+
+jQuery(function ($) {
+    $('#salestable td').contextMenu('salelistmenu', menuobj);
+});
+
+</script>
+<script src="__JS__/comms/commAddressList.js"></script>
+<!-- 挂牌记录查询模态框-->
+{include file="./commhtml/myquery.html"/}
+
+
+{/block}{block name="pg_inline_js"}
+
+{/block}

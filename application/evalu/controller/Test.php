@@ -202,11 +202,22 @@ dump(getUID());
 	//测试正则
 	public function test_reg(){
 // 	    $pattern = '/^(\d+)?\.\d{4}$/';
-	    $pattern = '/^(\d{4})-(\d{2})-(\d{2}) \d{2}:\d{2}:\d{2}.\d{3}$/';
-	    
-	    $string = '2066-06-05 00:00:00.000';
-// 	    $string = '思明区洪文七里29号1002室住宅、31号地下一层第9#30号车位、9#48号车位及海沧区滨湖二里208号2802室住宅、327号地下二层第G856号车位房地产抵押价值评估'
+// 	    $pattern = '/^(\d{4})-(\d{2})-(\d{2}) \d{2}:\d{2}:\d{2}.\d{3}$/';
+// 	    $string = '2066-06-05 00:00:00.000';
+	    $pattern = config('pattern');
+	    $string = '莲前东路864';
+	    if(preg_match('/\d$/',$string,$match)){
+	        $string .= '号';
+	    }
 	    $result = preg_match($pattern,$string,$match);
 	    dump($match);
 	}
+
+    public function test_strtodate(){
+        $str = '1970';
+        echo $str.'</br>';
+        echo strtotime($str).'</br>';
+        echo date('Y-m-d',$str);
+        
+    }
 }
