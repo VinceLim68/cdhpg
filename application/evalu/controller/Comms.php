@@ -1196,7 +1196,7 @@ class Comms extends Common {
                 unset($data['community_id']);
             }
         };
-        dump($data);
+//         dump($data);
         $data['num'] = 0;
         $replace = array('“'=>'"');
         $replace += array('”' => '"');
@@ -1224,6 +1224,9 @@ class Comms extends Common {
         if(!isset($data['set']) or trim($data['set'])==''){
             $data['set'] = '';
         }
+        $data["action"] = url('commAddressList');
+//         dump(url('commAddressList'));
+//         dump($data);
         $title = ['序号','小区编码','小区','城市','行政区','路','门牌号','类型','建成','总层','电梯','结构'];
 //         halt($data);
         $list = (new CommaddressModel())->getListByFormdata($data);
