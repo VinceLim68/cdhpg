@@ -8,7 +8,7 @@
 				<h4 class="modal-title" id="myModalLabel">高级查询</h4>
 			</div>
 			<div class="modal-body">
-				<form id="myform" class="form-inline"	method="post">
+				<form id="myform" class="form-inline" action='{$data["action"]|default=""}' method="post">
 					<input name="page" type="hidden" value='1'>
 					<input name="community_id" type="hidden" value='{$data["community_id"]|default=""}'> 
 					<table
