@@ -47,7 +47,8 @@ class View {
 				'__STATIC__' => $root . '/static',
 				'__CSS__' => $root . '/static/css',
 				'__JS__' => $root . '/static/js',
-				'__PIC__' => $root . '/static/picture' 
+				'__PIC__' => $root . '/static/picture' ,
+				'__LAYOUT__' => $root . '/layout'       //林晓：总平图的存放位置
 		];
 		$this->replace = array_merge ( $baseReplace, ( array ) $replace );
 	}

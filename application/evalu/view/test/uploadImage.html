@@ -1,0 +1,62 @@
+{extend name="mainbase" /} {block name="pg_cs"}
+{/block} {block name="breadcrumb"}
+
+{/block} {block name="main"}
+<form action="./dummy.html" class="dropzone well dz-clickable" id="dropzone">
+<div class="dz-default dz-message">
+<span>
+<span class="bigger-150 bolder">
+<i class="ace-icon fa fa-caret-right red"></i> 
+Drop files
+</span>
+ to upload 				
+ <span class="smaller-80 grey">(or click)</span> 
+ <br> 				
+ <i class="upload-icon ace-icon fa fa-cloud-upload blue fa-3x"></i>
+ </span>
+ </div>
+ </form>
+ <form action="{:url('Test/uploadImage')}" enctype="multipart/form-data" method="post">
+     <input type="file" name="image[]"  multiple="multiple"/> <br>
+     <input type="submit" value="上传" />
+ </form>
+<notemply name="data">
+<div class="row">
+{volist name="data" id="vo"}
+  <div class="col-xs-6 col-md-3">
+    <a class="thumbnail">
+	    <img src="__LAYOUT__/{$vo['img_url']}" class="forshowimage">
+    </a>
+  </div>
+{/volist}
+</div>
+</notemply>
+
+<div class="modal fade" tabindex="-1" role="dialog" id="mymodal">
+  <div class="modal-dialog modal-lg" role="document">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h4 class="modal-title">图片</h4>
+      </div>
+      <div class="modal-body">
+      	<img src="__LAYOUT__/{$vo['img_url']}" >
+      </div>
+      <div class="modal-footer">
+      </div>
+    </div><!-- /.modal-content -->
+  </div><!-- /.modal-dialog -->
+</div><!-- /.modal -->
+{/block} {block name="pg_js"}
+<script>    
+jQuery(function ($) {
+    $(".forshowimage").on('click',function(){
+    	var src = $(this).attr("src");//获取当前点击的pimg元素中的src属性   
+    	//alert(src);
+    	var img = '<img src="'+src+'" >';
+    	$("#mymodal .modal-body").html(img);
+    	$("#mymodal").modal('show');
+    }); 
+});
+</script>    
+{/block}{block name="pg_inline_js"}
+{/block}

@@ -394,10 +394,10 @@ class Index extends Common {
          * 得到历史的询价记录和案例
          */
         //从旧系统中查询
-        if(!isset($enq)){
-            $enq = new TEnquiryModel();
-        }
-        $historyEnquery = $enq->getEnqueryByCommAndDate();
+//         if(!isset($enq)){
+//             $enq = new TEnquiryModel();
+//         }
+//         $historyEnquery = $enq->getEnqueryByCommAndDate();
         
         //再从新系统中查询
         $EasyXj = new EasyPGXjModel();
@@ -409,9 +409,19 @@ class Index extends Common {
             $html .= '<tr><td class="font-small">'.config('historyDays').'天内没有'.session('user.comm').'的询价记录</td></tr>';
         }else{
             foreach ($historyEnquery as $rec){
-                $html .= '<tr><td class="font-small">'.$rec['Enquiry_PmName'].'('.date ( 'Y-m-d', strtotime ( $rec['Enquiry_Date']) ).')';
-                $html .= '------'.$rec['Enquiry_CellName'].'-'.$rec['Apprsal_Use'];
-                $html .= '</br>'.$rec['OfferPeople'].'------'.$rec['Apprsal_Up'].',备注:'.$rec['Remark'].'</td></tr>';
+                $html .= '<tr><td class="font-small">'.$rec['OfferPeople'].'===>'.$rec['Enquiry_PmName'];
+                $html .= '('.date ( 'Y-m-d', strtotime ( $rec['Enquiry_Date']) ).')';
+                $html .= '</br>'.$rec['Enquiry_CellName'].'-'.$rec['Apprsal_Use'].' : '.$rec['Apprsal_Up'];
+                if(trim($rec['PA_Located'])!=''){
+                    $html .= '</br>地址:'.$rec['PA_Located'];
+                }
+                if(trim($rec['Remark'])!=''){
+                    $html .= '</br>备注:'.$rec['Remark'];
+                }
+                $html .= '</td></tr>';
+//                 $html .= '<tr><td class="font-small">'.$rec['Enquiry_PmName'].'('.date ( 'Y-m-d', strtotime ( $rec['Enquiry_Date']) ).')';
+//                 $html .= '------'.$rec['Enquiry_CellName'].'-'.$rec['Apprsal_Use'];
+//                 $html .= '</br>'.$rec['OfferPeople'].'------'.$rec['Apprsal_Up'].',备注:'.$rec['Remark'].'</td></tr>';
             }
         }
         return $html;

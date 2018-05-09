@@ -92,8 +92,9 @@
 <!-- 挂牌信息列表右键菜单 -->
 <div class="contextMenu" id="salelistmenu">
 	<ul>
-		<li id="modifyrecord" style="margin-left: 20px">修改</li>
-		<li id="delrecord">删除</li>
+		<li id="modifyrecord" style="padding-left: 20px">  修改</li>
+		<li id="creatrecord">  新增</li>
+		<li id="delrecord">  删除</li>
 	</ul>
 </div>
 
@@ -104,6 +105,7 @@
 	var waitingImg = "__CSS__/1.gif";
 	var getcommname = "{:url('ajaxGetCommName')}";
 	var ajaxUpdateCommAddressRecord = "{:url('ajaxUpdateCommAddressRecord')}";
+	var ajaxAddCommAddressAction = "{:url('ajaxAddCommAddressAction')}";
 	var myself = "{:url('commAddressList')}";
 	var menuobj = {
 	        bindings: {
@@ -144,7 +146,6 @@
 	                },
                 'delrecord': function (t) { //取出当前行的序号 var
                     id = $(t).parent().find("td").eq(0).html(); 
-                	//alert(id); 
                     $.ajax({
                         url: "{:url('ajaxDelCommAddressRecord')}",
                         data: {
@@ -167,6 +168,112 @@
                         	}
                             $('#mydialogg ').modal('show');
                             window.location.reload();
+                        }
+                    });
+                },
+                'creatrecord': function (t) { //新增记录
+                	//取出当前行的序号 var
+                    id = $(t).parent().find("td").eq(0).html(); 
+                    $.ajax({
+                        url: "{:url('ajaxGetAddRecordForm')}",
+                        data: {
+                            ID: id,
+                        },
+                        datatype:'json',
+                        success: function (res) {
+                        	if(res==0){
+                        		alert('未找到符合要求的记录');
+                        	}else{
+	                        	//array (size=13)
+	                        	  //'comm_id' => int 1502005
+	                        	  //'city' => string '' (length=0)
+	                        	  //'region' => string '翔安区' (length=9)
+	                        	  //'road' => string '浦园一里' (length=12)
+	                        	  //'doorplate' => string '34号' (length=5)
+	                        	  //'type' => null
+	                        	  //'buildYear' => string '2014' (length=4)
+	                        	  //'floors' => int 30
+	                        	  //'elevator' => string '带电梯' (length=9)
+	                        	  //'structure' => string '钢混结构' (length=12)
+	                        	  //'comm_name' => string '明发半岛祥湾' (length=18)
+	                        	  //'block' => string '南部新城' (length=12)
+	                        	  //'keywords' => string '半岛祥湾,明发半岛' (length=25)
+		                    	var jsonstring = '<form style="margin-right: 15px;" id="addCommAddressForm">';
+		                    	jsonstring += '<div class="row">';
+		                    	jsonstring += '<div class="col-md-4 col-md-offset-1">版块 : '+res['block']+'</div>';
+		                    	jsonstring += '<div class="col-md-7">'+res['keywords']+'</div>';
+		                    	jsonstring += '</div>';
+		                    	jsonstring += '<hr>';
+		                    	jsonstring += '<div class="row">';
+		                    	jsonstring += '<label class="col-md-2 ">小区id</label>';
+		                    	jsonstring += '<div class="col-md-2">';
+		                    	jsonstring += '<label class="col-md-2 ">'+res['comm_id']+'</label>';
+		                    	jsonstring += '<input type="hidden" name="comm_id" value="'+res['comm_id']+'">';
+		                    	jsonstring += '</div>';
+		                    	jsonstring += '<label class="col-md-2 ">城市</label>';
+		                    	jsonstring += '<div class="col-md-2">';
+		                    	jsonstring += '<input type="text" name="city" value="'+res['city']+'" placeholder="城市">';
+		                    	jsonstring += '</div>';
+		                    	jsonstring += '<label class="col-md-2 ">区块</label>';
+		                    	jsonstring += '<div class="col-md-2">';
+		                    	jsonstring += '<input type="text" name="region" value="'+res['region']+'" placeholder="区块">';
+		                    	jsonstring += '</div>';
+		                    	jsonstring += '</div>';
+		                    	jsonstring += '<div class="row">';
+		                    	jsonstring += '<label class="col-md-2 ">道路</label>';
+		                    	jsonstring += '<div class="col-md-2">';
+		                    	jsonstring += '<input type="text" name="road" value="'+res['road']+'"placeholder="道路名">';
+		                    	jsonstring += '</div>';
+		                    	jsonstring += '<label class="col-md-2 ">门牌：从</label>';
+		                    	jsonstring += '<div class="col-md-6">';
+		                    	jsonstring += '<input type="text" name="doorplate" style="width:40%" value="'+res['doorplate']+'" placeholder="门牌">';
+		                    	jsonstring += ' ----> <input type="text" name="doorplate2" style="width:40%; float: right;" placeholder="门牌截止">';
+		                    	jsonstring += '</div>';
+	
+		                    	jsonstring += '</div>';
+		                    	jsonstring += '<div class="row">';
+		                    	jsonstring += '<label class="col-md-2 ">门牌类型</label>';
+		                    	jsonstring += '<div class="col-md-6 ">';
+		                    	jsonstring += '<label class="radio-inline"><input type="radio" checked name="doortype" value="连续">连续</label>';
+		                    	jsonstring += '<label class="radio-inline"><input type="radio" name="doortype" value="单数">单数</label>';
+		                    	jsonstring += '<label class="radio-inline"><input type="radio" name="doortype" value="双数">双数</label>';
+		                    	jsonstring += '</div>';
+		                    	jsonstring += '<div class="col-md-4 ">';
+		                    	jsonstring += '<label class="checkbox-inline"><input type="checkbox" name="iscover">覆盖原记录</label>';
+		                    	jsonstring += '</div>';
+		                    	jsonstring += '</div>';
+		                    	jsonstring += '<div class="row">';
+		                    	jsonstring += '<label class="col-md-2 ">物业类型</label>';
+		                    	jsonstring += '<div class="col-md-2">';
+		                    	jsonstring += '<input type="text" name="type" value="'+res['type']+'"placeholder="物业类型">';
+		                    	jsonstring += '</div>';
+		                    	jsonstring += '<label class="col-md-2 ">建成年份</label>';
+		                    	jsonstring += '<div class="col-md-2">';
+		                    	jsonstring += '<input type="text" name="buildYear" value="'+res['buildYear']+'" placeholder="建成年份">';
+		                    	jsonstring += '</div>';
+		                    	jsonstring += '<label class="col-md-2 ">总层数</label>';
+		                    	jsonstring += '<div class="col-md-2">';
+		                    	jsonstring += '<input type="text" name="floors"  value="'+res['floors']+'" placeholder="总层数">';
+		                    	jsonstring += '</div>';
+		                    	jsonstring += '</div>';
+		                    	jsonstring += '<div class="row">';
+		                    	jsonstring += '<label class="col-md-2 ">电梯</label>';
+		                    	jsonstring += '<div class="col-md-2">';
+		                    	jsonstring += '<input type="text" name="elevator" value="'+res['elevator']+'"placeholder="有电梯否">';
+		                    	jsonstring += '</div>';
+		                    	jsonstring += '<label class="col-md-2 ">结构</label>';
+		                    	jsonstring += '<div class="col-md-2">';
+		                    	jsonstring += '<input type="text" name="structure" value="'+res['structure']+'" placeholder="建筑结构">';
+		                    	jsonstring += '</div>';
+		                    	
+		                    	jsonstring += '</div>';
+		                    	jsonstring += '</form><button class="btn btn-primary btn-sm" id="addcommaddresses"'
+	                        		+ 'style="width: 100%;">增加小区地址</button>';
+		                    	$('#modal-title').html('新增地址:  <b>'+res['comm_name']+'</b>')
+	                            $('#mydialogg  div.modal-body').html(jsonstring); 
+	                           $('#mydialogg ').modal('show');
+                        		
+                        	}
                         }
                     });
                 },

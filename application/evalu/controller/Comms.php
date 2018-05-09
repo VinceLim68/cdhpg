@@ -42,18 +42,8 @@ class Comms extends Common {
 	 * 测试
 	 */
 	public function test() {
-// 		//$pattern = '/(.*市)?(.*区)?(.*[路道街巷里园])(\d+号(之[三二一四五六七八九十]*)?)(\d+)(室|单元)?/';
-// 		//测试用正则取地址里的路名、栋号等
-// 		$pattern = config('pattern');
-// 	    $pattern = '/(.*市)?(.*区)?(\D*)(\d*)(-\d+)?号(之[三二一四五六七八九十]*)?(\D*)?(\d+)?(室|单元|号车位)?/';
-// 		$string = '湖里区梧桐里32号之二十五202室住宅房地产抵押价值估价';
-// 		$string = '厦门市湖里区后埔东里142号301、401、501室、海沧区马青路5896号102室住宅房地产抵押价值估价';
-// 		$string = '五缘湾1号';
-// 		$string = '同安区环城南路76号之2';
-        $pattern = '/^(\d+)?\.\d{4}$/';
-        $string = '1120.0000';
-		$result = preg_match($pattern,$string,$match);
-		dump($result);
+        //看看页面
+        return $this->fetch();
 	    //实例化一个world对象
 //         $office = new \COM("word.application") or die("Unable to instantiate Word");
 //         if( ! $office ){
@@ -1258,16 +1248,96 @@ class Comms extends Common {
         return $record;
     }
     
+    //执行修改小区地址记录
     public function ajaxUpdateCommAddressRecord(){
         $data = input();
         foreach ($data as $key => $value){
             if($value == 'null'){
                 $data[$key] = "";
             }
-//             if()
         }
         $ca = new CommaddressModel();
         $res = $ca->allowField(true)->save($data,['id' => $data['id']]);
         return $res;
+    }
+
+    //获取增加小区地址记录时的原始值，并生成html页面
+    public function ajaxGetAddRecordForm(){
+        $data = input();
+        $ca = new CommaddressModel();
+        $record = $ca->alias('a')
+            ->join('comm c','c.comm_id = a.comm_id')
+            ->where('a.id',$data['ID'])
+            ->field('a.comm_id,city,a.region,road,doorplate,type,
+                buildYear,floors,elevator,structure,c.comm_name,block,
+                keywords')
+            ->find();
+        if($record){
+            return $record->toArray();
+        }else{
+            return 0;
+        }
+    }
+    
+    //批量增加记录
+    public function ajaxAddCommAddressAction(){
+        $data = input();
+        foreach ($data as $key => $value){
+            if($value == 'null'){
+                $data[$key] = "";
+            }
+            $data[$key] = trim($data[$key]);
+        }
+        $data['doorplate3'] = '';       //这是存放“之十五”之类的
+        $data['doorplate_prefix'] = '';       //这是存放“313-2”之类门牌中的313号
+//         $pattern = '/^(\d*)-?(\d+)?号?(之[三二一四五六七八九十]*)?/';
+        $pattern = '/^(\d*-)?(\d+)号?(之[三二一四五六七八九十]*)?/';
+        if(preg_match($pattern,$data['doorplate'],$match)){
+            $data['doorplate'] = $match[2];
+            if(count($match)>=3 and $match[1]!= ''){
+                $data['doorplate_prefix'] = $match[1];       //这是存放“313-2”之类门牌中的313号;
+            };
+            if(count($match)>=4){
+                $data['doorplate3'] = $match[3];
+            };
+        }else{
+            return 0;
+        }
+        if(isset($data['iscover'])){
+            //如果要覆盖，使用replace
+            $sql = "REPLACE INTO `commaddress`
+                (`comm_id` , `city` , `region` , `road` , `doorplate` , `type` ,
+                `buildYear` , `floors` , `elevator` , `structure`)
+                VALUES (?,?,?,?,?,?,?,?,?,?) ";
+        }else{
+            //如果不需要覆盖，使用insert ignore
+            $sql = "INSERT IGNORE INTO `commaddress`
+                (`comm_id` , `city` , `region` , `road` , `doorplate` , `type` ,
+                `buildYear` , `floors` , `elevator` , `structure`)
+                VALUES (?,?,?,?,?,?,?,?,?,?) ";
+        }
+        
+        //如果门牌止没有数据，自动赋予门牌起始号数
+        if($data['doorplate2'] == ''){
+            $data['doorplate2'] = $data['doorplate'];
+        }
+        $insert_nums = 0;
+        for($i=$data['doorplate'];$i<=$data['doorplate2'];$i++){
+            if($data['doortype'] =='双数' and $i%2==1){
+                continue;
+            }
+            if($data['doortype'] =='单数' and $i%2==0){
+                continue;
+            }
+            if(Db::execute($sql,[$data['comm_id'],$data['city'],$data['region'],
+                $data['road'],$data['doorplate_prefix'].$i.'号'.$data['doorplate3'],$data['type'],
+                date('Y-01-01',strtotime($data['buildYear'])),$data['floors'],$data['elevator'],$data['structure']
+            ])){
+                $insert_nums += 1;
+            }
+            
+        }
+        return $insert_nums;
+
     }
 }

@@ -100,7 +100,8 @@ class EasyPGXjModel extends Model {
            'InputName'=>'OfferPeople',
            'Xjbjdjms'=>'Apprsal_Up',
            'Xjyjremark'=>'Remark',
-           'Xjrname'=>'Enquiry_PmName'
+           'Xjrname'=>'Enquiry_PmName',
+           'Xjxqaddr'=>'PA_Located'
            ])
        ->order('Enquiry_Date desc')         //这里可以用别名
        ->where('InputDate','>= time',date('Y-m-d',strtotime('-'.config('historyDays').' day')))         // 这里不能用别名

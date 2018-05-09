@@ -21,7 +21,7 @@ class CommaddressModel extends Model {
 	
 	public function setBuildyearAttr($value)
 	{
-	    return date('Y-m-d',$value);
+	    return date('Y-01-01',strtotime($value));
 	}
 	
 	public function getListByFormdata($data){
