@@ -401,9 +401,10 @@ class Index extends Common {
         
         //再从新系统中查询
         $EasyXj = new EasyPGXjModel();
-        $historyEnquery1 = $EasyXj->getEnqueryByCommAndDate();
+//         $historyEnquery1 = $EasyXj->getEnqueryByCommAndDate();
+        $historyEnquery = $EasyXj->getEnqueryByCommAndDate();
         //合并两个数组，再生成html代码
-        $historyEnquery = array_merge ($historyEnquery1,$historyEnquery);
+//         $historyEnquery = array_merge ($historyEnquery1,$historyEnquery);
         $html = '';
         if(count($historyEnquery)==0){
             $html .= '<tr><td class="font-small">'.config('historyDays').'天内没有'.session('user.comm').'的询价记录</td></tr>';
