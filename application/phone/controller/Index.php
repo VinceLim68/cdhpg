@@ -353,6 +353,7 @@ class Index extends Common {
     public function insertQueryIntoEasyPG(){
         //把询价记录插入至easyPg的询价库中去
         $data = input();
+//         halt($data);
         $result = $this->validate($data,'InsertQueryValidate');
         if(true !== $result){
             // 验证失败 输出错误信息
@@ -362,7 +363,11 @@ class Index extends Common {
         $renameData['Xjyjrname'] = $data['OfferPeople'];
         $renameData['Xjxqname'] = $data['Enquiry_CellName'];
         $renameData['Xjbjdjms'] = $data['Apprsal_Up'];
-        $renameData['Xjrname'] = '电话客户';
+        if(trim($data['Enquiry_PmName'])==''){
+            $renameData['Xjrname'] = '电话客户';
+        }else{
+            $renameData['Xjrname'] = $data['Enquiry_PmName'];
+        }
         $renameData['Mark'] = $data['Remark'];
         $renameData['Xjxqaddr'] = $data['PA_Located'];
         $renameData['Xjyt'] = $data['Apprsal_Use'];
