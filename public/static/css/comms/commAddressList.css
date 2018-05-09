@@ -8,3 +8,19 @@ ul.pagination{
 .form-group {
     margin-bottom: 5px;
 }
+.row{
+	margin-bottom:5px;
+}
+.row label{
+	text-align: right;
+	margin-top: 8px !important;
+}
+.row input{
+	width:100%;
+}
+.radio-inline{
+	padding-left: 50px;
+}
+.row input[type="radio"],.checkbox-inline input[type="checkbox"]{
+	margin-left: -55px;
+}

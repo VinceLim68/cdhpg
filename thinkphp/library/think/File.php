@@ -324,6 +324,10 @@ class File extends SplFileObject {
 		$path = rtrim ( $path, DS ) . DS;
 		// 文件保存命名规则
 		$saveName = $this->buildSaveName ( $savename );
+		$saveName = iconv("UTF-8", "GB2312", $saveName);//林晓：解决汉字文件名乱码的问题
+		//在运用程序时，相应还要转化一次：
+		//$filename = $info->getFilename();
+        //$filename = iconv("GB2312","UTF-8",  $filename);
 		$filename = $path . $saveName;
 		
 		// 检测目录

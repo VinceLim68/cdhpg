@@ -3,10 +3,11 @@
 namespace app\evalu\controller;
 
 use think\Db;
-use app\phone\model\EasyPGXjModel;
 use app\evalu\model\CommaddressModel;
 use app\evalu\logic\MatchLogic;
 use think\Exception;
+use think\File;
+use app\phone\model\GeneralLayoutModel;
 
 class Test extends Common {
     //做一个测试模块,项目完成后删除
@@ -204,13 +205,15 @@ dump(getUID());
 // 	    $pattern = '/^(\d+)?\.\d{4}$/';
 // 	    $pattern = '/^(\d{4})-(\d{2})-(\d{2}) \d{2}:\d{2}:\d{2}.\d{3}$/';
 // 	    $string = '2066-06-05 00:00:00.000';
-	    $pattern = config('pattern');
-	    $string = '莲前东路864';
-	    if(preg_match('/\d$/',$string,$match)){
-	        $string .= '号';
+// 	    $pattern = config('pattern');
+	    $pattern = '/^(\d*)-?(\d+)?号(之[三二一四五六七八九十]*)?/';
+	    $string = '864-800号之三十一';
+	    if(preg_match($pattern,$string,$match)){
+// 	        $string .= '号';
+            dump($match);
 	    }
-	    $result = preg_match($pattern,$string,$match);
-	    dump($match);
+// 	    $result = preg_match($pattern,$string,$match);
+// 	    dump($match);
 	}
 
     public function test_strtodate(){
@@ -219,5 +222,39 @@ dump(getUID());
         echo strtotime($str).'</br>';
         echo date('Y-m-d',$str);
         
+    }
+
+    //上传图片
+    public function uploadImage(){
+        $files = request()->file('image');
+        $layout = new GeneralLayoutModel();
+        $getdata['comm_id'] = 1102005;
+        $imgs = $layout->where('comm_id',$getdata['comm_id'])->select();
+        $this->assign('data', $imgs);
+        if($files){
+            foreach($files as $file){
+                // 移动到框架应用根目录/public/layout/ 目录下
+                $info = $file->validate(['size'=>10240000,'ext'=>'jpg,png,gif,jpeg'])
+                            ->rule('uniqid')        //这是取消日期子目录
+                            ->move(ROOT_PATH . 'public' . DS . 'layout','');
+                if($info){
+                    // 成功上传后 获取上传信息
+                    // 输出 20160820/42a79759f284b767dfcb2a0197904287.jpg
+                    $savename = $info->getSaveName();
+                    $savename = iconv("GB2312","UTF-8",  $savename);
+                    if(!$layout->where('comm_id',$getdata['comm_id'])
+                        ->where('img_url',$savename)
+                        ->find()){
+                        $layout->comm_id = $getdata['comm_id'];
+                        $layout->img_url = $savename;
+                        $layout->save();
+                    }//如果数据库里没有记录，则追加，否则跳过
+                }else{
+                    // 上传失败获取错误信息
+                    echo $file->getError();
+                }
+            }
+        }
+        return $this->fetch();        
     }
 }

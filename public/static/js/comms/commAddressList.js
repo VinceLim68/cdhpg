@@ -5,23 +5,38 @@ jQuery(function($) {
 	$('.modal').draggable();			//设置模态框可移动
 	$(".modal").css("overflow", "hidden");//禁止模态对话框的半透明背景滚动
 	
+	//修改小区地址记录
 	$('#mydialogg .modal-body').on('click','#sendmodify',function(event){
 		$.ajax({
 			url:ajaxUpdateCommAddressRecord,
 			type:'POST',
 			data:$('#modifyCommAddressForm').serialize(),
 			success: function(msg){
-				$('#mydialogg ').modal('hide');
-				$('#modal-title').html('信息')
+//				alert(msg);
 				if(msg==1){
-                    $('#mydialogg  div.modal-body').html('记录修改成功'); 
-            	}else{
-            		$('#mydialogg  div.modal-body').html('记录未成功修改'); 
-            	}
-				$('#mydialogg ').modal('show');
-//				window.location.href = myself;
+					alert('记录修改成功');
+				}else{
+					alert('记录未成功修改');
+				}
 				window.location.reload();
    		   	},	
+		});
+	})
+	
+	//批量增加小区地址
+	$('#mydialogg .modal-body').on('click','#addcommaddresses',function(event){
+		$.ajax({
+			url:ajaxAddCommAddressAction,
+			type:'POST',
+			data:$('#addCommAddressForm').serialize(),
+			success: function(msg){
+				if(msg>=1){
+					alert('记录增加成功'+msg+'个');
+				}else{
+					alert('记录未增加成功');
+				}
+				window.location.reload();
+			},	
 		});
 	})
 	
