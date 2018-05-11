@@ -16,6 +16,7 @@ use app\evalu\model\CommRelateModel;
 use app\phone\model\EasyPGXjModel;
 use app\phone\model\EasyCjalkModel;
 use app\evalu\model\Comm;
+use app\phone\model\GeneralLayoutModel;
 
 //手机端的询价系统
 class Index extends Common {
@@ -251,6 +252,7 @@ class Index extends Common {
             $auth['look'] = $thisAuth->check('phone/index/look', session('user.user_id'));
             $auth['admin'] = $thisAuth->check('isadmin', session('user.user_id'));
             $auth['dispute'] = $thisAuth->check('phone/index/dispute', session('user.user_id'));
+            $auth['inputFiles'] = $thisAuth->check('phone/index/inputFiles', session('user.user_id'));
             $this->assign('auth',$auth);
         }else{
             //如果未查询出数据
@@ -464,4 +466,40 @@ class Index extends Common {
 //         halt(input());
         return CreatExcelLogic::creatExcel();
     }
+
+    public function inputFiles(){
+        $param = input();
+        $layout = new GeneralLayoutModel();
+        $files = request()->file('images');
+        if($files){
+            //dump($files);
+            foreach($files as $file){
+                // 移动到框架应用根目录/public/layout/ 目录下
+                $info = $file->validate(['size'=>10240000,'ext'=>'jpg,png,gif,jpeg'])
+                            ->rule('uniqid')        //这是取消日期子目录
+                            ->move(ROOT_PATH . 'public' . DS . 'layout');//
+                if($info){
+                    // 成功上传后 获取上传信息
+                    // 输出 20160820/42a79759f284b767dfcb2a0197904287.jpg
+                    $savename = $info->getSaveName();
+                    Db::table('general_layout')->insert(['comm_id' => $param['community_id'], 'img_url' => $savename]);
+//                     $layout->comm_id = $param['community_id'];
+//                     $layout->img_url = $savename;
+//                     $layout->isUpdate(false)->save();
+//                     echo '成功上传'.$savename;
+                }else{
+                    // 上传失败获取错误信息
+                    echo $file->getError();
+                }
+            }
+        }
+        $imgs = $layout->where('comm_id',$param['community_id'])->select();
+        $this->assign([
+            'data'  =>  $imgs,
+            'param' => $param,
+        ]);
+        return $this->fetch();
+    }
+    
+   
 }
