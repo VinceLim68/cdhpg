@@ -471,8 +471,8 @@ class Index extends Common {
         $param = input();
         $layout = new GeneralLayoutModel();
         $files = request()->file('images');
+//             dump($files);
         if($files){
-            //dump($files);
             foreach($files as $file){
                 // 移动到框架应用根目录/public/layout/ 目录下
                 $info = $file->validate(['size'=>10240000,'ext'=>'jpg,png,gif,jpeg'])
