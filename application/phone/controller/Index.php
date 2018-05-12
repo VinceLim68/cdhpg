@@ -467,22 +467,30 @@ class Index extends Common {
         return CreatExcelLogic::creatExcel();
     }
 
+    //移动端上传、删除图片。
     public function inputFiles(){
         $param = input();
+//         dump($param);
         $layout = new GeneralLayoutModel();
         $files = request()->file('images');
 //             dump($files);
         if($files){
             foreach($files as $file){
                 // 移动到框架应用根目录/public/layout/ 目录下
-                $info = $file->validate(['size'=>10240000,'ext'=>'jpg,png,gif,jpeg'])
+                $info = $file->validate(['size'=>9240000,'ext'=>'jpg,png,gif,jpeg'])
                             ->rule('uniqid')        //这是取消日期子目录
                             ->move(ROOT_PATH . 'public' . DS . 'layout');//
                 if($info){
                     // 成功上传后 获取上传信息
                     // 输出 20160820/42a79759f284b767dfcb2a0197904287.jpg
                     $savename = $info->getSaveName();
-                    Db::table('general_layout')->insert(['comm_id' => $param['community_id'], 'img_url' => $savename]);
+                    $filesize = $info->getSize();
+                    //dump($filesize);
+                    Db::table('general_layout')->insert([
+                        'comm_id' => $param['community_id'], 
+                        'img_url' => $savename,
+                        'img_size'=> $filesize,
+                    ]);
 //                     $layout->comm_id = $param['community_id'];
 //                     $layout->img_url = $savename;
 //                     $layout->isUpdate(false)->save();
@@ -493,13 +501,24 @@ class Index extends Common {
                 }
             }
         }
+        if(isset($param['delfile'])){
+            $tmp = explode('/', $param['delfile']);
+            $filename = $tmp[count($tmp) - 1];
+//             dump($last);
+            unlink('.'.$param['delfile']);
+            $layout->where('comm_id',$param['community_id'])
+                    ->where('img_url',$filename)
+                    ->delete();
+        }
         $imgs = $layout->where('comm_id',$param['community_id'])->select();
         $this->assign([
             'data'  =>  $imgs,
             'param' => $param,
+            
         ]);
         return $this->fetch();
     }
+    
     
    
 }
