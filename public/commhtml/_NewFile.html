@@ -1,0 +1,16 @@
+<notemply name="data">
+    <div class="row">
+    	<h3 style="margin-left: 2%;">小区平面图<small><a href="{:url('getprice',['community_id'=>$B['comm']['comm_id'],'price'=>$B['price']])}">返回上一页</a></small></h3>
+    	
+        {volist name="data" id="vo"}
+        <div style="margin: 8px;border: 1px solid #DDD;box-shadow: 1px 1px 5px 0px #A2958A;padding: 6px;float: left;text-align: center;">
+            <div class="thumbnail " style="width: 213px;height: 160px;">
+                <img src="__LAYOUT__/{$vo['img_url']}" class="forshowimage">
+            </div>
+            <div style="display: block;text-align: center;padding-top: 4px;font-size: 11px;color: #777;margin-bottom: 15px;white-space: nowrap;overflow: hidden;text-overflow: ellipsis;">
+                {$vo['img_url']}
+            </div>
+        </div>
+        {/volist}
+    </div>
+</notemply>
