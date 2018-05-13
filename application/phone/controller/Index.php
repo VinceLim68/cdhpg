@@ -505,7 +505,13 @@ class Index extends Common {
             $tmp = explode('/', $param['delfile']);
             $filename = $tmp[count($tmp) - 1];
 //             dump($last);
-            unlink('.'.$param['delfile']);
+            if(file_exists($param['delfile'])){
+                unlink($param['delfile']);
+            }else{
+                unlink('.'.$param['delfile']);
+//                 echo '(:';
+            }
+//             unlink($param['delfile']);
             $layout->where('comm_id',$param['community_id'])
                     ->where('img_url',$filename)
                     ->delete();
