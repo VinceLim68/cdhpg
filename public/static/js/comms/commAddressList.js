@@ -1,9 +1,12 @@
 function ActiveMyquery(){
 	$('#myquery').modal('show');
 }
+
+//function
 jQuery(function($) {
 	$('.modal').draggable();			//设置模态框可移动
 	$(".modal").css("overflow", "hidden");//禁止模态对话框的半透明背景滚动
+	
 	
 	//修改小区地址记录
 	$('#mydialogg .modal-body').on('click','#sendmodify',function(event){

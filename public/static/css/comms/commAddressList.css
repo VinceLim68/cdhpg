@@ -24,3 +24,16 @@ ul.pagination{
 .row input[type="radio"],.checkbox-inline input[type="checkbox"]{
 	margin-left: -55px;
 }
+/*媒体查询 */
+@media (max-width:640px){
+	.hide-sm{
+        display: none!important;
+    }
+	.fit-sm{
+        display: inline-block!important;
+    }
+}
+
+
+
+
