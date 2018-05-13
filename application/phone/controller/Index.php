@@ -504,14 +504,8 @@ class Index extends Common {
         if(isset($param['delfile'])){
             $tmp = explode('/', $param['delfile']);
             $filename = $tmp[count($tmp) - 1];
-//             dump($last);
-            if(file_exists($param['delfile'])){
-                unlink($param['delfile']);
-            }else{
-                unlink('.'.$param['delfile']);
-//                 echo '(:';
-            }
-//             unlink($param['delfile']);
+			$url = $_SERVER['DOCUMENT_ROOT'].$param['delfile'];  //在删除时要使用绝对路径才能在服务器里成功
+			unlink($url);
             $layout->where('comm_id',$param['community_id'])
                     ->where('img_url',$filename)
                     ->delete();
