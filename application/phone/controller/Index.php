@@ -419,13 +419,31 @@ class Index extends Common {
             foreach ($historyEnquery as $rec){
                 $html .= '<tr><td class="font-small">'.$rec['OfferPeople'].'===>'.$rec['Enquiry_PmName'];
                 $html .= '('.date ( 'Y-m-d', strtotime ( $rec['Enquiry_Date']) ).')';
-                $html .= '</br>'.$rec['Enquiry_CellName'].'-'.$rec['Apprsal_Use'].' : '.$rec['Apprsal_Up'];
+                $html .= '</br>'.$rec['Enquiry_CellName'];
+                if(trim($rec['Apprsal_Use'])!=''){
+                    $html .= '-'.$rec['Apprsal_Use'];
+                }
+                $html .= ' : '.$rec['Apprsal_Up'];
                 if(trim($rec['PA_Located'])!=''){
                     $html .= '</br>地址:'.$rec['PA_Located'];
                 }
                 if(trim($rec['Remark'])!=''){
                     $html .= '</br>备注:'.$rec['Remark'];
                 }
+                $html_append = '';
+                if($rec['Xjfcmj']!=0 ){
+                    $html_append .= '  面积:'.$rec['Xjfcmj'].';';
+                }
+                if($rec['Xjzlcs']!=0 or trim($rec['Xjlcs'])!=''){
+                    $html_append .= '  楼层:'.$rec['Xjlcs'].'/'.$rec['Xjzlcs'].';';
+                }
+                if(trim($rec['Xjxqjcnf'])!=''){
+                    $html_append .= '  建成年份:'.$rec['Xjxqjcnf'].';';
+                }
+                if(trim($html_append)!=''){
+                    $html .= '</br>'.$html_append;
+                }
+                
                 $html .= '</td></tr>';
 //                 $html .= '<tr><td class="font-small">'.$rec['Enquiry_PmName'].'('.date ( 'Y-m-d', strtotime ( $rec['Enquiry_Date']) ).')';
 //                 $html .= '------'.$rec['Enquiry_CellName'].'-'.$rec['Apprsal_Use'];
