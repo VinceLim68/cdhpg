@@ -13,7 +13,7 @@ ul.pagination{
 }
 .row label{
 	text-align: right;
-	margin-top: 8px !important;
+	/* margin-top: 8px !important; */
 }
 .row input{
 	width:100%;

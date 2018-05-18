@@ -257,4 +257,25 @@ dump(getUID());
         }
         return $this->fetch();        
     }
+
+    public function mystrtodate(){
+        $date='67';//这里可以任意格式，因为strtotime函数很强大
+        $is_date=strtotime($date)?strtotime($date):false;
+        if($is_date===false){
+            exit('日期格式非法');
+        }else{
+            echo date('Y-m-d',$is_date);//只要提交的是合法的日期，这里都统一成2014-11-11格式
+        }
+        echo '</br>';
+//         $date = "2011";
+//         $year=((int)substr($date,0,4));//取得年份
+        if(strlen($date)<=4){
+            $date = $date.'-01-01';
+        }
+//         $month=((int)substr($date,5,2));//取得月份
+//         $day=((int)substr($date,8,2));//取得几号
+//         $_date = date("Y-m-d",mktime(0,0,0,$month,$day,$year));
+        echo date("Y-m-d",strtotime($date)); 
+        
+    }
 }

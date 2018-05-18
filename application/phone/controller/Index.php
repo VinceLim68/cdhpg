@@ -17,6 +17,7 @@ use app\phone\model\EasyPGXjModel;
 use app\phone\model\EasyCjalkModel;
 use app\evalu\model\Comm;
 use app\phone\model\GeneralLayoutModel;
+use app\evalu\model\CommaddressModel;
 
 //手机端的询价系统
 class Index extends Common {
@@ -253,6 +254,7 @@ class Index extends Common {
             $auth['admin'] = $thisAuth->check('isadmin', session('user.user_id'));
             $auth['dispute'] = $thisAuth->check('phone/index/dispute', session('user.user_id'));
             $auth['inputFiles'] = $thisAuth->check('phone/index/inputFiles', session('user.user_id'));
+            $auth['inputAddress'] = $thisAuth->check('phone/index/inputAddress', session('user.user_id'));
             $this->assign('auth',$auth);
         }else{
             //如果未查询出数据
@@ -435,7 +437,14 @@ class Index extends Common {
                     $html_append .= '  面积:'.$rec['Xjfcmj'].';';
                 }
                 if($rec['Xjzlcs']!=0 or trim($rec['Xjlcs'])!=''){
-                    $html_append .= '  楼层:'.$rec['Xjlcs'].'/'.$rec['Xjzlcs'].';';
+                    $html_append .= '  楼层:';
+                    if(trim($rec['Xjlcs'])!=''){
+                        $html_append .= '第'.trim($rec['Xjlcs']).'层';
+                    }
+                    if($rec['Xjzlcs']!=0){
+                        $html_append .= '/共'.$rec['Xjzlcs'].'层';
+                    }
+                    $html_append .= ';';
                 }
                 if(trim($rec['Xjxqjcnf'])!=''){
                     $html_append .= '  建成年份:'.$rec['Xjxqjcnf'].';';
@@ -503,16 +512,11 @@ class Index extends Common {
                     // 输出 20160820/42a79759f284b767dfcb2a0197904287.jpg
                     $savename = $info->getSaveName();
                     $filesize = $info->getSize();
-                    //dump($filesize);
                     Db::table('general_layout')->insert([
                         'comm_id' => $param['community_id'], 
                         'img_url' => $savename,
                         'img_size'=> $filesize,
                     ]);
-//                     $layout->comm_id = $param['community_id'];
-//                     $layout->img_url = $savename;
-//                     $layout->isUpdate(false)->save();
-//                     echo '成功上传'.$savename;
                 }else{
                     // 上传失败获取错误信息
                     echo $file->getError();
@@ -537,6 +541,33 @@ class Index extends Common {
         return $this->fetch();
     }
     
-    
+    //移动端采集小区地址
+    public function inputAddress(){
+        $param = input();
+        $ca = new CommaddressModel();
+        $findresult = $ca->alias('a')
+            ->join('comm c','c.comm_id = a.comm_id')
+            ->where('a.comm_id',$param['community_id'])
+            ->field('a.comm_id,city,a.region,road,doorplate,type,
+                    buildYear,floors,elevator,structure,c.comm_name,block,
+                    keywords')
+            ->find();
+        if($findresult){
+            $getconfigs = action('evalu/comms/getConfig');
+//             halt($findresult);
+            $findresult = $findresult->toArray();
+            $findresult = array_merge($findresult,$getconfigs);
+//             dump($findresult);
+//             dump($findresult['floors']=null);
+        }else{
+            $findresult = 0;
+        }
+        $this->assign([
+            'param' => $param,
+            'findresult'=> json_encode($findresult),    //往js里传递数组，要转化成json
+        ]);
+//         halt(input());
+        return $this->fetch();
+    }
    
 }
