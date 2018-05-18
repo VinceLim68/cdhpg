@@ -10,6 +10,7 @@ use app\evalu\logic\PriceLogic;
 use app\evalu\logic\MatchLogic;
 use app\evalu\model\CommhistorypriceModel;
 use app\evalu\model\CommaddressModel;
+use think\Loader;
 
 class Comms extends Common {
 	protected $db;
@@ -1261,6 +1262,15 @@ class Comms extends Common {
         return $res;
     }
 
+    //获取默认的配置信息
+    public function getConfig(){
+        $getconfig['elevatorlist'] = config('elevator');
+        $getconfig['structuerlist'] = config('structuer');
+        $getconfig['uselist'] = config('use');
+        $getconfig['regionlist'] = config('region');
+        return $getconfig;
+    }
+    
     //获取增加小区地址记录时的原始值，并生成html页面
     public function ajaxGetAddRecordForm(){
         $data = input();
@@ -1282,6 +1292,18 @@ class Comms extends Common {
     //批量增加记录
     public function ajaxAddCommAddressAction(){
         $data = input();
+        
+        $validate = Loader::validate('AddCommAddressesValidate');
+        if(!$validate->check($data)){
+            return ($validate->getError());
+        }
+        
+        //如果建成年份只有4位数，即只有2014，则自动补上月和日，否则2001会变2018-1-1
+        if(strlen($data['buildYear'])<=4){
+            $data['buildYear'] = $data['buildYear'].'-01-01';
+        }
+//         echo $date= date("Y-01-01",strtotime($date));
+        
         foreach ($data as $key => $value){
             if($value == 'null'){
                 $data[$key] = "";
@@ -1290,6 +1312,7 @@ class Comms extends Common {
         }
         $data['doorplate3'] = '';       //这是存放“之十五”之类的
         $data['doorplate_prefix'] = '';       //这是存放“313-2”之类门牌中的313号
+//         dump($data);
 //         $pattern = '/^(\d*)-?(\d+)?号?(之[三二一四五六七八九十]*)?/';
         $pattern = '/^(\d*-)?(\d+)号?(之[三二一四五六七八九十]*)?/';
         if(preg_match($pattern,$data['doorplate'],$match)){
@@ -1303,6 +1326,7 @@ class Comms extends Common {
         }else{
             return 0;
         }
+//         dump($data);
         if(isset($data['iscover'])){
             //如果要覆盖，使用replace
             $sql = "REPLACE INTO `commaddress`
@@ -1316,6 +1340,8 @@ class Comms extends Common {
                 `buildYear` , `floors` , `elevator` , `structure`)
                 VALUES (?,?,?,?,?,?,?,?,?,?) ";
         }
+//         dump($data);
+//         halt(date('Y-m-d',strtotime($data['buildYear'])));
         
         //如果门牌止没有数据，自动赋予门牌起始号数
         if($data['doorplate2'] == ''){
@@ -1331,7 +1357,7 @@ class Comms extends Common {
             }
             if(Db::execute($sql,[$data['comm_id'],$data['city'],$data['region'],
                 $data['road'],$data['doorplate_prefix'].$i.'号'.$data['doorplate3'],$data['type'],
-                date('Y-01-01',strtotime($data['buildYear'])),$data['floors'],$data['elevator'],$data['structure']
+                date('Y-m-d',strtotime($data['buildYear'])),$data['floors'],$data['elevator'],$data['structure']
             ])){
                 $insert_nums += 1;
             }
