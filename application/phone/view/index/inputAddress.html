@@ -4,7 +4,7 @@
     <head>
         <meta charset="UTF-8"/>
         <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no">
-        <title>上传总平图</title>
+        <title>采集小区地址</title>
 
         <link href="__CSS__/bootstrap.min.css" rel="stylesheet">
         <link rel="stylesheet" type="text/css" href="__CSS__/comms/commAddressList.css">
@@ -20,7 +20,7 @@
     <body>
     <div style="margin:0 1%;">
 	    <div class="row">
-	    	<h3 style="margin-left: 2%;letter-spacing: 2px;">小区地址<small>
+	    	<h3 style="margin-left: 2%;letter-spacing: 2px;">{$findresult[0]['comm_name']}地址<small>
 	    	<a class="btn btn-info" href="{:url('getprice',['community_id'=>$param['community_id'],'price'=>$param['price']])}" style="margin-left: 2%;" role="button">返回</a>
 	    	</small></h3>
 	    </div>
@@ -28,12 +28,15 @@
 	    <div id="addAddresses"></div>
 	
 		
-    </body>
+   
     <script src="__JS__/comms/buildAddCommAddressForm.js"></script>
     <script>
     jQuery(function ($) {
-	    var form_html = buildAddCommAddressForm({$findresult});
-    	$('#addAddresses').html(form_html); 
+    	var myjson = {:json_encode($findresult)}
+    	//var myjson =  eval("("+myjson+")");		//把json转为对象
+    	var table_html = buildCommAddressList(myjson);
+	    var form_html = buildAddCommAddressForm(myjson[0]);
+    	$('#addAddresses').html(form_html +table_html ); 
     	//批量增加小区地址
     	
     	$('#addcommaddresses').on('click',function(event){
@@ -44,10 +47,11 @@
     			success: function(msg){
     				if(isNaN(msg)){
     					alert(msg);
-    				}else if(msg=0){
+    				}else if(msg == 0){
     					alert('记录未增加成功');
     				}else{
-    					alert('记录增加成功'+msg+'个');
+    					msg = msg + ' ';
+    					alert('记录增加成功 ' + msg + '个');
     				}
     				window.location.reload();
     			},	
@@ -59,4 +63,5 @@
    	
    
     </script>
+     </body>
 </html>

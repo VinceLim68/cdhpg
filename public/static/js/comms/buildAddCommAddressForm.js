@@ -1,5 +1,6 @@
 function buildAddCommAddressForm(res){
 //	alert(res['floors']==null);
+//	alert(res);
 //	alert(res['aaa'] != undefined );
 //	alert(res['comm_id'] != undefined );
 	var jsonstring = '<form style="margin: 1%;" id="addCommAddressForm">';
@@ -187,3 +188,34 @@ function buildAddCommAddressForm(res){
 		+ 'style="width: 100%;">增加小区地址</button>';
 	return jsonstring;
 	}
+
+function buildCommAddressList(res){
+	//console.log(res);
+	var html = '<div class="table-responsive"><table class="table table-striped table-condensed">';
+    html += '<thead>';
+    html += '<tr class="info">';
+    //html += '<th>#</th>';
+    html += '<th>路</th>';
+    html += '<th>门牌</th>';
+    html += '<th>用途</th>';
+    html += '</tr>';
+    html += '</thead>';
+    html += '<tbody>';
+    for (item in res)
+    {
+    	//console.log(item);
+    	if(res[item].road != undefined){
+    		html += '<tr>';
+    		//html += '<th scope="row">1</th>';
+    		html += '<td>' + res[item].road + '</td>';
+    		html += '<td>' + res[item].doorplate + '</td>';
+    		html += '<td>' + res[item].type + '</td>';
+    		html += '</tr>';
+    		
+    	}
+    }
+    
+    html += '</tbody>';
+    html += '</table></div>';
+    return html;
+}
