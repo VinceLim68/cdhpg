@@ -551,22 +551,20 @@ class Index extends Common {
             ->field('a.comm_id,city,a.region,road,doorplate,type,
                     buildYear,floors,elevator,structure,c.comm_name,block,
                     keywords')
-            ->find();
+            ->order(['road','doorplate'])
+            ->select();
         if($findresult){
             $getconfigs = action('evalu/comms/getConfig');
-//             halt($findresult);
             $findresult = $findresult->toArray();
             $findresult = array_merge($findresult,$getconfigs);
-//             dump($findresult);
-//             dump($findresult['floors']=null);
         }else{
             $findresult = 0;
         }
+//         halt(json_encode($findresult));
         $this->assign([
             'param' => $param,
-            'findresult'=> json_encode($findresult),    //往js里传递数组，要转化成json
+            'findresult'=> ($findresult),    //往js里传递数组，要转化成json
         ]);
-//         halt(input());
         return $this->fetch();
     }
    

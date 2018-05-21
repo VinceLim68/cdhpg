@@ -1363,6 +1363,7 @@ class Comms extends Common {
             }
             
         }
+//         halt($insert_nums);
         return $insert_nums;
 
     }
