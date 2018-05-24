@@ -1130,14 +1130,11 @@ class Comms extends Common {
     public function getdataforecharts(){
         $comms = new Comm();
         $inputs = input();
-        //dump($inputs);
         if(!isset($inputs['usage'])){
             $inputs['usage'] = '';
         }
-//         dump($inputs);
         $c = $comms->field('comm_id')
             ->where('comm_id',input('community_id'))
-//             ->where('comm_id','like','1001%')
             ->select()->toArray();
         $priceindex = new CommhistorypriceModel();
         $price = [];
@@ -1155,12 +1152,6 @@ class Comms extends Common {
                 ->toArray();
 //             dump($list);
             $isvalid = true;
-//             foreach ($list as $item){
-//                 if($item['mortgagePrice']==0 ){
-//                     $isvalid = false;
-//                     break;
-//                 }
-//             }
             if($isvalid){
                 $price[] = array_column ($list, 'mortgagePrice' );
                 $mean[] = array_column ($list, 'mean' );
@@ -1172,9 +1163,17 @@ class Comms extends Common {
         $data['price'] = $price;
         $data['mean'] = $mean;
         $data['ori_len'] = $ori_len;
-//         dump($data);
         return $data;
-        
+    }
+    
+    //给echart提供挂牌数据
+    public function ajaxGetSales(){
+        $sales = new SalesModel();
+        $data = input();
+        $list = $sales->field('price,area')
+        ->where('community_id',$data['community_id'])
+        ->select()->toArray();
+        return $list;
     }
 
     //小区地址列表管理

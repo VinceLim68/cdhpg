@@ -48,7 +48,7 @@
     // 基于准备好的dom，初始化echarts实例
     var myChart = echarts.init(document.getElementById('modal_echarts'));
 
-    //使用函数配置Echarts
+    //使用函数配置Echarts,这个是获取历史价格走势图
     function setEcharts(data){
     	// 把返回的data构造成Echarts的格式
 	    var price = [];
@@ -78,7 +78,6 @@
 	    	price.push(item);
 	    }
 
-	    //console.log(price);
 	    //给Echarts使用刚构造的数据并指定配置项显示图表。
 	    myChart.setOption({
     	    //title: {
@@ -116,8 +115,54 @@
 		        }
 		    ],
 	        series: price,
-	        
-	    });
+	    },true);
+    }
+    
+    function setAreaPriceEcharts(list){
+    	//console.log(list);
+    	var areaPrice = [];
+    	for (var x in list)
+ 	    {
+ 	    	var item =[];
+ 	    	item.push(list[x]['price']);
+ 	    	item.push(list[x]['area']);
+ 	    	areaPrice.push(item);
+ 	    }
+    	
+    	option = {
+   			 title: {
+   				 left: 'center',
+   			        text: $("#hidefeild").attr("comm_name"),
+   			        subtext: '楼价/面积分布'
+   			    },
+   			    tooltip: {
+   			    	trigger: 'axis',
+   			        axisPointer: {
+   			            type: 'cross',
+   			            crossStyle: {
+   			                color: '#999'
+   			            }
+   			        }
+   			    },
+   		    xAxis: {
+   		        scale: true,
+   		        name: '元',
+   		    },
+   		    yAxis: {
+   		        scale: true,
+   		        name:'平米',
+   		    },
+   		    series: [{
+   		        type: 'effectScatter',
+   		        symbolSize: 20,
+   		    }, {
+   		        type: 'scatter',
+   		        data: areaPrice,
+   		    }]
+   		};
+
+           // 使用刚指定的配置项和数据显示图表。
+         myChart.setOption(option,true);
     }
        
 </script>

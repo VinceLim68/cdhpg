@@ -8,6 +8,7 @@ use app\evalu\logic\MatchLogic;
 use think\Exception;
 use think\File;
 use app\phone\model\GeneralLayoutModel;
+use app\evalu\model\SalesModel;
 
 class Test extends Common {
     //做一个测试模块,项目完成后删除
@@ -258,6 +259,7 @@ dump(getUID());
         return $this->fetch();        
     }
 
+    //把2014转化为date类型
     public function mystrtodate(){
         $date='67';//这里可以任意格式，因为strtotime函数很强大
         $is_date=strtotime($date)?strtotime($date):false;
@@ -277,5 +279,18 @@ dump(getUID());
 //         $_date = date("Y-m-d",mktime(0,0,0,$month,$day,$year));
         echo date("Y-m-d",strtotime($date)); 
         
+    }
+
+    //使用echarts
+    public function area_price_echarts(){
+        $sales = new SalesModel();
+        $list = $sales->field('price,area')
+            ->where('community_id','1001001')
+            ->select()->toArray();
+//         dump($list);
+        $this->assign([
+            'list'  => $list,
+        ]);
+        return $this->fetch();
     }
 }

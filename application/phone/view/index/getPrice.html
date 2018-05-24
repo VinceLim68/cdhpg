@@ -31,9 +31,10 @@ usage="{$B['comm']['usage']|default=''}" block="{$B['comm']['block']}">
 				    <ul class="dropdown-menu">
 						<li ><a href="#" id="price_histroy" >历史走势图</a></li>
 						<li ><a href="#box" aria-controls="box" role="tab" data-toggle="tab" >盒须图</a></li>
-					    <li ><a href="#scatter_area_price" aria-controls="scatter_area_price" role="tab" data-toggle="tab" >面积/房价散点</a></li>
-					    <li ><a href="#scatter_floor_price" aria-controls="scatter_floor_price" role="tab" data-toggle="tab" >总楼层/房价散点</a></li>
-					    <li ><a href="#scatter_builded_year_price" aria-controls="scatter_builded_year_price" role="tab" data-toggle="tab" >建成年份/房价散点</a></li>
+					    <li ><a href="#" id="area_price_echart">面积Echart散点</a></li>
+					    <li ><a href="#scatter_area_price" aria-controls="scatter_area_price" role="tab" data-toggle="tab" type="area">面积/房价散点</a></li>
+					    <li ><a href="#scatter_floor_price" aria-controls="scatter_floor_price" role="tab" data-toggle="tab" type="total_floor" >总楼层/房价散点</a></li>
+					    <li ><a href="#scatter_builded_year_price" aria-controls="scatter_builded_year_price" role="tab" data-toggle="tab" type="builded_year">建成年份/房价散点</a></li>
 				    </ul>
 			    </li>
 				<li ><a href="#fee" aria-controls="fee" role="tab" data-toggle="tab" >收费</a></li>
@@ -353,8 +354,9 @@ usage="{$B['comm']['usage']|default=''}" block="{$B['comm']['block']}">
 					</div>
 			    </div>
 			    {/if}
-			    <!-- 面积楼价散点图 -->
-			    <div role="tabpanel" class="tab-pane" id="scatter_area_price">
+			    
+			    <!-- 面积楼价散点图,这是自己写的散点图 -->
+<!-- 			    <div role="tabpanel" class="tab-pane" id="scatter_area_price1">
    				    <div class="panel panel-success">
 						<div class="panel-heading" style="width:100% ;height:400px" >
 							<svg xmlns="http://www.w3.org/2000/svg" version="1.1" width="100%" height="100%">
@@ -377,10 +379,16 @@ usage="{$B['comm']['usage']|default=''}" block="{$B['comm']['block']}">
 							</svg>
 						</div>
 					</div>
+				</div> -->
+				
+				<!-- 使用Echarts有面积楼价散点图 -->
+			    <div role="tabpanel" class="tab-pane" id="scatter_area_price">
+					<div  id="echarts_area_price" style="width:100% ;height:400px" >
+					</div>
 				</div>
 				
-				<!-- 楼层楼价散点图 -->
-			    <div role="tabpanel" class="tab-pane" id="scatter_floor_price">
+				<!-- 楼层楼价散点图 ，自己写的-->
+			    <!-- <div role="tabpanel" class="tab-pane" id="scatter_floor_price">
 			    	<div class="panel panel-success">
 						<div class="panel-heading" style="width:100% ;height:400px" >
 							<svg xmlns="http://www.w3.org/2000/svg" version="1.1" width="100%" height="100%">
@@ -392,7 +400,6 @@ usage="{$B['comm']['usage']|default=''}" block="{$B['comm']['block']}">
 									{else /} scatter_text_x
 									{/if} scatter_text' >{$vo['val']}</text>
 								{/volist}
-								<!-- 这是画点 -->
 								{volist name="B['floor_price_scatter']['A']" id="vo"  }
 									<circle cx="{$vo['x']}%" cy="{$vo['y']}%" class = 'scatter_circle' r="1%"/>
 								{/volist}
@@ -403,10 +410,17 @@ usage="{$B['comm']['usage']|default=''}" block="{$B['comm']['block']}">
 							</svg>
 						</div>
 			    	</div>
+				</div> -->
+				
+				
+				<!-- 使用Echarts的楼层楼价散点图 -->
+				<div role="tabpanel" class="tab-pane" id="scatter_floor_price">
+					<div  id="echarts_floor_price" style="width:100% ;height:400px" >
+					</div>
 				</div>
 				
 				<!-- 建成年份楼价散点图 -->
-			    <div role="tabpanel" class="tab-pane" id="scatter_builded_year_price">
+<!-- 			    <div role="tabpanel" class="tab-pane" id="scatter_builded_year_price">
 			    	<div class="panel panel-success">
 						<div class="panel-heading" style="width:100% ;height:400px" >
 							<svg xmlns="http://www.w3.org/2000/svg" version="1.1" width="100%" height="100%">
@@ -418,7 +432,6 @@ usage="{$B['comm']['usage']|default=''}" block="{$B['comm']['block']}">
 									{else /} scatter_text_x
 									{/if} scatter_text' >{$vo['val']}</text>
 								{/volist}
-								<!-- 这是画点 -->
 								{volist name="B['builded_year_price_scatter']['A']" id="vo"  }
 									<circle cx="{$vo['x']}%" cy="{$vo['y']}%" class = 'scatter_circle' r="1%"/>
 								{/volist}
@@ -429,6 +442,12 @@ usage="{$B['comm']['usage']|default=''}" block="{$B['comm']['block']}">
 							</svg>
 						</div>
 			    	</div>
+				</div> -->
+				
+				<!-- 使用Echarts的建成年份楼价散点图 -->
+				<div role="tabpanel" class="tab-pane" id="scatter_builded_year_price">
+					<div  id="echarts_builded_year_price" style="width:100% ;height:400px" >
+					</div>
 				</div>
 		  	</div>
 			
@@ -590,6 +609,7 @@ usage="{$B['comm']['usage']|default=''}" block="{$B['comm']['block']}">
 	</script>
 <script type="text/javascript">
 jQuery(function($) {
+	//这是模态框生成价格历史指数
 	$('#price_histroy').on('click',function(e){
 		var community_id = $("#hidefeild").attr("community_id");
 		var commName = $("#hidefeild").attr("comm_name");
@@ -604,7 +624,11 @@ jQuery(function($) {
 			success: function(response) {
 				setEcharts(response);
 				if (response.price.length != 0) {
-					$('#Echarts h4.modal-title').html(commName + '(' + usage + ')房价走势图');
+					if((usage) != ''){
+						$('#Echarts h4.modal-title').html(commName + '(' + usage + ')房价走势图');
+					}else{
+						$('#Echarts h4.modal-title').html(commName + '房价走势图');
+					}
 				} else {
 					$('#Echarts h4.modal-title').html(commName + '房价数据不完整，无法展示');
 				}
@@ -612,6 +636,114 @@ jQuery(function($) {
 			}
 		});
 	})
+	
+	//模态框生成面积、价格散点图
+	$('#area_price_echart').on('click',function(e){
+		var community_id = $("#hidefeild").attr("community_id");
+		var commName = $("#hidefeild").attr("comm_name");
+		var usage = $("#hidefeild").attr("usage");
+		//alert(community_id);
+		$.ajax({
+			url: '{:url("evalu/comms/ajaxGetSales")}',
+			data: {
+				community_id: community_id,
+				usage:usage,
+			},
+			success: function(response) {
+				//console.log(response);
+				setAreaPriceEcharts(response);
+				if (response.length != 0) {
+					if((usage) != ''){
+						$('#Echarts h4.modal-title').html(commName + '(' + usage + ')房价走势图');
+					}else{
+						$('#Echarts h4.modal-title').html(commName + '房价走势图');
+					}
+				} else {
+					$('#Echarts h4.modal-title').html(commName + '房价数据不完整，无法展示');
+				}
+				$('#Echarts').modal('show');
+			}
+		});
+	})
+	
+	//这个直接生成面积散点图时使用的函数
+	function setEcharts(type){
+		//type:哪一种散点图,type的名称需要与字段名一致
+		var echarts_arr = [];
+		if(type=="area"){
+			var list = {:json_encode($B['echarts_area_price_scatter'])};
+			var this_subtext = '楼价/面积分布';
+			var yAxis_name = '平米';
+		}else if(type=="total_floor"){
+			var list = {:json_encode($B['echarts_floor_price_scatter'])};
+			var this_subtext = '楼价/楼层分布';
+			var yAxis_name = '层';
+		}else if(type=="builded_year"){
+			var list = {:json_encode($B['echarts_builded_year_price_scatter'])};
+			var this_subtext = '楼价/建成年份分布';
+			var yAxis_name = '年';
+		}
+		console.log(list);
+		for (var x in list)
+	    {
+	    	var item =[];
+	    	item.push(list[x]['price']);
+	    	item.push(list[x][type]);
+	    	echarts_arr.push(item);
+	    }
+		option = {
+			title: {
+			 	left: 'center',
+		        text: $("#hidefeild").attr("comm_name"),
+		        subtext: this_subtext
+			},
+		    tooltip: {
+		    	trigger: 'axis',
+		        axisPointer: {
+		            type: 'cross',
+		            crossStyle: {
+		                color: '#999'
+		            }
+		        }
+		    },
+		    xAxis: {
+		        scale: true,
+		        name: '元',
+		    },
+		    yAxis: {
+		        scale: true,
+		        name:yAxis_name,
+		    },
+		    series: [{
+		        type: 'effectScatter',
+		        symbolSize: 20,
+		    }, {
+		        type: 'scatter',
+		        data: echarts_arr,
+		    }]
+		};
+		return option;
+	}
+	var my_area_price = echarts.init(document.getElementById('echarts_area_price'));
+	var my_floor_price = echarts.init(document.getElementById('echarts_floor_price'));
+	var my_builded_year_price = echarts.init(document.getElementById('echarts_builded_year_price'));
+       
+       $('a[data-toggle = "tab"]').on('shown.bs.tab',function(e){
+    	   //console.log(e);
+    	   var type = e.target.attributes['type'].value;
+   		   //console.log(type);
+    	   option = setEcharts(type);
+    	   if(type=="area"){
+    		   mycharts = my_area_price;
+    	   }else if(type=="total_floor"){
+    		   mycharts = my_floor_price;
+    	   }else if(type=="builded_year"){
+    		   mycharts = my_builded_year_price;
+    	   }
+    	   //console.log(option);
+    	   mycharts.resize();
+    	   mycharts.setOption(option,true);
+       })
 })
 </script>
 {include file="./commhtml/common_echarts.html"/} 	

@@ -202,12 +202,14 @@ class Index extends Common {
 //             halt($result);
             $PL = new PriceLogic($result);
             $getPrice_result = $PL->getStatic($getComm,$data['price']);
+//             dump($getPrice_result);
             $getPrice_result['emplorers'] = config('emplorers');
             $getPrice_result['use'] = config('use');
             $getPrice_result['elevator'] = config('elevator');
             $getPrice_result['structuer'] = config('structuer');
             
             $this->assign('B',$getPrice_result);
+//             dump($getPrice_result['area_price_scatter']);
 //             dump($getPrice_result['comm']);
             //===================登记查询记录===============================================
             $ins = QueryRecordsModel::insert_record($getPrice_result);      //返回插入的id,如果是重复数据没有插入，则返回0
