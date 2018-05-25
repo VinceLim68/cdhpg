@@ -208,7 +208,7 @@
 							usage:usage,
 						},
 						success: function(response) {
-							setEcharts(response);
+							setModalPriceHistoryEcharts(response);
 							if (response.price.length != 0) {
 								$('#Echarts h4.modal-title').html(commName + '(' + usage + ')房价走势图');
 							} else {

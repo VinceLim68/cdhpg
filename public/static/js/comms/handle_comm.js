@@ -38,6 +38,30 @@ jQuery(function($) {
 	$('.modal').draggable();
 	$(".modal").css("overflow", "hidden");//禁止模态对话框的半透明背景滚动
 	
+	var my_area_price = echarts.init(document.getElementById('echarts_area_price'));
+	var my_floor_price = echarts.init(document.getElementById('echarts_floor_price'));
+	var my_builded_year_price = echarts.init(document.getElementById('echarts_builded_year_price'));
+       
+	$('a[data-toggle = "tab"]').on('shown.bs.tab',function(e){
+		if(e.target.attributes['type'] != undefined ){
+			var type = e.target.attributes['type'].value;
+			//console.log(type);
+			option = setEcharts(type);
+			if(type=="area"){
+				mycharts = my_area_price;
+			}else if(type=="total_floor"){
+				mycharts = my_floor_price;
+			}else if(type=="builded_year"){
+				mycharts = my_builded_year_price;
+			}else{
+				return;
+			}
+			//console.log(option);
+			mycharts.resize();
+			mycharts.setOption(option,true);
+		}
+	})
+	
 	$("#rela_table ").on('click','td', function(t){
 		var rela_id =  $(this).parent().find('td').eq(0).html();
 		$.ajax({
@@ -123,10 +147,7 @@ jQuery(function($) {
 	$('.tab-pane .scatter_btn').on('click',function(event){
 		//散点图的过滤按钮
 		var tab_pane = $(this).parent().parent().parent().parent();
-//		alert(btn);
 		var thisinput = $(this).prev().val();
-//		alert(thisinput);
-//		console.log(btn);
 		$.ajax({
 			url:getscatter,
 			data:{
@@ -138,10 +159,34 @@ jQuery(function($) {
 				this_btn		: tab_pane.prop('id'),
 				times			: thisinput,
 			},
-			success:function(response){
-				var name = "#" + tab_pane.prop('id') + ' .panel-heading';
-//				alert(name);
-				$(name).html(response);
+			success:function(list){
+//				console.log(list);
+				var str = tab_pane.prop('id');
+				if(str.indexOf("area")!=-1){
+					var type = 'area';
+					var myecharttab = my_area_price;
+				}else if(str.indexOf("floor")!=-1){
+					var type = 'total_floor';
+					var myecharttab = my_floor_price;
+				}else if(str.indexOf("build")!=-1){
+					var type = 'builded_year';
+					var myecharttab = my_builded_year_price;
+				}else{
+					return;
+				}
+				var echarts_arr = [];
+				for (var x in list)
+			    {
+			    	var item =[];
+			    	item.push(list[x]['price']);
+			    	item.push(list[x][type]);
+			    	echarts_arr.push(item);
+			    }
+				option = getOption(type,echarts_arr)
+				myecharttab.setOption(option,true);
+				
+//				var name = "#" + tab_pane.prop('id') + ' .panel-heading';
+//				$(name).html(response);
 			},
 			
 		});
@@ -278,7 +323,7 @@ jQuery(function($) {
      			usage:usage,
      		},
      		success:function(response){ 
-     			setEcharts(response);
+     			setModalPriceHistoryEcharts(response);
      			if(response.price.length != 0){
          			$('#Echarts h4.modal-title').html(thiscomm+'房价走势图');
      			}else{

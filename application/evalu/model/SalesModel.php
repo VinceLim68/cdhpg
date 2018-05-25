@@ -53,19 +53,6 @@ class SalesModel extends Model {
 //     	    ->fetchSql(true)
     	    ->select()
     	    ->toArray();
-// 	    halt($result);
-	    //采用关联方式，不再往前取值来增加记录数了
-// 	    $records_num = count($result);                                       //累计：获得记录数
-// 	    $min_base_records = config('min_base_records');                     //最低记录数
-// 	    while ($records_num < $min_base_records and $before_months <= 13) {
-// 	        $before_months += $more_months;
-// 	        $result = self::field($fields)
-// 	        ->where('community_id',$comm_id)
-// 	        ->where("first_acquisition_time", ">= time", strtotime('-'.$before_months.' month'))
-// 	        ->select()
-// 	        ->toArray();
-// 	        $records_num = count($result);
-// 	    }
 	     
 	    $res[] = strtotime('-'.$before_months.' month');
 	    $res[] = $result;

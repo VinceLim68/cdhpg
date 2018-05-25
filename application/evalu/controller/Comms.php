@@ -1063,8 +1063,6 @@ class Comms extends Common {
 	    if(count($result[1])>0){
 	        //如果能查询出数据
 	        $PL = new PriceLogic($result);
-// 	        $dots = $PL->scatter($item[2], $item[1],$data['times']);
-	        
 	        //=======================
             $PL->arr = $PL->firstClearData();
             $PL->price = array_column ($PL->arr, 'price' );
@@ -1076,29 +1074,33 @@ class Comms extends Common {
             }elseif('builded' == $item[1]){
                 $actionitem = 'builded_year';
             }
-	        $dots = $PL->scatter('price', $actionitem ,$data['times']);
+	        $dots = $PL->echarts_scatter('price', $actionitem ,$data['times']);
+	        return $dots;
+	        
+// 	        这是以前自己画散点图
+// 	        $dots = $PL->scatter('price', $actionitem ,$data['times']);
 
 	        //=========================
-	        $html = '<svg xmlns="http://www.w3.org/2000/svg" version="1.1" width="100%" height="100%">';
-	        foreach( $dots['A_line'] as $vo){
-	           $html .= '<line x1="'.$vo['x0'].'%" y1="'.$vo['y0'].'%" x2="'.$vo['x1'].'%" y2="'.$vo['y1'].'%"  class="scatter_line" />';    
-	           $html .= '<text x="'.$vo['t_x'].'%" y="'.$vo['t_y'].'%" class="'; 
-	           if($vo['t_x'] == 0){
-	               $html .= 'scatter_text_y';
-	           }else{
-	               $html .= 'scatter_text_x';
-	           };
-	           $html .= ' scatter_text" >'.$vo['val'].'</text>';
-	        }
-	        foreach($dots['A'] as $vo){
-	            $html .= '<circle cx="'.$vo['x'].'%" cy="'.$vo['y'].'%" class = "scatter_circle" r="1%"/>';
-	        }
-            $html .= '<line x1="'.$dots['axes'][0]['x0'].'%" y1="'.$dots['axes'][0]['y0'].'%" x2="'.$dots['axes'][0]['x1'].'%" y2="'.$dots['axes'][0]['y1'].'%"  class="scatter_axes" />';    
-            $html .= '<text x="'.$dots['axes'][0]['t_x'].'%" y="'.$dots['axes'][0]['t_y'].'%"  class="XAxesText">'.$dots['axes'][0]['val'].'</text>';    
-            $html .= '<line x1="'.$dots['axes'][1]['x0'].'%" y1="'.$dots['axes'][1]['y0'].'%" x2="'.$dots['axes'][1]['x1'].'%" y2="'.$dots['axes'][1]['y1'].'%"  class="scatter_axes" />';    
-            $html .= '<text x="'.$dots['axes'][1]['t_x'].'%" y="'.$dots['axes'][1]['t_y'].'%" class="YAxesText">'.$dots['axes'][1]['val'].'</text></svg>';    
+// 	        $html = '<svg xmlns="http://www.w3.org/2000/svg" version="1.1" width="100%" height="100%">';
+// 	        foreach( $dots['A_line'] as $vo){
+// 	           $html .= '<line x1="'.$vo['x0'].'%" y1="'.$vo['y0'].'%" x2="'.$vo['x1'].'%" y2="'.$vo['y1'].'%"  class="scatter_line" />';    
+// 	           $html .= '<text x="'.$vo['t_x'].'%" y="'.$vo['t_y'].'%" class="'; 
+// 	           if($vo['t_x'] == 0){
+// 	               $html .= 'scatter_text_y';
+// 	           }else{
+// 	               $html .= 'scatter_text_x';
+// 	           };
+// 	           $html .= ' scatter_text" >'.$vo['val'].'</text>';
+// 	        }
+// 	        foreach($dots['A'] as $vo){
+// 	            $html .= '<circle cx="'.$vo['x'].'%" cy="'.$vo['y'].'%" class = "scatter_circle" r="1%"/>';
+// 	        }
+//             $html .= '<line x1="'.$dots['axes'][0]['x0'].'%" y1="'.$dots['axes'][0]['y0'].'%" x2="'.$dots['axes'][0]['x1'].'%" y2="'.$dots['axes'][0]['y1'].'%"  class="scatter_axes" />';    
+//             $html .= '<text x="'.$dots['axes'][0]['t_x'].'%" y="'.$dots['axes'][0]['t_y'].'%"  class="XAxesText">'.$dots['axes'][0]['val'].'</text>';    
+//             $html .= '<line x1="'.$dots['axes'][1]['x0'].'%" y1="'.$dots['axes'][1]['y0'].'%" x2="'.$dots['axes'][1]['x1'].'%" y2="'.$dots['axes'][1]['y1'].'%"  class="scatter_axes" />';    
+//             $html .= '<text x="'.$dots['axes'][1]['t_x'].'%" y="'.$dots['axes'][1]['t_y'].'%" class="YAxesText">'.$dots['axes'][1]['val'].'</text></svg>';    
 	        
-            return $html;
+//             return $html;
 	    }
 	    
 	}
@@ -1130,14 +1132,11 @@ class Comms extends Common {
     public function getdataforecharts(){
         $comms = new Comm();
         $inputs = input();
-        //dump($inputs);
         if(!isset($inputs['usage'])){
             $inputs['usage'] = '';
         }
-//         dump($inputs);
         $c = $comms->field('comm_id')
             ->where('comm_id',input('community_id'))
-//             ->where('comm_id','like','1001%')
             ->select()->toArray();
         $priceindex = new CommhistorypriceModel();
         $price = [];
@@ -1155,12 +1154,6 @@ class Comms extends Common {
                 ->toArray();
 //             dump($list);
             $isvalid = true;
-//             foreach ($list as $item){
-//                 if($item['mortgagePrice']==0 ){
-//                     $isvalid = false;
-//                     break;
-//                 }
-//             }
             if($isvalid){
                 $price[] = array_column ($list, 'mortgagePrice' );
                 $mean[] = array_column ($list, 'mean' );
@@ -1172,9 +1165,17 @@ class Comms extends Common {
         $data['price'] = $price;
         $data['mean'] = $mean;
         $data['ori_len'] = $ori_len;
-//         dump($data);
         return $data;
-        
+    }
+    
+    //给echart提供挂牌数据
+    public function ajaxGetSales(){
+        $sales = new SalesModel();
+        $data = input();
+        $list = $sales->field('price,area,total_floor,builded_year')
+        ->where('community_id',$data['community_id'])
+        ->select()->toArray();
+        return $list;
     }
 
     //小区地址列表管理
