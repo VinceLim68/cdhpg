@@ -137,15 +137,25 @@ class PriceLogic
             $value25 = $this->getByPosition($dots, 25);
             $value75 = $this->getByPosition($dots, 75);
             $boxlen = $value75[0][$item] - $value25[0][$item];
-            //重新过滤数组
             $newdots = [];
-//             $times = config('whisker_times');
-            foreach ($dots as $dot){
-                if($dot[$item] <= ($value75[0][$item]+$times*$boxlen) and $dot[$item] >= ($value25[0][$item]-$times*$boxlen)){
-                    $newdots[] = $dot;
+            if($boxlen == 0){
+                //如果盒子长度为0，数据已经高度集中,把times理解成去掉最高和最低的百分比
+                //如times=3,则取3%-97%位置的数据
+                $valuemin = $this->getByPosition($dots, $times);
+                $valuemax = $this->getByPosition($dots, 100-$times);
+                foreach ($dots as $dot){
+                    if($dot[$item] <= $valuemax and $dot[$item] >= $valuemin){
+                        $newdots[] = $dot;
+                    }
+                }
+            }else{
+                foreach ($dots as $dot){
+                    if($dot[$item] <= ($value75[0][$item]+$times*$boxlen) and $dot[$item] >= ($value25[0][$item]-$times*$boxlen)){
+                        $newdots[] = $dot;
+                    }
                 }
             }
-            //echo 'clear';
+            //重新过滤数组
             return $newdots;
         }else{
             return $dots;
@@ -179,13 +189,6 @@ class PriceLogic
     
     public function scatter($Xitem,$Yitem,$times=0){
         //===========================计算散点图==================================
-//         Xitem表示X轴的参数，$Yitem表示Y轴的参数
-//         $result_arr = $PL->getArr();
-//         $XY_scatter['Xmin'] = 10000000;
-//         $XY_scatter['Xmax'] = 0;
-//         $XY_scatter['Ymin'] = 10000000;
-//         $XY_scatter['Ymax'] = 0;
-        
         //计算最大值最小值
         $dots =[];
         
@@ -200,7 +203,7 @@ class PriceLogic
             return 0;
         }
         
-        //对散点图作两次过滤，把异常值剔除
+        //对散点图分别按X、Y两轴作两次过滤，把异常值剔除。过滤的方式是盒子长度的倍数
         $dots = $this->clearByBox($dots, $Xitem,$times);
         reset($dots); //第一个
         $XY_scatter['Xmin']  = current($dots)[$Xitem];

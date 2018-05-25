@@ -48,8 +48,9 @@
     // 基于准备好的dom，初始化echarts实例
     var myChart = echarts.init(document.getElementById('modal_echarts'));
 
+
     //使用函数配置Echarts,这个是获取历史价格走势图
-    function setEcharts(data){
+    function setModalPriceHistoryEcharts(data){
     	// 把返回的data构造成Echarts的格式
 	    var price = [];
 	    for (var x in data.mean)
@@ -80,9 +81,6 @@
 
 	    //给Echarts使用刚构造的数据并指定配置项显示图表。
 	    myChart.setOption({
-    	    //title: {
-		    //    text: '房价走势'
-		    //},
 		    tooltip: {
 		        trigger: 'axis',
 		        axisPointer: {
@@ -118,52 +116,100 @@
 	    },true);
     }
     
-    function setAreaPriceEcharts(list){
-    	//console.log(list);
-    	var areaPrice = [];
+    //通过ajax返回一个数组，包括area,total_floor,build_year,price来构建echarts
+    //这个数组是未经清洗的
+    function setModelEcharts(type,list){
+    	var echart_arr = [];
     	for (var x in list)
  	    {
- 	    	var item =[];
- 	    	item.push(list[x]['price']);
- 	    	item.push(list[x]['area']);
- 	    	areaPrice.push(item);
+ 	    	if(list[x][type] > 0){
+ 	    		var item =[];
+	 	    	item.push(list[x]['price']);
+	 	    	item.push(list[x][type]);
+	 	    	echart_arr.push(item);
+ 	    	}
  	    }
     	
+    	option = getOption(type,echart_arr);
+        // 使用刚指定的配置项和数据显示图表。
+         myChart.setOption(option,true);
+    }
+    
+    function getOption(type,list){
+    	//type:指定散点图是面积、楼层还是建成年份；
+    	//list:传入数据
+    	if(type=="area"){
+			var this_subtext = '楼价/面积分布';
+			var yAxis_name = '平米';
+		}else if(type=="total_floor"){
+			var this_subtext = '楼价/楼层分布';
+			var yAxis_name = '层';
+		}else if(type=="builded_year"){
+			var this_subtext = '楼价/建成年份分布';
+			var yAxis_name = '年';
+		}
     	option = {
-   			 title: {
-   				 left: 'center',
-   			        text: $("#hidefeild").attr("comm_name"),
-   			        subtext: '楼价/面积分布'
-   			    },
-   			    tooltip: {
-   			    	trigger: 'axis',
-   			        axisPointer: {
-   			            type: 'cross',
-   			            crossStyle: {
-   			                color: '#999'
-   			            }
-   			        }
-   			    },
+   			title: {
+   			 	left: 'center',
+   		        text: $("#hidefeild").attr("comm_name"),
+   		        subtext: this_subtext
+   			},
+   		    tooltip: {
+   		    	trigger: 'axis',
+   		        axisPointer: {
+   		            type: 'cross',
+   		            crossStyle: {
+   		                color: '#999'
+   		            }
+   		        }
+   		    },
    		    xAxis: {
    		        scale: true,
-   		        name: '元',
+   		        name: '元/平米',
    		    },
    		    yAxis: {
    		        scale: true,
-   		        name:'平米',
+   		        name:yAxis_name,
    		    },
    		    series: [{
    		        type: 'effectScatter',
    		        symbolSize: 20,
    		    }, {
    		        type: 'scatter',
-   		        data: areaPrice,
+   		        data: list,
    		    }]
    		};
-
-           // 使用刚指定的配置项和数据显示图表。
-         myChart.setOption(option,true);
+   		return option;
     }
-       
+   {present name="B"}
+   
+	function setEcharts(type){
+		//type:哪一种散点图,type的名称需要与字段名一致
+		var echarts_arr = [];
+		if(type=="area"){
+			var list = {:json_encode($B['echarts_area_price_scatter'])};
+			//var this_subtext = '楼价/面积分布';
+			//var yAxis_name = '平米';
+		}else if(type=="total_floor"){
+			var list = {:json_encode($B['echarts_floor_price_scatter'])};
+			//var this_subtext = '楼价/楼层分布';
+			//var yAxis_name = '层';
+		}else if(type=="builded_year"){
+			var list = {:json_encode($B['echarts_builded_year_price_scatter'])};
+			//var this_subtext = '楼价/建成年份分布';
+			//var yAxis_name = '年';
+		}
+		//console.log(list);
+		for (var x in list)
+	    {
+	    	var item =[];
+	    	item.push(list[x]['price']);
+	    	item.push(list[x][type]);
+	    	echarts_arr.push(item);
+	    }
+		option = getOption(type,echarts_arr)
+		return option;
+	}
+ {/present}
 </script>
 
