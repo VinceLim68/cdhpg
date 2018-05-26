@@ -45,4 +45,6 @@ class CommhistorypriceModel extends Model
 	    }
 	    return $find;
 	}
+    
+        
 }
