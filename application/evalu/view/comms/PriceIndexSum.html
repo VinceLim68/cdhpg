@@ -83,7 +83,7 @@
 		<li id="detail_comm">查询：此小区信息</li>
 		<li id="detail_rela">查询：关联规则信息</li>
 		<li id="detail_history">查询：当前小区的历史价格列表</li>
-		<li id="detail_history_echarts">查询：当前小区的历史价格走势图</li>
+		<li id="detail_history_echarts">查询：当前小区的历史价格走势图</li> 
 		<li id="delete_comm">删除当前小区的记录</li>
 		<li id="thisblock">只显示当前版块</li>
 		<li id="gotohandle">跳转功能拆分模块</li>
@@ -203,15 +203,17 @@
 	                        usage:usage,
 	                    },
 	                    success: function(response) {
-	                        setEcharts(response);
+	                    	setModalPriceHistoryEcharts(response);
 	                        if (response.price.length != 0) {
-	                        	$('#Echarts h4.modal-title').html(commName + '(' + usage + ')房价走势图');
+	                        	if((usage) != ''){
+	        						$('#Echarts h4.modal-title').html(commName + '(' + usage + ')房价走势图');
+	        					}else{
+	        						$('#Echarts h4.modal-title').html(commName + '房价走势图');
+	        					}
 	                        } else {
 	                            $('#Echarts h4.modal-title').html(commName + '房价数据不完整，无法展示');
-	                            //$('#modal_echarts').html('<h3>'+commName+'房价数据不完整，无法展示'+'</h3>');
 	                        }
 	                        $('#Echarts').modal('show');
-	                        //$('#modal_echarts').html('');
 	                    }
 	                });
 	            },

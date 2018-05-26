@@ -14,7 +14,7 @@ class PriceLogic
 //     private $arr_cleared = [];
     
     public function __construct($collection){
-//         halt($collection);
+        // $collection包括一个时间date,和用于计算的数据
         //按价格给数据排序
         array_multisort(array_column ( $collection[1], 'price' ), SORT_ASC, $collection[1]);
         $this->arr = $collection[1];
@@ -107,7 +107,9 @@ class PriceLogic
                     $result ['len'] = count($this->arr);
                     //原始的数据数量
                     $result['ori_len'] = $length;
-                    $result['from_date'] = date('Y-m-d',$this->date );
+//                     dump($this->date);
+//                     $result['from_date'] = date('Y-m-d',$this->date );
+                    $result['from_date'] = $this->date;
         
                     //覆盖率
                     $result['coverage'] = round($result['len']/$result['ori_len']*100,2);
@@ -137,14 +139,16 @@ class PriceLogic
             $value25 = $this->getByPosition($dots, 25);
             $value75 = $this->getByPosition($dots, 75);
             $boxlen = $value75[0][$item] - $value25[0][$item];
+//             halt($boxlen);
             $newdots = [];
             if($boxlen == 0){
                 //如果盒子长度为0，数据已经高度集中,把times理解成去掉最高和最低的百分比
                 //如times=3,则取3%-97%位置的数据
                 $valuemin = $this->getByPosition($dots, $times);
                 $valuemax = $this->getByPosition($dots, 100-$times);
+                
                 foreach ($dots as $dot){
-                    if($dot[$item] <= $valuemax and $dot[$item] >= $valuemin){
+                    if($dot[$item] <= $valuemax[0][$item] and $dot[$item] >= $valuemin[0][$item]){
                         $newdots[] = $dot;
                     }
                 }

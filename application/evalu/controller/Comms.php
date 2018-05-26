@@ -646,9 +646,193 @@ class Comms extends Common {
 	
 	}
 	
+	//这个是重新写的计算基价的方法：按小区ID计算全时期的基价
+	public function CalculatePriceIndexOfWholePeriodByCommID($iscover='1'){
+	    $input = input();
+	    
+	    //获取要循环的小区。这里同一个小区里所有分功能都一次计算
+	    $comms = $this->getCommsForCal($input['community_id']);
+            // 	   $comms 返回的数据格式如下
+            // 	    array (size=2)
+            //     	    0 =>没有分功能
+            //         	    array (size=1)
+            //             	    'community_id' => int 1209002
+            //     	    1 =>有拆分的子功能
+            //         	    array (size=7)
+            //             	    'community_id' => int 1209002
+            //             	    'rela_comm_id' => int 1209001
+            //             	    'where' => null
+            //             	    'rela_ratio' => float 0.81
+            //             	    'rela_weight' => float 1
+            //             	    'usage' => string '类推基价' (length=12)
+            //             	    'rela_id' => int 3
+        
+        //接下来取计算的日期，联合两个表来取
+	    //这里返回的是开始期$period_start,结束期$period_end,表中的最早日期$mindate,最晚日期$maxdate,（每次计算采集的月数-1）$month
+	    $all = $this->getPeriod('allsales');
+	    $now = $this->getPeriod('for_sale_property');
+	    //生成一个关于sale表的参数，计算基价在判断从哪张表取数时用的到
+	    $tablesInfo[] = $all;
+	    $tablesInfo[] = $now;
+
+	    $period_start = $all[0];
+	    $period_end = $now[1];
+	    
+	    //开始计算主体
+	    //按小区循环
+	    foreach ($comms as $comm){
+	        //初始化计算期
+	        $period = $period_start;
+	        //按期数循环
+	        while ($period <= $period_end){
+	            //计算单期单小区的基价
+	            $this->setPriceIndexByCommAndPeriod($comm,$period,$tablesInfo);
+	            //取出下一期，继续循环计算
+	            $period = date("Y-m-d",strtotime("$period +1 month"));
+	        }
+	    }
+	}
+	
+	//给定起始时间和小区信息,计算价格指数,设计目的：这是最小的计算单元
+	private function setPriceIndexByCommAndPeriod($comm,$period,$tablesInfo,$iscover='1'){
+	    //先把期数转化为相应的起始日期
+	    $month = $tablesInfo[0][4];
+	    $start = date("Y-m-d",strtotime("$period -$month month"));
+	    $last = date("Y-m-d",strtotime("$period +1 month -1 day"));
+	     
+	    //给定日期、小区信息，取出数据
+	    $datas = $this->getSalesDataByCommAndPeriod($comm, $start,$last,$tablesInfo);
+	     
+	    //计算价格指数,没有数据就只返回小区信息
+	    if($datas){
+	        $thispriceIndex = (new PriceLogic([$period,$datas]))->calPriceIndex();
+	        $thispriceIndex = array_merge ($comm,$thispriceIndex);
+	    }else{
+	        //没有数据时会填0值进去
+	        $thispriceIndex = $comm;
+	    }
+	     
+	    //保存基价
+	    $priceIndex = new CommhistorypriceModel;
+	    //构造查询是否有重复字段的查询语句
+	    $findPeriod = "from_date BETWEEN '".date("Y-m-01",strtotime("$period"))."' AND '".$last."'";
+	    //判断是否已经计算过当月基价
+	    $findrecord = $priceIndex->isDuplicate($comm,$findPeriod);
+	    if($findrecord){
+	        //如果需要覆盖
+	        if($iscover == '1'){
+	            if($thispriceIndex['community_id']!= null){
+	                //如果community有值才保存。不知道为什么有时会得到community_id为空的记录
+	                $thispriceIndex['from_date'] = $period;      //记录基价所对应的日期
+	                $priceIndex->allowField(true)->save($thispriceIndex,['id' => $findrecord->id]);
+	                dump($thispriceIndex);
+	            }
+	        }else{
+	            echo '====== 本小区当月基价数据已经存在,不再重复计算  =====</br>';
+	        }
+	    }else{
+	        //如果没有基价
+	        if($thispriceIndex['community_id']!= null){
+	            $thispriceIndex['from_date'] = $period;      //记录基价所对应的日期
+	            $priceIndex->data($thispriceIndex)->allowField(true)->save();
+	        }
+	    }
+	    return;
+	}
+	
+	//给定起始时间和小区信息,取出供分析的数据
+	private function getSalesDataByCommAndPeriod($comm,$start,$last,$tablesInfo){
+	    //给的$comm格式如下：如果没有关联功能，则只有'community_id'
+        //     array (size=7)
+        // 	    'community_id' => int 1209002
+        // 	    'rela_comm_id' => int 1209001
+        // 	    'where' => null
+        // 	    'rela_ratio' => float 0.81
+        // 	    'rela_weight' => float 1
+        // 	    'usage' => string '类推基价' (length=12)
+        // 	    'rela_id' => int 3
+        //$period是一个日期，表示计算的基价期
+        //$tablesInfo放的是两张表的时间的数据，最早、最晚采集时间等
+        // array (size=2)
+        // 0 => 'allsales'表
+        //     array (size=5)
+        //     0 => string '2016-08-01' (length=10)可计算的最早月份
+        //     1 => string '2018-01-01' (length=10)     最晚月份
+        //     2 => string '2016-06-14' (length=10)表中       最早采集时间
+        //     3 => string '2018-02-11' (length=10)     最晚采集时间
+        //     4 => int 2                               取数往前几月
+        // 1 => 'for_sale_property'表
+        //     array (size=5)
+        //     0 => string '2018-04-01' (length=10)
+        //     1 => string '2018-04-01' (length=10)
+        //     2 => string '2018-02-22' (length=10)
+        //     3 => string '2018-05-21' (length=10)
+        //     4 => int 2
+        
+	    //根据$date计算出相应的起始日期
+// 	    $month = $tablesInfo[0][4];
+// 	    $start = date("Y-m-d",strtotime("$period -$month month"));        
+//         $last = date("Y-m-d",strtotime("$period +1 month -1 day")); 
+        
+        //构告取数据的时间段的查询语句
+        $where_Date = "first_acquisition_time BETWEEN '".$start."' AND '".$last."'";
+        //构造取的字段名
+        if(isset($comm['rela_ratio'])){
+            $fields = 'id,floor_index,total_floor,price*'.$comm['rela_ratio'].' as price,area,builded_year';
+        }else{
+            $fields = 'id,floor_index,total_floor,price,area,builded_year';
+        };
+        //有关联小区就用关联小区的数据，否则取自己的
+        $comm_id = (isset($comm['rela_comm_id']) and $comm['rela_comm_id']!=0) ? $comm['rela_comm_id'] : $comm['community_id'];
+        $where = isset($comm['where']) ? $comm['where'] : ' 1=1 ';
+        $rela_ratio = isset($comm['rela_ratio']) ? $comm['rela_ratio'] : 1;
+        $rela_weight = isset($comm['rela_weight']) ? $comm['rela_weight'] : 1;
+        
+        //取数据
+        //如果last小于allsales表的最晚采集时间，数据都在’allsales‘表中取
+        if($last<=$tablesInfo[0][3]){
+            $res = Db::table('allsales')->field($fields)
+                ->where('community_id',$comm_id)
+                ->where($where_Date)
+                ->where($where)
+                ->select();
+        //如果start比’for_sale_property‘最早采集时间还晚，数据都在’for_sale_property‘表中
+        }elseif($start>=$tablesInfo[1][2]){
+            $res = Db::table('for_sale_property')->field($fields)
+                ->where('community_id',$comm_id)
+                ->where($where_Date)
+                ->where($where)
+                ->select();
+        //否则的话表示数据分布在两张表中，需要联合查询
+        }else{
+            $res1 = Db::table('for_sale_property')->field($fields)
+                ->where('community_id',$comm_id)
+                ->where($where_Date)
+                ->where($where)
+                ->select();
+            $res2 = Db::table('allsales')->field($fields)
+                ->where('community_id',$comm_id)
+                ->where($where_Date)
+                ->where($where)
+                ->select();
+            $res = array_merge($res1, $res2);
+//             dump($period);
+//             dump(count($res1));
+//             dump(count($res2));
+//             dump(count($res));
+//             dump($res);
+        }
+        
+        return $res;
+	}
+	
 	//生成需计算基价的小区列表（功能拆分也算一种）
-	public function getCommsForCal(){
-	    $comms = Comm::with('commrelate')->select()->toArray();
+	public function getCommsForCal($comm_id=""){
+	    if($comm_id == ""){
+    	    $comms = Comm::with('commrelate')->select()->toArray();
+	    }else{
+	        $comms = Comm::with('commrelate')->where('comm_id',$comm_id)->select()->toArray();
+	    }
 	    //有用的字段是comm_id，关联中的rela_comm_id，where，rela_ratio，rela_weight,usage,rela_id(这个rela的id)
 	    $datas = [];       //存放需要计算基价的列表（小区，及小区内的功能拆分）
 	    //生成需计算基价的小区列表（功能拆分也算一种）
@@ -672,6 +856,60 @@ class Comms extends Common {
 	        }
 	    }
 	    return $datas;
+	}
+	
+	public function calindexofperiod(){
+	    // 	    传递来的参数形式
+	    // 	    array (size=4)
+	    // 	    'from' => string '2018-01-01' (length=10)
+	    // 	    'to' => string '2018-02-01' (length=10)
+	    // 	    'table' => string 'for_sale_property' (length=17)
+	    // 	    'iscover' => string '1' (length=1)
+	    $all = $this->getPeriod('allsales');
+	    $now = $this->getPeriod('for_sale_property');
+	    //生成一个关于sale表的参数，计算基价在判断从哪张表取数时用的到
+	    $tablesInfo[] = $all;
+	    $tablesInfo[] = $now;
+	    
+	    if(request()->isAjax()){
+	        ignore_user_abort(true); // 后台运行
+	        error_reporting(0);
+	        set_time_limit(0);
+	
+	        $buffer = ini_get('output_buffering');
+	        echo str_repeat(' ',$buffer+1);
+	        ob_end_flush();
+	         
+	        //得到需要计算的小区列表（功能拆分也单独计算）
+	        $comms = $this->getCommsForCal();
+	         
+	        $getdate = input();
+	        $period = $getdate['from'];
+	        $month = $all[4];
+	        
+	        //按日期循环
+	        while ($period <= $getdate['to']){
+	            $i = 0;        //计数变量
+	            
+	            //按小区循环
+	            foreach ($comms as $comm){
+	                $i += 1;
+	                echo $i."========".$comm['community_id']."基期".$period."=======</br>";
+	                //计算单期单小区的基价
+	                $this->setPriceIndexByCommAndPeriod($comm,$period,$tablesInfo,$getdate[iscover]);
+	                
+	                flush();
+	            }
+	            //取出下一期，继续循环计算
+	            $period = date("Y-m-d",strtotime("$period +1 month"));
+	        }
+	    }
+	     
+	    $this->assign([
+	        'history_period'=>  $all,
+	        'now_period'    =>  $now,
+	    ]);
+	    return $this->fetch();
 	}
 	
 	//生成基价
@@ -725,8 +963,8 @@ class Comms extends Common {
        ignore_user_abort(false); // 解除后台运行
 	}
 	
-	//按指定时间生成价格指数
-	public function calIndexOfPeriod(){
+	//按指定时间生成价格指数，这个备册
+	public function _calIndexOfPeriod(){
         // 	    传递来的参数形式
         // 	    array (size=4)
         // 	    'from' => string '2018-01-01' (length=10)
@@ -742,7 +980,8 @@ class Comms extends Common {
 	        $buffer = ini_get('output_buffering');
 	        echo str_repeat(' ',$buffer+1);
 	        ob_end_flush();
-	         
+	        
+	        //得到需要计算的小区列表（功能拆分也单独计算）
 	        $datas = $this->getCommsForCal();
 	        
 	        $getdate = input();
@@ -753,8 +992,7 @@ class Comms extends Common {
 	            $startday = date("Y-m-d",strtotime("$start -$month month"));          //开始日期，如果2016后8月的基期，其开始为2016-6-1
 	            $lastday = date("Y-m-d",strtotime("$start +1 month -1 day"));         //结束日期，如果2016后8月的基期，其结束为2016-8-31
 	            $whichmonth = "first_acquisition_time BETWEEN '".$startday."' AND '".$lastday."'";//指定查询的时间范围
-	            $whichmonth1 = "from_date BETWEEN '".$start."' AND '".$lastday."'";
-// 	            halt($whichmonth);
+	            $whichmonth1 = "from_date BETWEEN '".$start."' AND '".$lastday."'";    //这个是判断基价是否已经存在
 	            //每个月再按上面的列表分别计算各小区基价
 	            $i = 0;        //计数变量
 	            foreach ($datas as $item){
@@ -763,10 +1001,11 @@ class Comms extends Common {
 	                $priceIndex = new CommhistorypriceModel;
                     //判断是否已经计算过当月基价
 	                $findrecord = $priceIndex->isDuplicate($item,$whichmonth1);
+                    //如果已经有基价的记录
 	                if($findrecord){
-	                    //如果已经有基价的记录
+                        //如果需要覆盖
 	                    if($getdate['iscover'] == '1'){
-	                        //如果需要覆盖
+	                        //这是计算基价
     	                    $getPrice_result = $this->cal($item,$whichmonth,$getdate['table']);
     	                    if($getPrice_result['community_id']!= null){
     	                        //如果community有值才保存。不知道为什么有时会得到community_id为空的记录
@@ -789,7 +1028,6 @@ class Comms extends Common {
 	                flush();
 	            }
 	            $start = date("Y-m-d",strtotime("$start +1 month"));
-	            
 	        }
 	    }
 	    
@@ -812,20 +1050,24 @@ class Comms extends Common {
             //如果取出的开始日期早于本表中的最小日期,即period_start必须在表中，则顺延一月
             $period_start = date("Y-m-01",strtotime("$period_start +1 month")); 
         }
+        
+        //先取出最后一月
         $period_end1 = date("Y-m-01",strtotime("$maxdate"));
+        //再得出最后一月的月底：下月1日减掉1天
         $period_end = date("Y-m-d",strtotime("$period_end1 +1 month -1 day")); 
-        //echo $period_end;
+        //如果取出的结束日期晚于本表中的最大日期，则减掉一月
         if($period_end > $maxdate){
-            //如果取出的结束日期晚于本表中的最大日期，则减掉一月
             $period_end = date("Y-m-01",strtotime("$period_end1 -1 day")); 
         }
         return array($period_start,$period_end,$mindate,$maxdate,$month);
 	}
 	
-	//供调用的基价计算模块
-	private function cal($item,$whichmonth,$tablename="allsales"){
+	
+	//供调用的基价计算模块,这个要删除
+	private function _cal($item,$whichmonth,$tablename="allsales"){
+	    //item是一个包括小区分功能信息的数组，如关联小区、关联系数、权重、子功能的查询条件等
 	    if($whichmonth == 1){
-	        //如果是1，表示只计算当前月
+	        //如果是1，表示只计算当前月,但是取的数据是按设置的，比如当月的价格指数是用近三个月的数据来计算，则返回的是近三个月的数据
     	    $result = SalesModel::getRecordsByCommid($item);
 	    }else{
 	        //按月取挂牌数据
@@ -850,7 +1092,7 @@ class Comms extends Common {
 	    if($result[1]){
 	        //如果有数据就计算价格指数
     	    $getPrice_result = (new PriceLogic($result))->calPriceIndex();
-    	    $result = array_merge ( $item,$getPrice_result);
+    	    $result = array_merge ($item,$getPrice_result);
 	    }else{
 	        $result = $item;
 	    }
@@ -964,7 +1206,6 @@ class Comms extends Common {
 	        //     	    dump($list);
 	    }elseif(isset($data['community_id']) and ('' != $data['community_id']) and ('' == $data['where'])){
 	        //如果有community_id，则按community_id查询，其实是按小区名称查询
-// 	        	        halt($data);
 	        $list = (new CommhistorypriceModel())->with('comm')
 	        ->field('*,SUM(ori_len) as sumorilen,sum(len) as sumlen,avg(std_r) as avgstdr,count(from_date) as datecount')
 	        ->where('community_id',$data['community_id'])
@@ -978,10 +1219,8 @@ class Comms extends Common {
 	                'set'=>  $data['set'],
 	            ],
 	        ]);
-// 	        halt($list);
 	    }else{
 	        //否则正常查询
-// 	        dump($data);
 	        $HPrice = new CommhistorypriceModel();
 	        $list = $HPrice->with('comm')
 	        ->field('*,SUM(ori_len) as sumorilen,sum(len) as sumlen,avg(std_r) as avgstdr,count(from_date) as datecount')
