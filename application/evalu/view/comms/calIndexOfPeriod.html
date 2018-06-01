@@ -111,7 +111,7 @@
 
 							<div>
 								<a href="javascript:void(0)" onclick="cal('allsales')" class="btn btn-block btn-success"><i
-									class="ace-icon fa fa-calculator " ></i><span>开始计算基价</span> </a>
+									class="ace-icon fa fa-calculator " ></i><span>开始计算基价（可跨库）</span> </a>
 							</div>
 						</div>
 					</div>
@@ -208,7 +208,7 @@ function cal(tablename){
 			defaultDate : "+1w",
 			changeMonth : true,
 			minDate : new Date('{$history_period[0]}'),
-			maxDate : new Date('{$history_period[1]}'),
+			maxDate : new Date('{$now_period[1]}'),
 			defaultDate:new Date('{$history_period[0]}'),
 			showOtherMonths : true,
 			selectOtherMonths : true,
@@ -221,7 +221,7 @@ function cal(tablename){
 			defaultDate : "+1w",
 			changeMonth : true,
 			minDate : new Date('{$history_period[0]}'),
-			maxDate : new Date('{$history_period[1]}'),
+			maxDate : new Date('{$now_period[1]}'),
 			defaultDate:new Date('{$history_period[1]}'),
 			showOtherMonths : true,
 			selectOtherMonths : true,

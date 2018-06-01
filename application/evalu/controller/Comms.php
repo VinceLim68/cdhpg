@@ -821,11 +821,6 @@ class Comms extends Common {
                 ->where($where)
                 ->select();
             $res = array_merge($res1, $res2);
-//             dump($period);
-//             dump(count($res1));
-//             dump(count($res2));
-//             dump(count($res));
-//             dump($res);
         }
         
         return $res;
@@ -1534,7 +1529,7 @@ class Comms extends Common {
         }
     }
     
-    //批量增加记录
+    //批量增加小区的地址记录
     public function ajaxAddCommAddressAction(){
         $data = input();
         
@@ -1611,5 +1606,10 @@ class Comms extends Common {
 //         halt($insert_nums);
         return $insert_nums;
 
+    }
+
+    //这是没有小区id的小区名聚合列表
+    public function commWithoutIDList(){
+        
     }
 }
