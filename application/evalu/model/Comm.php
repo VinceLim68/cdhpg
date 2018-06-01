@@ -40,6 +40,7 @@ class Comm extends Model {
 	    // 	    删除当前库中的挂牌记录，把community_id改成0
 // 	    Db::table('for_sale_property')->where('community_id',$community_id)->update(['community_id'=>0]);
 	    Db::execute('UPDATE IGNORE for_sale_property SET community_id=0 WHERE community_id=?',[$community_id]);
+// 	    SalesModel::updateWithoutduplicate($community_id, ['community_id'=>0]);
 	    // 	    删除历史库中的挂牌记录，把community_id改成0
 	    Db::table('allsales')->where('community_id',$community_id)->update(['community_id'=>0]);
 	    // 	    删除关联规则表中的相关记录：根据community_id 删除

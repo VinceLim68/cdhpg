@@ -91,7 +91,8 @@ class Comms extends Common {
 		
 		if (input ( 'keywords' )) {
 			$keywords = input ( 'keywords' );
-			$where .= " and (keywords like '%" . $keywords . "%' or comm_name like '%" . $keywords . "%')";
+			$where .= " and (keywords like '%" . $keywords . "%' or comm_name like '%" 
+			    . $keywords . "%' or comm_id = '". $keywords . "' )";
 		}
 		;
 		if (input ( 'region' )) {
@@ -422,9 +423,13 @@ class Comms extends Common {
 	
 	public function ajaxGetSaleslist(){
 	    $data = input();
+	    
+	    //先对传入的参数进行一翻过滤，避免不合格的查询条件，补上默认值
 	    $data1 = action('Sales/datahandle',  ['data' => $data]);
+	    //执行查询语句，如果有修改语句，先修改再查询
 	    $saleslist = action('Sales/getSalesByArray',  ['data' => $data1]);
-        $response['page'] = $saleslist->render();
+        
+	    $response['page'] = $saleslist->render();
         $response['total'] = $saleslist->total();
 	    $liststring = '';
 	    foreach ($saleslist as $v){

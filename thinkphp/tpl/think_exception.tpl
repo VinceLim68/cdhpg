@@ -446,9 +446,7 @@
                     </span>
                      &nbsp; &nbsp;&nbsp; &nbsp;    
                          <span class="glyphicon glyphicon-phone" aria-hidden="true"></span>13600966656
-        //<a title="官方网站" href="http://www.thinkphp.cn">ThinkPHP</a> 
-        //<span>V<?php echo THINK_VERSION; ?></span> 
-        //<span>{ 十年磨一剑-为API开发设计的高性能框架 }</span>
+        //<span>{提供专业数据支撑的评估程序 }</span>
     </div>
     <?php if(\think\App::$debug) { ?>
     <script>

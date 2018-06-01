@@ -583,35 +583,6 @@ jQuery(function($) {
 		mycharts.setOption(option,true);
 	})
 	
-	////模态框生成面积、价格散点图
-	$(".echarts_div").on('dblclick',function(e){
-		var type = (e.currentTarget.attributes['type'].value);
-		var community_id = $("#hidefeild").attr("community_id");
-		var commName = $("#hidefeild").attr("comm_name");
-		var usage = $("#hidefeild").attr("usage");
-		//alert(community_id);
-		$.ajax({
-			url: '{:url("evalu/comms/ajaxGetSales")}',
-			data: {
-				community_id: community_id,
-				usage:usage,
-			},
-			success: function(response) {
-				//console.log(response);
-				setModelEcharts(type,response);
-				if (response.length != 0) {
-					if((usage) != ''){
-						$('#Echarts h4.modal-title').html(commName + '(' + usage + ')<small>未清洗非零原始房价数据分布图</small>');
-					}else{
-						$('#Echarts h4.modal-title').html(commName + '<small>未清洗非零原始房价数据分布图</small>');
-					}
-				} else {
-					$('#Echarts h4.modal-title').html(commName + '房价数据不完整，无法展示');
-				}
-				$('#Echarts').modal('show');
-			}
-		});
-	})
 })
 </script>
 {include file="./commhtml/common_echarts.html"/} 	
