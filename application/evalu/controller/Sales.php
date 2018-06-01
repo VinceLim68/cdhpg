@@ -316,9 +316,9 @@ class Sales extends Common {
                                         ->select();
             foreach ($for_sale_property_list as $item){
                 $result = SalesModel::updateWithoutduplicate($item['id'], $temp);
-                if($result != 1){
-                    echo $result;
-                }
+//                 if($result != 1){
+//                     echo $result;
+//                 }
             }
             
             //把allsales表中的数据也改了
@@ -328,9 +328,9 @@ class Sales extends Common {
                                 ->select();
             foreach ($allsales_list as $item){
                 $result = Db::table('allsales')->where('id',$item['id'])->update($temp);
-                if($result != 1){
-                    echo $result;
-                }
+//                 if($result != 1){
+//                     echo $result;
+//                 }
             }
             
 // 	        $sqlstr = 'UPDATE for_sale_property SET '.$data['set'].' WHERE '.$data['where'];
