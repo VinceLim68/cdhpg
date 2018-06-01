@@ -84,6 +84,7 @@
 		<li id="detail_rela">查询：关联规则信息</li>
 		<li id="detail_history">查询：当前小区的历史价格列表</li>
 		<li id="detail_history_echarts">查询：当前小区的历史价格走势图</li> 
+		<li id="cal_history_price_again">重新计算：当前小区的历史价格指数</li>
 		<li id="delete_comm">删除当前小区的记录</li>
 		<li id="thisblock">只显示当前版块</li>
 		<li id="gotohandle">跳转功能拆分模块</li>
@@ -191,6 +192,18 @@
 	                var jumpurl = "{:url('Comms/managePriceIndex')}" + "?where=community_id='" + community_id + "'";
 	                window.location.href = (jumpurl);
 	            },
+	            'cal_history_price_again':function(t){
+					var community_id = $(t).parent().find("td").eq(1).attr('community_id');
+					$.ajax({
+						url: 'CalculatePriceIndexOfWholePeriodByCommID',
+						data: {
+							community_id: community_id,
+						},
+						success: function(response) {
+							alert('计算完成');
+						}
+					});
+				},
 	            'detail_history_echarts': function(t) {
 	                var community_id = $(t).parent().find("td").eq(1).attr('community_id');
 	                var commName = $(t).parent().find("td").eq(1).html();

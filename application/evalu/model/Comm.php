@@ -27,19 +27,21 @@ class Comm extends Model {
 	    //因为我在模型名的后面加上了Model，所以这里的表名也要加上_model
 	    return $this->hasMany('comm_relate_model','community_id','comm_id');
 	}
-	/*
-	 * public function setPriLevelAttr($value)
-	 * {
-	 * $pri_level = array('小区级'=>0,'区块级'=>1);
-	 * return $pri_level[$value];
-	 * }
-	 */
+	
 	
     // 	    删除一个小区，要相应删除所有的关联记录，包括：
 	public function delWithRelation($community_id){
 	    // 	    删除当前库中的挂牌记录，把community_id改成0
 // 	    Db::table('for_sale_property')->where('community_id',$community_id)->update(['community_id'=>0]);
-	    Db::execute('UPDATE IGNORE for_sale_property SET community_id=0 WHERE community_id=?',[$community_id]);
+        $for_sale_property_list = Db::table('for_sale_property')
+                                        ->where('community_id',$community_id)
+                                        ->field('id')
+                                        ->select();
+        foreach ($for_sale_property_list as $item){
+            $result = SalesModel::updateWithoutduplicate($item['id'],['community_id'=>0]);
+        }
+        
+// 	    Db::execute('UPDATE IGNORE for_sale_property SET community_id=0 WHERE community_id=?',[$community_id]);
 // 	    SalesModel::updateWithoutduplicate($community_id, ['community_id'=>0]);
 	    // 	    删除历史库中的挂牌记录，把community_id改成0
 	    Db::table('allsales')->where('community_id',$community_id)->update(['community_id'=>0]);
