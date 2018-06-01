@@ -58,4 +58,35 @@ class SalesModel extends Model {
 	    $res[] = $result;
 	    return $res;
 	}
+    
+	//软删除community_id(置为0）时，避免重复数据的一个方法
+    static public function updateWithoutduplicate($id,$updateArr){
+        //输入$id值和一个用于修改记录的数组
+        if(isset($updateArr['community_id']) and $updateArr['community_id']<= 999){
+            //如果修改涉及改变community_id，经常会发生重复的情况
+            $flag = true;   //一个是否循环的标识位
+            while ($updateArr['community_id'] <= 999 and $flag){
+                //循环增加id值，保证不重复
+                try{
+                    $result = self::where('id',$id)->update($updateArr);
+                    break;          //跳出循环
+                }catch(\Exception $e){
+                    if($e->getCode()==10501){
+                        $updateArr['community_id'] = $updateArr['community_id'] + 1;
+                    }else{
+                        //非重复原因不用循环
+                        $flag = false;
+                        $result = 'Message: </br>' .$e->getMessage();
+                    }
+                }
+            }
+        }else{
+            try{
+                $result = self::where('id',$id)->update($updateArr);
+            }catch(\Exception $e){
+                $result = 'Message: </br>' .$e->getMessage();
+            }
+        }
+        return $result;
+    }
 }

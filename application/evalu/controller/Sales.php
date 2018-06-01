@@ -296,10 +296,46 @@ class Sales extends Common {
 	}
 	
 	public function getSalesByArray($data){
+// 	    dump($data);
 	    if('' !== $data['set']){
 	        //修改记录
-	        $sqlstr = 'UPDATE for_sale_property SET '.$data['set'].' WHERE '.$data['where'];
-	        $data['num'] = Db::execute($sqlstr);
+	        //先用“,”拆成数组
+	        $insertArr = explode(",",$data['set']);
+	        
+	        //把待修改的数据封装成数组$temp给thinkphp用
+	        foreach ($insertArr as $key => $value){
+    	        //再用=拆分成两部分
+	            $item = explode("=",$value);
+	            $temp[trim($item[0])] = trim(str_replace('"','',$item[1]));//把双引号去除
+	        }
+	        
+	        //取出要修改的记录列表，只取id，因为要逐条修改，避免重复时出错
+            $for_sale_property_list = Db::table('for_sale_property')
+                                        ->where($data['where'])
+                                        ->field('id')
+                                        ->select();
+            foreach ($for_sale_property_list as $item){
+                $result = SalesModel::updateWithoutduplicate($item['id'], $temp);
+                if($result != 1){
+                    echo $result;
+                }
+            }
+            
+            //把allsales表中的数据也改了
+            $allsales_list = Db::table('allsales')
+                                ->where($data['where'])
+                                ->field('id')
+                                ->select();
+            foreach ($allsales_list as $item){
+                $result = Db::table('allsales')->where('id',$item['id'])->update($temp);
+                if($result != 1){
+                    echo $result;
+                }
+            }
+            
+// 	        $sqlstr = 'UPDATE for_sale_property SET '.$data['set'].' WHERE '.$data['where'];
+//          $data['num'] = Db::execute($sqlstr);
+	        
 	    }
 	    //查询记录,无论是否修改，都需要查询
 	    $sales = Db::table('for_sale_property')->field('id,title,community_id,community_name,price,total_floor,builded_year')

@@ -112,7 +112,7 @@ jQuery(function($) {
 	      			$('#mydialogg').modal('show');
 	     		},
 			  success:function(response){
-				  $('#mydialogg').modal('hide');
+				  	$('#mydialogg').modal('hide');
 					$("#pages").html(response['page']);
 					$("#salestable").html(response['items']);
 					$(".text-muted").html('共'+response['total']+'条记录');
@@ -151,11 +151,11 @@ jQuery(function($) {
 		$.ajax({
 			url:getscatter,
 			data:{
-				community_id 	: $('#hidden_datas').attr('community_id'),
-				rela_comm_id 	: $('#hidden_datas').attr('rela_comm_id'),
-				rela_ratio 		: $('#hidden_datas').attr('rela_ratio'),
-				where 			: $('#hidden_datas').attr('where'),
-				rela_weight 	: $('#hidden_datas').attr('rela_weight'),
+				community_id 	: $('#hidefeild').attr('community_id'),
+				rela_comm_id 	: $('#hidefeild').attr('rela_comm_id'),
+				rela_ratio 		: $('#hidefeild').attr('rela_ratio'),
+				where 			: $('#hidefeild').attr('where'),
+				rela_weight 	: $('#hidefeild').attr('rela_weight'),
 				this_btn		: tab_pane.prop('id'),
 				times			: thisinput,
 			},
@@ -313,8 +313,8 @@ jQuery(function($) {
 	
 	
 	$('#pricehistory').on("click",function(){
- 		var community_id = $('#hidden_datas').attr('community_id');
- 		var usage = $('#hidden_datas').attr('usage');
+ 		var community_id = $('#hidefeild').attr('community_id');
+ 		var usage = $('#hidefeild').attr('usage');
  		//alert(community_id);
  		$.ajax({
  			url:getpricehistory,
@@ -335,7 +335,7 @@ jQuery(function($) {
 	});
 	
 	$('#origin').on('click',function(){
-		var community_id = $('#hidden_datas').attr('community_id');
+		var community_id = $('#hidefeild').attr('community_id');
 //		alert('');
 		window.location.href= myself + "?community_id=" + community_id;
 	})
