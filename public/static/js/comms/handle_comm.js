@@ -334,6 +334,20 @@ jQuery(function($) {
  		});
 	});
 	
+	$('#calculatePriceIndex').on("click",function(){
+		var community_id = $('#hidefeild').attr('community_id');
+		$.ajax({
+			url: CalculatePriceIndexOfWholePeriodByCommID,
+			data: {
+				community_id: community_id,
+			},
+			success: function(response) {
+				alert('计算完成');
+			}
+		});
+	});
+	
+	
 	$('#origin').on('click',function(){
 		var community_id = $('#hidefeild').attr('community_id');
 //		alert('');

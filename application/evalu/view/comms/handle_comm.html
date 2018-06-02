@@ -271,6 +271,9 @@
 			  		<button type="button" class="btn btn-app btn-yellow btn-xs" id="pricehistory" style="float: right;">
 			  			<i class="ace-icon fa fa-bar-chart-o" aria-hidden="true"></i>房价走势
 			  		</button>
+			  		<button type="button" class="btn btn-app btn-yellow btn-xs" id="calculatePriceIndex" style="float: right;">
+			  			<i class="ace-icon fa fa-cogs" aria-hidden="true"></i>重算走势
+			  		</button>
 			  		<button type="button" class="btn btn-app btn-yellow btn-xs" id="origin" style="float: right;">
 			  			<i class="ace-icon fa fa-adjust" aria-hidden="true"></i>原始数据
 			  		</button>
@@ -411,6 +414,7 @@
 	var thiscomm = "{$data['comm_name']}";
 	var goblodk = "{:url('managepriceindex')}";
 	var getpricehistory = "{:url('getdataforecharts')}";
+	var CalculatePriceIndexOfWholePeriodByCommID = "{:url('CalculatePriceIndexOfWholePeriodByCommID')}";
 	//var sales_getfullbyid = "{:url('Sales/getFullById')}";
 	var menuobj = {
 	        bindings: {
