@@ -209,13 +209,14 @@ class Comms extends Common {
 			;
 		}
 		;
+		//halt($regi);
 		// 这里如果用return,tp5会自动加上转义字符，形成如
 		// <option value="\"海沧\"" role="option">海沧</option>之类的
 		// 这些加到$("#ABC").html($regi)去没问题
 		// 但如果直接使用就错了
 		// 用echo可以原文返回
 		echo $regi;
-		// return $regi;
+// 		return $regi;
 	}
 	
 	/*
