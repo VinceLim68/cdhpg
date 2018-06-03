@@ -13,7 +13,7 @@
 </ul>
 {/block} 
 {block name="main"}
- <input type='hidden' id='hidefeild' community_id='{$data["community_id"]}' 
+ <input type='hidden' id='hidefeild' community_id='{$data["community_id"]}' comm_name="{$data['comm_name']}"
  rela_comm_id='{$data["rela_comm_id"]|default=0}' usage="{$data['usage']|default=''}"
  rela_ratio='{$data["rela_ratio"]|default=1}' where='{$data["where"]|default=" 1=1 "}'
  rela_weight='{$data["rela_weight"]|default=1}'/>

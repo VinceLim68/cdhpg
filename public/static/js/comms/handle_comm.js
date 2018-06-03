@@ -315,19 +315,26 @@ jQuery(function($) {
 	$('#pricehistory').on("click",function(){
  		var community_id = $('#hidefeild').attr('community_id');
  		var usage = $('#hidefeild').attr('usage');
- 		showPriceIndexInModal(community_id);
+ 		showPriceIndexInModal(community_id,usage);
 	});
 	
-	function showPriceIndexInModal(community_id){
+	function showPriceIndexInModal(community_id,usage){
+		//var thiscomm = $('#hidefeild').attr('comm_name');
 		$.ajax({
  			url:getpricehistory,
        	 	data:{
      			community_id:community_id,
+     			usage:usage,
      		},
      		success:function(response){ 
+     			console.log(response);
      			setModalPriceHistoryEcharts(response);
      			if(response.price.length != 0){
-         			$('#Echarts h4.modal-title').html(thiscomm+'房价走势图');
+     				if(usage==''){
+     					$('#Echarts h4.modal-title').html(thiscomm+'房价走势图');
+     				}else{
+     					$('#Echarts h4.modal-title').html(thiscomm+'('+usage+')房价走势图');
+     				}
      			}else{
          			$('#Echarts h4.modal-title').html(thiscomm+'房价数据不完整，无法展示');
      			}
@@ -338,14 +345,16 @@ jQuery(function($) {
 	
 	$('#calculatePriceIndex').on("click",function(){
 		var community_id = $('#hidefeild').attr('community_id');
+		var usage = $('#hidefeild').attr('usage');
 		$.ajax({
 			url: CalculatePriceIndexOfWholePeriodByCommID,
 			data: {
 				community_id: community_id,
+				usage:usage,
 			},
 			success: function() {
 				//重算基价后，直接弹出
-				showPriceIndexInModal(community_id);
+				showPriceIndexInModal(community_id,usage);
 			}
 		});
 	});
