@@ -360,26 +360,6 @@ class Sales extends Common {
         $data = $this->datahandle($data);
         $list = $this->getSalesByArray($data);
         
-//         dump($data);
-//         if('' !== $data['set']){
-//             //修改记录
-//             $sqlstr = 'UPDATE for_sale_property SET '.$data['set'].' WHERE '.$data['where'];
-//             $data['num'] = Db::execute($sqlstr);
-// //             dump($num);
-            
-//         }
-//         //查询记录,无论是否修改，都需要查询
-//         $list = $this->db->field('id,title,community_id,community_name,price,total_floor,builded_year')
-//         ->where($data['where'] )
-//         ->order(data['neworder']) 
-//         ->paginate(100,false,[
-//             'query'=>[
-//                 'where'=>  $data['where'],
-//                 'order'=>  $data['order'],
-//                 'set'=>  $data['set'],
-//             ],
-//         ]);
-        //halt($list);
 	    $fields = Db::query('SHOW COLUMNS FROM for_sale_property');
 
         $title = ['序号','标题','小区','名称','单价','总层','建成'];

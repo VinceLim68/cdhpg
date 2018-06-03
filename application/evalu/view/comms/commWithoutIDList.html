@@ -1,0 +1,236 @@
+﻿{extend name="mainbase" /} 
+{block name="pg_cs"}
+<link rel="stylesheet" href="__CSS__/jquery-ui.min.css" />
+{/block} 
+{block name="breadcrumb"}
+<ul class="breadcrumb">
+	<li><i class="ace-icon fa fa-home home-icon"></i> <a href="#">大叔评估后台</a>
+	</li>
+	<li><a href="#">小区管理</a></li>
+	<li><a href="#">未解析小区名称列表</a></li>
+
+</ul>
+{/block} 
+{block name="main"}
+
+<div class="col-xs-12">
+	<div class="tabbable">
+		<div class="tab-content">
+			<div class="widget-header" id='search_div' style='padding-top: 5px; background: #5AA7D6;'>
+				<div class="text-muted" style="color:white;float:left;margin:auto 0;margin-top: 6px;">
+					共{$list->total()}条记录
+				</div>
+				<a href="{:url('commWithoutIDList',['tablename'=>$nextTableName,'community_name'=>$community_name])}" class="btn btn-sm btn-info"
+					style="margin-right: 20px; border-radius: 20px; margin-bottom: 3px;float:right;">
+					<span class="ace-icon fa fa-search icon-on-right bigger-110"></span>切换到{$nextTableName}
+				</a>
+			</div>
+			<table	class="table table-striped table-bordered table-hover table-condensed">
+				<tr>
+					{foreach name="title" item="v"}
+					<th>{$v}</th>
+					{/foreach}
+				</tr>
+				{if condition="($isCount == 1)"} 
+					{foreach name="list" item="v"}
+						<tr >
+							<td>{$v['community_name']}</td>
+							<td>{$v['title']}</td>
+							<td>{$v['count']}</td>
+						</tr>
+					{/foreach}
+				{else /} 
+					{foreach name="list" item="v"}
+						<tr >
+							<td url="{$v['details_url']}">{$v['community_name']}</td>
+							<td >{$v['title']}</td>
+							<td>{$v['spatial_arrangement']}</td>
+							<td>{$v['total_floor']}</td>
+							<td>{$v['price']}</td>
+							<td>{$v['area']}</td>
+						</tr>
+					{/foreach}
+				{/if}
+			</table>
+			<div >{$list->render()}</div>
+		</div>
+	</div>
+</div>
+
+
+<div class="modal fade" id="detailinfomation" tabindex="-1" role="dialog"
+	aria-labelledby="myModalLabel" aria-hidden="true">
+	<div class="modal-dialog">
+		<div class="modal-content">
+			<div class="modal-header">
+				<button type="button" class="close" data-dismiss="modal"
+					aria-hidden="true">&times;</button>
+				<h4 class="modal-title" id="myModalLabel">新增小区</h4>
+			</div>
+			<div class="modal-body">
+					<form class="form-horizontal">
+					  <div class="form-group">
+					    <label class="col-sm-2 control-label">小区名称</label>
+					    <div class="col-sm-10">
+					      <input type="text" class="form-control" name="comm_name">
+					    </div>
+					  </div>
+					  <div class="form-group">
+					    <label class="col-sm-2 control-label">区域</label>
+					    <select class="col-sm-9" name="region" id="search_region" style="margin-left: 13px;">
+					    </select>
+					  </div>
+					  <div class="form-group">
+					    <label class="col-sm-2 control-label">片区</label>
+					    <div class="col-sm-10">
+					      <input type="text" class="form-control" name="block" id="input_block" list="search_block">
+					      <datalist id="search_block"></datalist>
+					    </div>
+					  </div>
+					  <div class="form-group">
+					    <label class="col-sm-2 control-label">关键词</label>
+					    <div class="col-sm-10">
+					      <input type="text" class="form-control" name="keywords">
+					    </div>
+					  </div>
+					  <div class="form-group">
+					    <label class="col-sm-2 control-label">地址</label>
+					    <div class="col-sm-10">
+					      <input type="text" class="form-control" name="comm_addr">
+					    </div>
+					  </div>
+					  <div class="form-group">
+					    <label class="col-sm-2 control-label">级别</label>
+					    <select class="col-sm-9" name="pri_level"  style="margin-left: 13px;">
+						    <option value="0">小区级</option>
+						    <option value="1">区块级</option>
+					    </select>
+					  </div>
+					  <div class="form-group">
+					    <div class="col-sm-offset-2 col-sm-10">
+					      <button type="button" class="btn btn-success" id="addNewCommButton">创建</button>
+					    </div>
+					  </div>
+					</form>
+			</div>
+		</div>
+	</div>
+</div>
+
+<div class="contextMenu" id="myMenu1">
+  <ul>
+	{if condition="($isCount == 1)"} 
+		<li id="showThisCommNameRecords" style="margin-left:20px">该小区的所有记录</li>
+	{else /} 
+		<li id="returnTo" style="margin-left:20px">返回所有未解析小区列表</li>
+	    <li id="detail">跳转原始页面</li>
+	{/if}
+	    <li id="newCommunity">创建新小区</li>
+    
+  </ul>
+</div> 
+
+{/block} {block name="pg_js"}
+<script src="__JS__/jquery-ui.min.js"></script>
+<script src="__JS__/jquery.contextmenu.js"></script>
+<script>
+jQuery(function($) {
+	$('.modal').draggable();
+	$(".modal").css("overflow", "hidden");//禁止模态对话框的半透明背景滚动
+
+	
+	 $('div.tab-content table td').contextMenu('myMenu1', 
+      {
+		 menuStyle: {
+				width: '230px',
+			},  
+		 bindings: 
+           {
+             'showThisCommNameRecords': function(t) {
+            	 //取出当前行的序号
+        	 	var commName = $(t).parent().find("td").eq(0).html();
+        	 	var urlstr = "{:url('commWithoutIDList')}";
+        	 	window.location.href=urlstr + '?isCount=2&community_name=' + commName + '&tablename='+'{$tablename}'; 
+             },
+             'returnTo': function(t) {
+           	 	window.location.href="{:url('commWithoutIDList',['isCount'=>'1'])}";
+             },
+             'newCommunity': function(t) {
+        	 	var commName = $(t).parent().find("td").eq(0).html();
+        	 	$("input[name='comm_name']").val(commName);
+        	 	$("input[name='keywords']").val(commName);
+           	 	$('#detailinfomation').modal('show');
+             },
+             'detail': function(t) {
+           	 	var url = $(t).parent().find("td").eq(0).attr("url");
+           	 	window.open(url);                 
+             },
+            
+           }
+     });
+	//取出片区值
+	$.get('getRegion',function(response,status,xhr){
+		var $s = '<option value="" ></option>' + response;
+		//alert($s);
+		jQuery("#search_region").html($s);		//根据选定的区域，添加该区域的片区列表
+	}); 
+	
+	//当区域字段发生变化时，加载相应的片区选项
+	jQuery("#search_region").on("change", 		
+		function(){
+			var re = $("#search_region").val();
+			//alert(re);
+			jQuery("#search_block").html("");
+			jQuery("#input_block").val("");
+			if(re !== ""){
+				$.ajax({
+					url:'getBlock',
+					data:{'reg':re},
+					type:'post',
+					success:function(response){  
+						var blocks = '<option value="">' + response;
+						jQuery("#search_block").html(blocks);		
+			        }  
+				});
+			};
+	});
+	
+	//输入小区名称，自动进入关键字
+	jQuery("input[name='comm_name']").on("change",function(){
+		var name = $("input[name='comm_name']").val();
+		var keyw = $("input[name='keywords']").val();
+		var n = keyw.indexOf(name);		//查找，关键字中是否有小区名称
+		if (n == -1){					//如果没有
+			if (keyw != ''){
+				keyw = name + ',' + keyw;
+			}else{
+				keyw = name
+			};
+			$("input[name='keywords']").val(keyw);
+		};
+	});
+	
+	jQuery(".modal-body").on("click","#addNewCommButton",function(){
+		$.ajax({
+      		url:'ajaxAddComm',
+      		type:"POST",
+      		data:$('form').serialize(),
+      		success:function(response){  
+      			$('#detailinfomation').modal('hide');
+      			if(response == 1){
+      				alert('成功增加了一个新小区，并将相关的挂牌记录的小区id清空');
+      			}else{
+	      			alert(response) ; 
+      				
+      			}
+	        }  
+      		
+      	});
+	})
+	
+	
+});
+</script>
+{/block}{block name="pg_inline_js"}
+
+{/block}
