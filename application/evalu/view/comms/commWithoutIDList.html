@@ -159,6 +159,12 @@ jQuery(function($) {
         	 	var commName = $(t).parent().find("td").eq(0).html();
         	 	$("input[name='comm_name']").val(commName);
         	 	$("input[name='keywords']").val(commName);
+        		//取出片区值
+        		$.get("{:url('getRegion')}",function(response,status,xhr){
+        			var $s = '<option value="" ></option>' + response;
+        			//alert(response);
+        			jQuery("#search_region").html($s);		//根据选定的区域，添加该区域的片区列表
+        		}); 
            	 	$('#detailinfomation').modal('show');
              },
              'detail': function(t) {
@@ -168,12 +174,7 @@ jQuery(function($) {
             
            }
      });
-	//取出片区值
-	$.get('getRegion',function(response,status,xhr){
-		var $s = '<option value="" ></option>' + response;
-		//alert($s);
-		jQuery("#search_region").html($s);		//根据选定的区域，添加该区域的片区列表
-	}); 
+
 	
 	//当区域字段发生变化时，加载相应的片区选项
 	jQuery("#search_region").on("change", 		
@@ -184,7 +185,7 @@ jQuery(function($) {
 			jQuery("#input_block").val("");
 			if(re !== ""){
 				$.ajax({
-					url:'getBlock',
+					url:"{:url('getBlock')}",
 					data:{'reg':re},
 					type:'post',
 					success:function(response){  
@@ -212,7 +213,7 @@ jQuery(function($) {
 	
 	jQuery(".modal-body").on("click","#addNewCommButton",function(){
 		$.ajax({
-      		url:'ajaxAddComm',
+      		url:"{:url('ajaxAddComm')}",
       		type:"POST",
       		data:$('form').serialize(),
       		success:function(response){  
