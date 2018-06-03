@@ -315,12 +315,14 @@ jQuery(function($) {
 	$('#pricehistory').on("click",function(){
  		var community_id = $('#hidefeild').attr('community_id');
  		var usage = $('#hidefeild').attr('usage');
- 		//alert(community_id);
- 		$.ajax({
+ 		showPriceIndexInModal(community_id);
+	});
+	
+	function showPriceIndexInModal(community_id){
+		$.ajax({
  			url:getpricehistory,
        	 	data:{
      			community_id:community_id,
-     			usage:usage,
      		},
      		success:function(response){ 
      			setModalPriceHistoryEcharts(response);
@@ -332,7 +334,22 @@ jQuery(function($) {
      			$('#Echarts').modal('show');
 	        }  
  		});
+	}
+	
+	$('#calculatePriceIndex').on("click",function(){
+		var community_id = $('#hidefeild').attr('community_id');
+		$.ajax({
+			url: CalculatePriceIndexOfWholePeriodByCommID,
+			data: {
+				community_id: community_id,
+			},
+			success: function() {
+				//重算基价后，直接弹出
+				showPriceIndexInModal(community_id);
+			}
+		});
 	});
+	
 	
 	$('#origin').on('click',function(){
 		var community_id = $('#hidefeild').attr('community_id');

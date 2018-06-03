@@ -220,12 +220,6 @@ jQuery(function($) {
 	//通过选中的片区得到区块列表
 	function getBlockByRegion(){
 		var id = jQuery(grid_selector).jqGrid('getGridParam','selrow');
-/*		if (id)    {
-	        var ret = jQuery(grid_selector).jqGrid('getRowData',id);
-	        var r = ret.region;
-	        //alert("id="+ret.comm_name+" region="+ret.region+"...");
-	        ajaxGetBlock(r);
-	    } else { alert("请选择一行！");}*/
 		//因为是从行直接进行编辑的，无论如何都能获得
 		var ret = jQuery(grid_selector).jqGrid('getRowData',id);
 		var r = ret.region;
@@ -324,16 +318,6 @@ jQuery(function($) {
 				},
 				afterSubmit : function(response, postdata)
 				{
-					//alert(response.Text);
-/*					var props = "" ; 
-					// 开始遍历 
-					for ( var p in response ){ // 方法 
-						if ( typeof ( response [ p ]) == " function " ){ response [ p ]() ; 
-					} else { // p 为属性名称，response[p]为对应属性的值 
-						props += p + " = " + response [ p ] + " ;\n " ; 
-					} } // 最后显示所有的属性 
-					alert ( props ) ;*/
-					//alert(response.responseText);
 					if(response.responseText == 1){
 						jQuery(grid_selector).jqGrid('setGridParam', {
 							url: "getComms", 

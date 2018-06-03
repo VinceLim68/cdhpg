@@ -129,46 +129,45 @@ class Comms extends Common {
 		return $outputs;
 	}
 	
+	//增加一个新小区的相关信息
+	private function addNewComm($vars){
+	    //传入一个包括小区名称、地址、区域、片区、关键字等的数组，在这里给出comm_id,block_id等
+	    // 1.判断传入的小区名称是否已经存在，或者在关键字中存在。
+	    $where = " (keywords like '%" . $vars ['comm_name'] . "%' or comm_name like '%" . $vars ['comm_name'] . "%')";
+	    $sql_count = "SELECT COUNT(*) AS count FROM comm where " . $where;
+	    $records = $this->db->query ($sql_count );
+	    $count = $records [0] ['count'];
+	    if ($count >= 1) {
+	        return '小区已经存在';
+	    } else {
+	        // 2.判断传入的区块名称是否已经存在，如果存在，取出相应的block_id，如果不存在，需要生成新的block_id
+	        $b_id = $this->db->field ( 'block_id' )->where ( 'block', $vars ['block'] )->where ( 'region', $vars ['region'] )->find ();
+	        if ($b_id) {
+	            $vars ['block_id'] = $b_id ['block_id'];
+	        } else {
+	            $vars ['block_id'] = $this->get_newblockid ( $vars ['region'] );
+	        }
+	        // 3.取得新的comm_id
+	        $vars ['comm_id'] = $this->get_newcommkid ( $vars ['block_id'] );
+	        // 4.保存新记录
+	        return $this->db->allowField ( true )->data ( $vars )->save ();
+	    }
+	}
 	/*
 	 * 增加、修改、删除小区记录
 	 */
 	public function editComm() {
 		$vars = input ( '' );
 		if ($vars ['oper'] == 'add') { // 追加记录
-		  // 1.判断传入的小区名称是否已经存在，或者在关键字中存在。
-			$where = " (keywords like '%" . $vars ['comm_name'] . "%' or comm_name like '%" . $vars ['comm_name'] . "%')";
-			$sql_count = "SELECT COUNT(*) AS count FROM comm where " . $where;
-			$records = $this->db->query ( $sql_count );
-			$count = $records [0] ['count'];
-			if ($count >= 1) {
-				return 1;
-			} else {
-				// 2.判断传入的区块名称是否已经存在，如果存在，取出相应的block_id，如果不存在，需要生成新的block_id
-				$b_id = $this->db->field ( 'block_id' )->where ( 'block', $vars ['block'] )->where ( 'region', $vars ['region'] )->find ();
-				if ($b_id) {
-					$vars ['block_id'] = $b_id ['block_id'];
-				} else {
-					$vars ['block_id'] = $this->get_newblockid ( $vars ['region'] );
-				}
-				// 3.取得新的comm_id
-				$vars ['comm_id'] = $this->get_newcommkid ( $vars ['block_id'] );
-				// 4.保存新记录
-				$this->db->allowField ( true )->data ( $vars )->save ();
-			}
+		    $this->addNewComm($vars);
 		} elseif ($vars ['oper'] == 'edit') { // 修改记录
 			$this->db->allowField ( true )->update ( $vars );
 		} elseif ($vars ['oper'] == 'del') { // 删除记录
-// 		    halt($vars);
 			$del_id = explode ( ',', $vars ['id'] );
 			foreach ( $del_id as $myid ) {
                 //根据小区列表的序号取出小区id
 				$comm_id = $this->db->field('comm_id')->where ( 'Id', $myid )->find();
 				$this->db->delWithRelation($comm_id['comm_id']);
-// 				$this->db->where ( 'Id', $myid )->delete ();
-// 				//删除之后还要把挂牌信息里相关的commid改成0
-// 				Db::table('for_sale_property')->where('community_id',$comm_id['comm_id'])->update(['community_id'=>0]);
-// 				//把小区基价里的历史价格数据删除
-// 				Db::table('commhistoryprice')->where('community_id',$comm_id['comm_id'])->delete();
 			}
 		}
 	}
@@ -1610,6 +1609,72 @@ class Comms extends Common {
 
     //这是没有小区id的小区名聚合列表
     public function commWithoutIDList(){
-        
+        $data = input();
+        $data['tablename'] = isset($data['tablename']) ? $data['tablename'] : 'for_sale_property';
+        $data['community_name'] = isset($data['community_name']) ? $data['community_name'] : '';
+        $data['isCount'] = $data['community_name']=='' ? '1' : '2';
+        $nextTableName = $data['tablename']=='for_sale_property'?'allsales':'for_sale_property';
+//         dump($data);
+//         dump($nextTableName);
+        if($data['isCount'] == 1){
+            //是聚合查询
+            $list = Db::table($data['tablename'])
+                ->field(['community_name','title','Count(community_name)'=>'count'])
+                ->where('community_id < 999 OR community_id IS NULL')
+                ->group('community_name')
+                ->order('count desc')
+                ->paginate(100,false,[
+                    'tablename'=>$data['tablename'],
+                    'isCount'   => $data['isCount'],
+                    'nextTableName'=>$nextTableName,
+                    'community_name'=>$data['community_name'],
+                ]);
+            $title = ['小区名称','标题','数量'];
+        }else{
+            //不是聚合查询，是查某个小区的详细记录
+            $list = Db::table($data['tablename'])
+                ->field(['community_name','title','spatial_arrangement','total_floor','price','area','details_url'])
+                ->where('community_id < 999 OR community_id IS NULL')
+                ->where('community_name','like','%'.$data['community_name'].'%')
+                ->order('price')
+//                 ->fetchSql()
+                ->paginate(100,false,[
+                    'tablename'=>$data['tablename'],
+                    'isCount'   => $data['isCount'],
+                    'nextTableName'=>$nextTableName,
+                    'community_name'=>$data['community_name'],
+                ]);
+//             dump($list);
+            $title = ['小区名称','标题','户型','总层','单价','面积'];
+        }
+        $this->assign([
+            'list'=>$list,
+            'title'=>$title,
+            'nextTableName'=>$nextTableName,
+            'isCount'=> $data['isCount'],
+            'community_name'=>$data['community_name'],
+            'tablename'=>$data['tablename'],
+        ]);
+        return $this->fetch();
+    }
+    
+    public function ajaxAddComm(){
+        $vars = input();
+        $validate = Loader::validate('AddNewComm');
+        if(!$validate->check($vars)){
+            return ($validate->getError());
+        }
+        $vars['comm_name'] = trim($vars['comm_name']);
+        //不仅增加小区的记录
+        //还要把对应的comm_name的挂牌记录的comm_id清0
+        $for_sale_property_list = Db::table('for_sale_property')
+            ->where('community_name','like','%'.$vars['comm_name'].'%')
+            ->field('id')
+            ->select();
+        foreach ($for_sale_property_list as $item){
+            $result = SalesModel::updateWithoutduplicate($item['id'],['community_id'=>0]);
+        }
+        Db::table('allsales')->where('community_name','like','%'.$vars['comm_name'].'%')->update(['community_id'=>0]);
+        return $this->addNewComm($vars);
     }
 }
