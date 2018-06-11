@@ -11,6 +11,7 @@ use app\evalu\logic\MatchLogic;
 use app\evalu\model\CommhistorypriceModel;
 use app\evalu\model\CommaddressModel;
 use think\Loader;
+use function think\select;
 
 class Comms extends Common {
 	protected $db;
@@ -352,6 +353,23 @@ class Comms extends Common {
 	    $this->redirect('handle_comm?community_id='.$id);
 	}
 	
+	//增加一个小区的关联规则
+	public function ajaxAddARelationship(){
+	    $data = input();
+	    $commrelate = new CommRelateModel();
+	    if(isset($data['action']) and $data['action']==1){
+	        //如果是增加关联规则，先保存
+	        if(!$commrelate->where('community_id',$data['community_id'])->where('usage',$data['usage'])->find()){
+	            //如果没有相同community_id和用途的记录，才能追加
+	            // 过滤post数组中的非数据表字段数据
+	            $see = $commrelate->data($data)->allowField(true)->save();
+	        }else{
+	            $see = 0;
+	        }
+	    }
+	    return $see;
+	}
+	
     //处理拆分小区的模块
 	public function handle_comm(){
         //如果是从异常记录跳转，这里传过来2个参数:community_id,commName
@@ -359,14 +377,14 @@ class Comms extends Common {
 // 	    dump($data);
 	    
         $commrelate = new CommRelateModel();
-        if(isset($data['action']) and $data['action']==1){
-            //如果是增加关联规则，先保存
-            if(!$commrelate->where('community_id',$data['community_id'])->where('usage',$data['usage'])->find()){
-                //如果没有相同community_id和用途的记录，才能追加
-                // 过滤post数组中的非数据表字段数据
-                $see = $commrelate->data($data)->allowField(true)->save();
-            }
-        }
+//         if(isset($data['action']) and $data['action']==1){
+//             //如果是增加关联规则，先保存
+//             if(!$commrelate->where('community_id',$data['community_id'])->where('usage',$data['usage'])->find()){
+//                 //如果没有相同community_id和用途的记录，才能追加
+//                 // 过滤post数组中的非数据表字段数据
+//                 $see = $commrelate->data($data)->allowField(true)->save();
+//             }
+//         }
 	    
 	    $rela_list = $commrelate->where('community_id',$data['community_id'])->select()->toArray();
         $this->assign('rela_list',$rela_list);
@@ -382,7 +400,6 @@ class Comms extends Common {
 	    $getComm['rela_ratio'] = isset($data['rela_ratio']) ? $data['rela_ratio'] : 1;
 	    $getComm['usage'] = isset($data['usage'])? $data['usage']:'';
 	    $data = array_merge ( $data,$getComm);
-// 	    dump($data);
 	    
 	    //取同一版块的其他小区列表
 	    $rela_comms = $this->db->where('block_id',$getComm['block_id'])->select()->toArray();
@@ -528,7 +545,7 @@ class Comms extends Common {
             $mystr .= '<div class="col-md-3 col-xs-3 "><button type="button" style="margin-left:10px;" class="btn btn-success" id="del_rela">删除关联规则</button></div>';
             $mystr .= '<div class="col-md-3 col-xs-3 "><button type="submit" style="margin-left:10px;" class="btn btn-success" id="refresh_data">更新数据</button></div>';
         }else{
-            $mystr .= '<div class="col-md-3 col-xs-3 "><button type="submit" style="margin-left:10px;" class="btn btn-success" id="refresh_data">增加规则</button></div>';
+            $mystr .= '<div class="col-md-3 col-xs-3 "><button type="button" style="margin-left:10px;" class="btn btn-success" id="add_a_relationship">增加规则</button></div>';
         }
         $mystr .= '<div class="col-md-3 col-xs-3 "><button type="button" class="btn btn-success" data-dismiss="modal">取消</button></div>';
         $mystr .= '</div>';
@@ -1486,7 +1503,10 @@ class Comms extends Common {
         $data = input();
         $ca = new CommaddressModel();
         $record = $ca->findById($data['ID']);
-        return $record;
+        $result[] = $record;
+        $result[] = action('evalu/comms/getConfig');
+//         halt($record);
+        return $result;
     }
     
     //执行修改小区地址记录
@@ -1505,8 +1525,8 @@ class Comms extends Common {
     //获取默认的配置信息
     public function getConfig(){
         $getconfig['elevatorlist'] = config('elevator');
-        $getconfig['structuerlist'] = config('structuer');
-        $getconfig['uselist'] = config('use');
+        $getconfig['structurelist'] = config('structuer');
+        $getconfig['typelist'] = config('use');
         $getconfig['regionlist'] = config('region');
         return $getconfig;
     }
@@ -1521,12 +1541,18 @@ class Comms extends Common {
             ->field('a.comm_id,city,a.region,road,doorplate,type,
                 buildYear,floors,elevator,structure,c.comm_name,block,
                 keywords')
-            ->find();
+//             ->find();
+            ->select();
         if($record){
-            return $record->toArray();
+            $getconfigs = action('evalu/comms/getConfig');
+            $record = $record->toArray();
+            $record = array_merge($record,$getconfigs);
+            return $record;
         }else{
             return 0;
         }
+        
+        
     }
     
     //批量增加小区的地址记录

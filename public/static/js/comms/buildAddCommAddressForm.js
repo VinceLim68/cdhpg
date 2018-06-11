@@ -8,7 +8,7 @@ function buildAddCommAddressForm(res){
 	jsonstring += '<div class="container-fluid" >';
 	jsonstring += '<div class="row">';
 	jsonstring += '<div class="col-md-4 col-xs-12 hide-sm" style="text-align: right;">版块 :'+ res[0]['block'] + '</div>';
-	jsonstring += '<div class="col-md-8 col-xs-12 hide-sm">'+res['keywords']+'</div>';
+	jsonstring += '<div class="col-md-8 col-xs-12 hide-sm">'+res[0]['keywords']+'</div>';
 	jsonstring += '</div>';
 	jsonstring += '<div class="row">';
 	jsonstring += '<div class="col-md-2 col-xs-3 hide-sm" style="margin-top: 4px;">';
@@ -47,11 +47,11 @@ function buildAddCommAddressForm(res){
 	jsonstring += '<div style="float: right;">用途：</div>';
 	jsonstring += '</div>';
 	jsonstring += '<div class="col-md-2 col-xs-9">';
-	jsonstring += '<input type="text"  style="width:100%"  list="uselist" name="type" value="'+(res['type'] == null ? '住宅' : res['type'])+'" placeholder="物业类型">';
-	if(res['uselist'] != undefined ){
-		jsonstring += '<datalist id="uselist">';
-		for(var item in res['uselist']){
-			jsonstring += '<option value="' +res['uselist'][item]+ '">';
+	jsonstring += '<input type="text"  style="width:100%"  list="typelist" name="type" value="'+(res['type'] == null ? '住宅' : res['type'])+'" placeholder="物业类型">';
+	if(res['typelist'] != undefined ){
+		jsonstring += '<datalist id="typelist">';
+		for(var item in res['typelist']){
+			jsonstring += '<option value="' +res['typelist'][item]+ '">';
 		}
 	  	jsonstring += '</datalist>';
 	}
@@ -101,11 +101,11 @@ function buildAddCommAddressForm(res){
 	jsonstring += '<div style="float: right;">结构：</div>';
 	jsonstring += '</div>';
 	jsonstring += '<div class="col-md-2 col-xs-9">';
-	jsonstring += '<input type="text" style="width:100%" name="structure" list="structuerlist" value="'+(res['structure'] == null ? '钢混结构' : res['structure'])+'" placeholder="建筑结构">';
-	if(res['structuerlist'] != undefined ){
-		jsonstring += '<datalist id="structuerlist">';
-		for(var item in res['structuerlist']){
-			jsonstring += '<option value="' +res['structuerlist'][item]+ '">';
+	jsonstring += '<input type="text" style="width:100%" name="structure" list="structurelist" value="'+(res['structure'] == null ? '钢混结构' : res['structure'])+'" placeholder="建筑结构">';
+	if(res['structurelist'] != undefined ){
+		jsonstring += '<datalist id="structurelist">';
+		for(var item in res['structurelist']){
+			jsonstring += '<option value="' +res['structurelist'][item]+ '">';
 		}
 	  	jsonstring += '</datalist>';
 	}

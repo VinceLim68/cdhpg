@@ -15,7 +15,7 @@
 {block name="main"}
 <div class="tabbable">
 	<ul class="nav nav-tabs padding-12 tab-color-blue background-blue" id="myTab">
-		<li class="active"><a href="#list1" aria-controls="list1" role="tab" data-toggle="tab" >数据列表</a></li>
+		<li class="active"><a href="#list1" aria-controls="list1" role="tab" data-toggle="tab" >地址列表</a></li>
 	</ul>
 	<div class="tab-content">
 
@@ -124,13 +124,26 @@
 	                        	$('#mydialogg ').modal('hide');
 	                        	if(response){
 		                            var jsonstring = '<form class="form-horizontal" id="modifyCommAddressForm">';
-		                            for(var key in response){
+		                            for(var key in response[0]){
 		                            	jsonstring += 
 		                            		'<div class="form-group"><label class="col-sm-2 control-label input-sm">'
 		                            		+ key + '</label><div class="col-sm-10">'
 		                            		+'<input type="text" class="form-control input-sm " name="' + key 
-		                            		+ '" value="' + response[key] + '"></div></div>';
+		                            		+ '" value="' + response[0][key] + '"'
+		                            	for(var k in response[1]){
+		                            		if(k.indexOf(key) != -1){
+		                            			jsonstring += ' list="' + k + '" ';
+		                            		}
+		                            	}	
+	                            		jsonstring += '></div></div>';
 	                            	}
+		                            for(var key in response[1]){
+		                            	jsonstring += '<datalist id="' + key +'">';
+		                        		for(var item in response[1][key]){
+		                        			jsonstring += '<option value="' + response[1][key][item]+ '">';
+		                        		}
+		                        	  	jsonstring += '</datalist>';
+		                            }
 		                            jsonstring += '</form><button class="btn btn-primary btn-sm" id="sendmodify"'
 		                            		+ 'style="width: 100%;">修改数据</button>';
 		                            $('#modal-title').html('修改数据')
@@ -140,9 +153,7 @@
 		                            $('#mydialogg  div.modal-body').html('未找到数据'); 
 	                        	}
 	                            $('#mydialogg ').modal('show');
-
 	                        }
-
 	                    });
 	                },
                 'delrecord': function (t) { //取出当前行的序号 var
@@ -200,7 +211,7 @@
 	                        	  //'block' => string '南部新城' (length=12)
 	                        	  //'keywords' => string '半岛祥湾,明发半岛' (length=25)
 		                    	var jsonstring = buildAddCommAddressForm(res);
-		                    	$('#modal-title').html('新增地址:  <b>'+res['comm_name']+'</b>');
+		                    	$('#modal-title').html('新增地址:  <b>'+res[0]['comm_name']+'</b>');
 	                            $('#mydialogg  div.modal-body').html(jsonstring); 
 	                            $('#mydialogg ').modal('show');
                         		
