@@ -255,9 +255,6 @@
 				</div>
 			  <div class="panel-body">
 			  	<div  style="height:40px;">
-<!-- 			  		<button type="button" class="btn btn-app btn-sm btn-success" id="add_rela" style="border-radius: 5px;float:right;padding: 3px 15px;">
-			  			<span class="glyphicon glyphicon-plus" aria-hidden="true"></span>增加关联规则
-			  		</button> -->
 			  		<button type="button" class="btn btn-app btn-yellow btn-xs" id="add_rela" style="float:right;">
 						<i class="ace-icon glyphicon glyphicon-plus"></i>
 						增加规则
@@ -414,6 +411,7 @@
 	var thiscomm = "{$data['comm_name']}";
 	var goblodk = "{:url('managepriceindex')}";
 	var getpricehistory = "{:url('getdataforecharts')}";
+	var ajaxAddARelationship = "{:url('ajaxAddARelationship')}";
 	var CalculatePriceIndexOfWholePeriodByCommID = "{:url('CalculatePriceIndexOfWholePeriodByCommID')}";
 	//var sales_getfullbyid = "{:url('Sales/getFullById')}";
 	var menuobj = {
@@ -453,7 +451,9 @@
 </script>
 <!-- 挂牌记录查询模态框-->
 {include file="./commhtml/myquery.html"/}
+{if condition="$B"}
 {include file="./commhtml/common_echarts.html"/}
+{/if}
 <script>
 jQuery(function ($) {
     $('#salestable td').contextMenu('salelistmenu', menuobj);

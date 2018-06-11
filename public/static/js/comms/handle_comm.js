@@ -231,6 +231,33 @@ jQuery(function($) {
 		});
 	});
 	
+	//增加关联规则
+	$('#relaform').on('click','#add_a_relationship',function(){
+		var id = $('#reladialogg .modal-header h4 small span').text();
+		//alert(id);
+		$.ajax({
+			url:ajaxAddARelationship,
+			data: $.param({'rela_id':id,}) + '&' + $('#relaform').serialize(),
+			dataType: "json",
+			beforeSend:function(){
+				$('#reladialogg').modal('hide');
+			},
+			success:function(response){
+				//alert(response);
+				if(response == 0){
+					var html = '增加失败。或者该小区已经定义相同子功能的关联规则，一个子功能只能有一个定义规则。';
+				}else{
+					var html = '<img src="' + waitingImg + '" /><span style="margin-left:10px;">修改成功,正在刷新页面...</span>';
+				}
+				$('#mydialogg div.modal-body').html(html);
+				$('#mydialogg').modal('show');
+				if(response != 0){
+					$('#relaform').submit();
+				}
+			},
+		});
+	});
+	
 	//删除关联规则
 	$('#relaform').on('click','#del_rela',function(){
 		var id = $('#reladialogg .modal-header h4 small span').text();
