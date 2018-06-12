@@ -338,7 +338,8 @@ class Sales extends Common {
 	        
 	    }
 	    //查询记录,无论是否修改，都需要查询
-	    $sales = Db::table('for_sale_property')->field('id,title,community_id,community_name,price,total_floor,builded_year')
+	    $sales = Db::table('for_sale_property')
+	    ->field('id,title,community_id,community_name,price,total_floor,builded_year,total_price')
 	    ->where($data['where'] )
 	    ->order($data['neworder'])
 	    ->paginate(100,false,[
