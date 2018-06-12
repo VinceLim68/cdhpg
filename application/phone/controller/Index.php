@@ -562,8 +562,7 @@ class Index extends Common {
         }else{
             $findresult = 0;
         }
-//         halt(json_encode($findresult));
-        //dump($findresult);
+//         dump($findresult);
         $this->assign([
             'param' => $param,
             'findresult'=> $findresult,    //往js里传递数组，要转化成json

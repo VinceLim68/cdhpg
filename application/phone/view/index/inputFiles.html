@@ -6,23 +6,25 @@
         <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no">
         <title>上传总平图</title>
 
-        <link href="__CSS__/bootstrap.min.css" rel="stylesheet">
-       <!--  <link href="__CSS__/fileinput.min.css" media="all" rel="stylesheet" type="text/css" /> -->
+                <link href="__CSS__/bootstrap.min.css" rel="stylesheet">
 
         <script src="__JS__/jquery-2.1.4.min.js"></script>
-        <!-- <script src="__JS__/fileinput.js" type="text/javascript"></script> -->
         <script src="__JS__/bootstrap.min.js" type="text/javascript"></script>
-        <!-- 中文化 -->
-        <!-- <script src="__JS__/fileinput-zh.js" type="text/javascript"></script> -->
 
     </head>
     <body>
-    <div style="margin:0 1%;">
-   		<notemply name="data">
-		    <div class="row">
-		    	<h3 style="margin-left: 2%;letter-spacing: 2px;">小区平面图<small>
+    <div class="panel panel-default" style="margin: 0 0;">
+		<div class="panel-heading">
+			<h3 style="color: #3c763d;">{$param['comm_name']}
+			<small style="padding-left:3%">平面图采集
 		    	<a class="btn btn-info" href="{:url('getprice',['community_id'=>$param['community_id'],'price'=>$param['price']])}" style="margin-left: 2%;" role="button">返回</a>
 		    	</small></h3>
+		</div>
+		<div class="panel-body" style="padding-top: 0;font-size: 18px;">
+		
+		<notemply name="data">
+		    <div class="row">
+		    	
 		    	
 		        {volist name="data" id="vo"}
 		        <div style="margin: 8px;border: 1px solid #DDD;box-shadow: 1px 1px 5px 0px #A2958A;padding: 6px;float: left;text-align: center;">
@@ -39,60 +41,36 @@
 		        {/volist}
 		    </div>
 		</notemply>
-        <form method="post" enctype="multipart/form-data">
+		 <form method="post" enctype="multipart/form-data">
         	<input type="file" name="images[]" id="upload" multiple="multiple" class="btn btn-info  btn-block"/>
      		<input type="submit" value="上传" class="btn btn-success btn-block " />
 			<!-- <input id="file-1" type="file" multiple class="file" data-overwrite-initial="false" name="images[]"> -->
 		</form>
-	</div>	
-		<div class="modal fade" tabindex="-1" role="dialog" id="mymodal">
-		    <div class="modal-dialog modal-lg" role="document">
-		        <div class="modal-content">
-		            <div class="modal-header">
-		                <h4 class="modal-title">
-		                    图片详情
-		                </h4>
-		            </div>
-		            <div class="modal-body">
-		            </div>
-		            <div class="modal-footer">
-		            	<button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
-		            </div>
-		        </div>
-		        <!-- /.modal-content -->
-		    </div>
-		    <!-- /.modal-dialog -->
 		</div>
+	</div>
+    
+
+<div class="modal fade" tabindex="-1" role="dialog" id="mymodal">
+    <div class="modal-dialog modal-lg" role="document">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h4 class="modal-title">
+                    图片详情
+                </h4>
+            </div>
+            <div class="modal-body">
+            </div>
+            <div class="modal-footer">
+            	<button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
+            </div>
+        </div>
+        <!-- /.modal-content -->
+    </div>
+    <!-- /.modal-dialog -->
+</div>
 		
     </body>
     <script>
- 	// 初始化filleinput控件  第一次初始化
-    /* function initFileInput(ctrlName, uploadUrl){
-        var control = $('#'+ctrlName);
-        control.fileinput({
-            language: 'zh', //设置语言
-            uploadUrl:uploadUrl,    //上传的地址
-            //allowedFileExtensions:['jpg','png'],    //接收的文件后缀
-            showUpload:true,    //是否显示上传按钮
-            showCaption:true,    //是否显示标题
-            //maxFileSize: 15000,    //图片最大尺寸kb 为0不限制
-            //maxFilesNum: 5,        //最多上传图片
-            overwriteInitial: false,//不覆盖已上传的图片
-            browseClass: "btn btn-info", //按钮样式 
-            dropZoneEnabled: false,//是否显示拖拽区域
-            previewFileIcon: "<i class='glyphicon glyphicon-king'></i>",
-            msgFilesTooMany: "选择上传的文件数量({n}) 超过允许的最大数值{m}！",
-        });
-    } */
-
-    //初始化fileinput控件,第一次初始化 (控件id，上传地址)
-    //initFileInput("file-1", "");
-
-   	// 监听事件
-    //$("#file-1").on("fileuploaded", function (event, data, previewId, index) {
-        // 上传地址
-        //console.log(data);
-    ///});
    	
    	$(".forshowimage").on('click',function(){
     	var src = $(this).attr("src");//获取当前点击的pimg元素中的src属性   

@@ -428,7 +428,7 @@ class Comms extends Common {
 	    $saleslist = action('Sales/getSalesByArray',  ['data' => $data]);
 	    
 	    $fields = Db::query('SHOW COLUMNS FROM for_sale_property');
-	    $title = ['序号','标题','小区','名称','单价','总层','建成'];
+	    $title = ['序号','标题','小区','名称','单价','总价','总层','建成'];
 	    $this->assign('saleslist',$saleslist);
 	    $this->assign('title',$title);
 	    $this->assign('fields',$fields);

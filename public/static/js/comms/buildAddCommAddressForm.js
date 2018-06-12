@@ -7,8 +7,18 @@ function buildAddCommAddressForm(res){
 	var jsonstring = '<form style="margin: 1%;" id="addCommAddressForm">';
 	jsonstring += '<div class="container-fluid" >';
 	jsonstring += '<div class="row">';
-	jsonstring += '<div class="col-md-4 col-xs-12 hide-sm" style="text-align: right;">版块 :'+ res[0]['block'] + '</div>';
-	jsonstring += '<div class="col-md-8 col-xs-12 hide-sm">'+res[0]['keywords']+'</div>';
+	jsonstring += '<div class="col-md-2 col-xs-3 hide-sm" style="margin-top: 4px;">';
+	jsonstring += '<div style="float: right;">版块：</div>';
+	jsonstring += '</div>';
+	jsonstring += '<div class="col-md-2 col-xs-9 hide-sm" style="margin-top: 4px;">'+ res[0]['block']+'</div>';
+	jsonstring += '<div class="col-md-2 col-xs-3  " style="margin-top: 4px;">';
+	jsonstring += '<div style="float: right;">关键字：</div>';
+	jsonstring += '</div>';
+	jsonstring += '<div class="col-md-6 col-xs-9 hide-sm" style="margin-top: 4px;">'+ res[0]['keywords']+'</div>';
+	
+	
+//	jsonstring += '<div class="col-md-4 col-xs-12 hide-sm" style="text-align: right;">版块 :'+ res[0]['keywords'] + '</div>';
+//	jsonstring += '<div class="col-md-8 col-xs-12 hide-sm">'+res[0]['keywords']+'</div>';
 	jsonstring += '</div>';
 	jsonstring += '<div class="row">';
 	jsonstring += '<div class="col-md-2 col-xs-3 hide-sm" style="margin-top: 4px;">';
@@ -20,7 +30,7 @@ function buildAddCommAddressForm(res){
 	jsonstring += '<div style="float: right;">城市：</div>';
 	jsonstring += '</div>';
 	jsonstring += '<div class="col-md-2 col-xs-9">';
-	jsonstring += '<input type="text" style="width:100%" name="city" value="'+(res[0]['city']==''?'厦门':res['city'])+'" placeholder="城市">';
+	jsonstring += '<input type="text" style="width:100%" name="city" value="'+(res[0]['city']==''?'厦门':res[0]['city'])+'" placeholder="城市">';
 	jsonstring += '</div>	';		
 	jsonstring += '<div class="col-md-2 col-xs-3 " style="margin-top: 4px;">';
 	jsonstring += '<div style="float: right;">区块：</div>';
@@ -69,8 +79,8 @@ function buildAddCommAddressForm(res){
 	jsonstring += '</div>';
 	jsonstring += '<div class="col-md-10 col-xs-9">';
 	jsonstring += '<label class="radio-inline"><input type="radio" checked name="doortype" value="连续">连续</label>';
-	jsonstring += '<label class="radio-inline"><input type="radio" checked name="doortype" value="单数">单数</label>';
-	jsonstring += '<label class="radio-inline"><input type="radio" checked name="doortype" value="双数">双数</label>';
+	jsonstring += '<label class="radio-inline"><input type="radio" name="doortype" value="单数">单数</label>';
+	jsonstring += '<label class="radio-inline"><input type="radio" name="doortype" value="双数">双数</label>';
 	jsonstring += '</div>';
 	jsonstring += '</div>';
 	jsonstring += '<div class="row">';
