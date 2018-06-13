@@ -17,23 +17,25 @@ usage="{$B['comm']['usage']|default=''}" block="{$B['comm']['block']}">
 		<div class="panel-heading">
 		<div class="row">
 			<h3 style="color: #3c763d;">
-			<div class="col-md-6 col-xs-12" style="margin-bottom: 10px;">
-			{$B['comm']['comm_name']}
-			{if condition="$B['comm']['usage']!=''"}-{$B['comm']['usage']}{/if}
-			<small style="padding-left:3%">{$B['comm']['region']}-{$B['comm']['block']}</small>
-			</div>
-			
-			<div class="col-md-6 col-xs-12">
-				<form action="{:url('getCommName')}" method="post" >
-					<div class="col-md-8 col-xs-9" style="margin-left:-14px">
-				    <input type="text" class="form-control" name="comm"  placeholder="小区名/地址">
-				    </div>
-					<div class="col-md-4 col-xs-3">
-				  	<button type="submit" class="btn btn-default" style="color:#fff;background-color: rgb(76, 174, 76); width:100%;">估值</button>
+				<div class="col-md-6 col-xs-12" style="margin-bottom: 10px;">
+					{$B['comm']['comm_name']}
+					{if condition="$B['comm']['usage']!=''"}-{$B['comm']['usage']}{/if}
+					<small style="padding-left:3%">{$B['comm']['region']}-{$B['comm']['block']}</small>
+					<a style="margin-left:3%;letter-spacing: 3px;" class="btn btn-success " href="{:url('index')}">
+					<i class="ace-icon fa fa-home green"></i><span style="padding-left:1%;">返回</span></a>
 				</div>
-				</form>
-			</div>
-		</h3>
+				<div class="col-md-6 col-xs-12">
+					<form action="{:url('getCommName')}" method="post" >
+						<div class="col-md-8 col-xs-9" style="margin-left:-14px">
+					    	<input type="text" class="form-control" name="comm"  placeholder="小区名/地址">
+					    </div>
+						<div class="col-md-4 col-xs-3">
+					  		<button type="submit" class="btn btn-success" style="width:100%;letter-spacing:4px;">
+					  		<i class="ace-icon glyphicon glyphicon-search"></i>估值</button>
+						</div>
+					</form>
+				</div>
+			</h3>
 			</div>
 					
 		</div>
@@ -365,7 +367,7 @@ usage="{$B['comm']['usage']|default=''}" block="{$B['comm']['block']}">
 								<td class="col-md-4 col-xs-4 left " >交易价/二手报价</td>
 								<td class="col-md-8 col-xs-8 right">{$B['price']}/{$B['priceByDeal']}</td>
 							</tr>
-							</table>
+						</table>
 					</div>
 			    </div>
 			    {/if}
@@ -390,7 +392,7 @@ usage="{$B['comm']['usage']|default=''}" block="{$B['comm']['block']}">
 				</div>
 		  	</div>
 			
-			<a class="btn btn-success btn-block btn-lg" href="{:url('index')}">返回</a>
+			<!-- <a class="btn btn-success btn-block btn-lg" href="{:url('index')}">返回</a> -->
 			{if condition="$auth['dispute']"}
 			<div class="input-group input-group-lg" style="margin-top:10px;">
 		      <input type="text" class="form-control" placeholder="输入您认为合适的评估价..." id="myprice">
@@ -582,7 +584,11 @@ jQuery(function($) {
        
 	$('a[data-toggle = "tab"]').on('shown.bs.tab',function(e){
 		//console.log(e);
-		var type = e.target.attributes['type'].value;
+		if(e.target.attributes['type']){
+			var type = e.target.attributes['type'].value;
+		}else{
+			var type = 'nothing';
+		}
 		//console.log(type);
 		option = setEcharts(type);
 		if(type=="area"){
