@@ -257,6 +257,7 @@ class Index extends Common {
             $auth['dispute'] = $thisAuth->check('phone/index/dispute', session('user.user_id'));
             $auth['inputFiles'] = $thisAuth->check('phone/index/inputFiles', session('user.user_id'));
             $auth['inputAddress'] = $thisAuth->check('phone/index/inputAddress', session('user.user_id'));
+            $auth['showSaleList'] = $thisAuth->check('phone/index/showSaleList', session('user.user_id'));
             $this->assign('auth',$auth);
         }else{
             //如果未查询出数据
@@ -534,11 +535,17 @@ class Index extends Common {
                     ->where('img_url',$filename)
                     ->delete();
         }
-        $imgs = $layout->where('comm_id',$param['community_id'])->select();
+        $imgs = $layout
+            ->alias('l')
+//             ->join('comm c','c.comm_id = l.comm_id')
+            ->where('l.comm_id',$param['community_id'])
+            ->select();
+//         dump($imgs);
+        $comm_info = Db::table('comm')->where('comm_id',$param['community_id'])->find();
         $this->assign([
             'data'  =>  $imgs,
             'param' => $param,
-            
+            'comm_info'=>$comm_info,
         ]);
         return $this->fetch();
     }
@@ -570,4 +577,31 @@ class Index extends Common {
         return $this->fetch();
     }
    
+    //移动端展示数据列表
+    public function showSaleList(){
+        $data = input();
+        //取挂牌数据
+        if(!isset($data['where']) or trim($data['where'])==''){
+            $data['where'] = 'community_id = '.$data['community_id'];
+        }else{
+            //避免重复加入community_id = 的条件
+            if(stripos($data['where'], 'community_id') === false){
+                $data['where'] .= ' AND community_id = '.$data['community_id'];
+            }
+        }
+        $data = action('evalu/Sales/datahandle',  ['data' => $data]);
+//         dump($data);
+        $saleslist = action('evalu/Sales/getSalesByArray',  ['data' => $data]);
+         
+        $fields = Db::query('SHOW COLUMNS FROM for_sale_property');
+        $title = ['序号','标题','小区','名称','单价','总价','总层','建成'];
+        $this->assign([
+            'saleslist'=>$saleslist,
+            'title'=>$title,
+            'data'=>$data,
+            'fields'=>$fields,
+        ]);
+
+        return $this->fetch();
+    }
 }

@@ -195,10 +195,10 @@ function buildAddCommAddressForm(res){
 //    	jsonstring += '<input type="text" name="structure" value="'+res['structure']+'" placeholder="建筑结构">';
 //    	jsonstring += '</div>';
 //    	jsonstring += '</div>';
-	jsonstring += '</form><button class="btn btn-primary btn-sm" id="addcommaddresses"'
-		+ 'style="width: 100%;">增加小区地址</button>';
+	jsonstring += '</form><button class="btn btn-success btn-block" id="addcommaddresses"'
+		+ '>增加小区地址</button>';
 	return jsonstring;
-	}
+}
 
 function buildCommAddressList(res){
 	//console.log(res);

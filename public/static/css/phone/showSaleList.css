@@ -1,0 +1,39 @@
+@CHARSET "UTF-8";
+#total{
+	float: left;
+	line-height: 50px;
+	color: #1B6D85;
+	font-size: 16px;
+}
+
+.pagination {
+	margin:5px;
+	font-size: 16px;
+}
+
+.search_buttom{
+	margin:5px;
+	background-color: #337AB7;
+	margin-left:3%;
+	letter-spacing: 3px;
+}
+.table{
+	font-size:13px;
+}
+.table thead{
+	background-color: #eee;
+}
+.table thead th{
+	text-align: center;
+	color: #3c763d;
+}
+.table tbody td{
+	color: #393939;
+}
+
+
+@media (max-width:768px){
+    .hide-xs{
+        display: none!important;
+    }
+}

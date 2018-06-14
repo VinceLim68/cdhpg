@@ -6,8 +6,8 @@
         <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no">
         <title>上传总平图</title>
 
-                <link href="__CSS__/bootstrap.min.css" rel="stylesheet">
-
+        <link href="__CSS__/bootstrap.min.css" rel="stylesheet">
+		<link rel="stylesheet" type="text/css"	href="__CSS__/font-awesome.min.css">
         <script src="__JS__/jquery-2.1.4.min.js"></script>
         <script src="__JS__/bootstrap.min.js" type="text/javascript"></script>
 
@@ -15,10 +15,19 @@
     <body>
     <div class="panel panel-default" style="margin: 0 0;">
 		<div class="panel-heading">
-			<h3 style="color: #3c763d;">{$param['comm_name']}
-			<small style="padding-left:3%">平面图采集
-		    	<a class="btn btn-info" href="{:url('getprice',['community_id'=>$param['community_id'],'price'=>$param['price']])}" style="margin-left: 2%;" role="button">返回</a>
-		    	</small></h3>
+			<div class="row">
+				<h3 style="color: #3c763d;">
+					<div class="col-md-11 col-xs-9" style="margin-bottom: 10px;">
+						{$comm_info['comm_name']|default=""}
+						<small style="padding-left:3%">平面图采集</small>
+					</div>
+					<div class="col-md-1 col-xs-3">
+							<a class="btn btn-success" href="{:url('getprice',['community_id'=>$param['community_id'],'price'=>$param['price']])}" 
+							style="margin-left:3%;letter-spacing: 3px;" role="button">
+							<i class="ace-icon fa fa-home green"></i><span style="padding-left:1%;">返回</span></a>
+					</div>
+				</h3>
+			</div>
 		</div>
 		<div class="panel-body" style="padding-top: 0;font-size: 18px;">
 		
