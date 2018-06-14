@@ -15,29 +15,30 @@
 usage="{$B['comm']['usage']|default=''}" block="{$B['comm']['block']}">
 	<div class="panel panel-default" style="margin: 0 0;">
 		<div class="panel-heading">
-		<div class="row">
-			<h3 style="color: #3c763d;">
-				<div class="col-md-6 col-xs-12" style="margin-bottom: 10px;">
-					{$B['comm']['comm_name']}
-					{if condition="$B['comm']['usage']!=''"}-{$B['comm']['usage']}{/if}
-					<small style="padding-left:3%">{$B['comm']['region']}-{$B['comm']['block']}</small>
-					<a style="margin-left:3%;letter-spacing: 3px;" class="btn btn-success " href="{:url('index')}">
-					<i class="ace-icon fa fa-home green"></i><span style="padding-left:1%;">返回</span></a>
-				</div>
-				<div class="col-md-6 col-xs-12">
-					<form action="{:url('getCommName')}" method="post" >
-						<div class="col-md-8 col-xs-9" style="margin-left:-14px">
-					    	<input type="text" class="form-control" name="comm"  placeholder="小区名/地址">
-					    </div>
-						<div class="col-md-4 col-xs-3">
-					  		<button type="submit" class="btn btn-success" style="width:100%;letter-spacing:4px;">
-					  		<i class="ace-icon glyphicon glyphicon-search"></i>估值</button>
+			<div class="row">
+				<h3 style="color: #3c763d;">
+					<div class="col-md-6 col-xs-12" style="margin-bottom: 10px;">
+						{$B['comm']['comm_name']}
+						{if condition="$B['comm']['usage']!=''"}-{$B['comm']['usage']}{/if}
+						<small style="padding-left:3%">{$B['comm']['region']}-{$B['comm']['block']}</small>
+					</div>
+					<div class="col-md-6 col-xs-12">
+						<form action="{:url('getCommName')}" method="post" >
+							<div class="col-md-8 col-xs-8" style="margin-left:-14px">
+						    	<input type="text" class="form-control" name="comm"  placeholder="小区名/地址">
+						    </div>
+							<div class="col-md-2 col-xs-2" style="padding:0;">
+						  		<button type="submit" class="btn btn-success" style="letter-spacing:3px;">
+						  		<i class="ace-icon glyphicon glyphicon-search"></i>估值</button>
+							</div>
+						</form>
+						<div class="col-md-2 col-xs-2">
+						<a style="margin-left:3%;letter-spacing: 3px;" class="btn btn-success " href="{:url('index')}">
+						<i class="ace-icon fa fa-home green"></i><span style="padding-left:1%;">返回</span></a>
 						</div>
-					</form>
-				</div>
-			</h3>
+					</div>
+				</h3>
 			</div>
-					
 		</div>
 		<div class="panel-body" style="padding-top: 0;font-size: 18px;">
 			<ul class="nav nav-pills nav-tabs" >
@@ -67,10 +68,13 @@ usage="{$B['comm']['usage']|default=''}" block="{$B['comm']['block']}">
 						<li ><a href="#casetab" aria-controls="casetab" role="tab" data-toggle="tab" id="case">成交案例</a></li>
 						{/if}
 				    	{if condition="$auth['inputFiles']"}
-						<li ><a href="{:url('inputFiles',['community_id'=>$B['comm']['comm_id'],'price'=>$B['price'],'comm_name'=>$B['comm']['comm_name']])}">采集总平图</a></li>
+						<li ><a href="{:url('inputFiles',['community_id'=>$B['comm']['comm_id'],'price'=>$B['price']])}">采集总平图</a></li>
 						{/if}
 				    	{if condition="$auth['inputAddress']"}
 						<li ><a href="{:url('inputAddress',['community_id'=>$B['comm']['comm_id'],'price'=>$B['price']])}">采集小区地址</a></li>
+						{/if}
+				    	{if condition="$auth['showSaleList']"}
+						<li ><a href="{:url('showSaleList',['community_id'=>$B['comm']['comm_id'],'price'=>$B['price']])}">数据列表</a></li>
 						{/if}
  						{if condition="$auth['insert']"}
 		 				<li ><a href="#query_record" aria-controls="query_record" role="tab" data-toggle="tab" >登记询价记录</a></li> 
