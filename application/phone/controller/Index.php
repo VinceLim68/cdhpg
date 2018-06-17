@@ -600,7 +600,7 @@ class Index extends Common {
             'title'=>$title,
             'data'=>$data,
             'fields'=>$fields,
-            'update'=>false,
+            'update'=>false,        //只要设置了updata,不管值是什么，页面上都不会显示修改的功能。不能让手机端有修改功能。
         ]);
 
         return $this->fetch();
