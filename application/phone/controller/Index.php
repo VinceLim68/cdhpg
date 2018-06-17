@@ -600,6 +600,7 @@ class Index extends Common {
             'title'=>$title,
             'data'=>$data,
             'fields'=>$fields,
+            'update'=>false,
         ]);
 
         return $this->fetch();
