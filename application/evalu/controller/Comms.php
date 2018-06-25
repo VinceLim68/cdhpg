@@ -1558,7 +1558,11 @@ class Comms extends Common {
     //批量增加小区的地址记录
     public function ajaxAddCommAddressAction(){
         $data = input();
-        
+        //如果门牌里没有"号"字，自动追加一个
+        if(stripos($data['doorplate'],'号')===false){
+            $data['doorplate'] .= '号';
+        }
+//         halt($data);
         $validate = Loader::validate('AddCommAddressesValidate');
         if(!$validate->check($data)){
             return ($validate->getError());
@@ -1568,7 +1572,6 @@ class Comms extends Common {
         if(strlen($data['buildYear'])<=4){
             $data['buildYear'] = $data['buildYear'].'-01-01';
         }
-//         echo $date= date("Y-01-01",strtotime($date));
         
         foreach ($data as $key => $value){
             if($value == 'null'){
@@ -1578,8 +1581,6 @@ class Comms extends Common {
         }
         $data['doorplate3'] = '';       //这是存放“之十五”之类的
         $data['doorplate_prefix'] = '';       //这是存放“313-2”之类门牌中的313号
-//         dump($data);
-//         $pattern = '/^(\d*)-?(\d+)?号?(之[三二一四五六七八九十]*)?/';
         $pattern = '/^(\d*-)?(\d+)号?(之[三二一四五六七八九十]*)?/';
         if(preg_match($pattern,$data['doorplate'],$match)){
             $data['doorplate'] = $match[2];
