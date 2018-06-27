@@ -8,6 +8,7 @@ jQuery(function($) {
 		$(grid_selector).jqGrid('setGridWidth', parent_column.width());
 	})
 
+
 	// resize on sidebar collapse/expand
 	$(document).on(
 			'settings.ace.jqGrid',
@@ -21,7 +22,10 @@ jQuery(function($) {
 								parent_column.width());
 					}, 20);
 				}
-			})
+			}
+			
+			
+	)
 
 
 	jQuery(grid_selector).jqGrid({
@@ -143,7 +147,7 @@ jQuery(function($) {
 			align : 'center',
 		} ,{
 			label:'操作',
-			//name : 'myac',
+			name : 'myac',
 			//index : '',
 			width : 70,
 			//fixed : true,
@@ -171,7 +175,19 @@ jQuery(function($) {
 					//width:650,
 				},
 			}
-		}],
+		},{  
+            name: '其他', index: '', width: 80, fixed: true, sortable: false, resize: false,  
+            //formatter:'actions',  
+            formatter: function formatDjho(cellvalue, options, rowObject){  
+//                if(rowObject["name"] == ""){  
+//                    return "";  
+//                }  
+//                var cz = "<a href=\"javascript:getCbdjInfo(\'"+rowObject["comm_id"]+"\')\" >" + cellvalue + "</a>";  
+//                return cz;  
+//            }
+             return '<a href=\"#\" style=\"color:#f60\" class=\"recalculate\" thisid=\"'+rowObject["comm_id"]+' \">重算基价</a>' }  
+            },
+		],
 		viewrecords : true,
 		rowNum:50,							// 每页显示记录数
 		rowList:[20,50,100],
@@ -214,6 +230,8 @@ jQuery(function($) {
 	 */
 
 	});
+	
+
 	$(window).triggerHandler('resize.jqGrid');// trigger window resize to make
 												// the grid get the correct size
 
@@ -583,6 +601,22 @@ jQuery(function($) {
 	$(document).one('ajaxloadstart.page', function(e) {
 		$.jgrid.gridDestroy(grid_selector);
 		$('.ui-jqdialog').remove();
+	});
+	
+	$("#gridtable").on('click','.recalculate',function(e){
+		community_id = e.target.attributes.thisid.value;
+		$.ajax({
+			url: CalculatePriceIndexOfWholePeriodByCommID,
+			data: {
+				community_id: community_id,
+				//usage:usage,
+			},
+			success: function() {
+				//重算基价后，直接弹出
+				//showPriceIndexInModal(community_id,usage);
+				alert('计算完成')
+			}
+		});
 	});
 	
 //	$("#gridtable td").on('dblclick',function(){

@@ -19,18 +19,6 @@ class Comms extends Common {
 	protected function _initialize() {
 		parent::_initialize ();
 		$this->db = new Comm ();
-		if(!session('user.user_id'))
-		{
-		    // 			注意这里传递了参数，但是用url方式，接收时要使用$_GET
-		    $this->redirect('evalu/login/login',['modulestr' => request()->module()]);
-		}
-		$controller = request()->controller();
-		$module = request()->module();
-		$act = strtolower($module.'/'.$controller);       //使用模块+控制器来验证
-		$auth = new \Auth();
-		if(!$auth->check($act,session('user.user_id'))){
-		    $this->error(session('user.user_name').':'.$act.'你不能对小区数据进行操作');
-		}
 	}
 	
 	/*

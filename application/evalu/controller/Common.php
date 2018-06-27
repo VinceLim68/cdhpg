@@ -3,6 +3,8 @@ namespace app\evalu\controller;
 
 use think\Controller;
 use think\Request;
+use app\evalu\model\UserModel;
+use think\Session;
 // use think\Auth;
 
 class Common extends Controller
@@ -11,14 +13,26 @@ class Common extends Controller
 	{
 		parent::__construct($request);
 		//执行登录验证
-		if(!session('user.user_id'))
+		if(!session('user.user_id') )
 		{
-        // 			注意这里传递了参数，但是用url方式，接收时要使用$_GET
-		    $this->redirect('evalu/login/login',['modulestr' => $request->module()]);
+		    //没有session，再取token.设置的token为“lxtoken”
+// 		    halt('进来了，没session');
+		    if(cookie('lxtoken')){
+		        $token = cookie('lxtoken');
+// 		        halt($token);
+		        $res = $this->checkToken($token);//这里会更新token的有效时间
+// 		        halt($res);
+		    }else{
+		        $res = 90003;
+		    }
+		    if($res >= 90002){
+                // 			注意这里传递了参数，但是用url方式，接收时要使用$_GET
+    		    $this->redirect('evalu/login/login',['modulestr' => $request->module()]);
+		    }
 		}
 		$controller = request()->controller();
 		$action = request()->action();
-		$module = $request->module();
+		$module = request()->module();
 		$act = strtolower($module.'/'.$controller.'/'.$action);       //$controller . '/' . $action
 		$auth = new \Auth();
  		if(!$auth->check($act,session('user.user_id'))){
@@ -26,6 +40,54 @@ class Common extends Controller
 		} 
 	}
 	
+	//用于检验 token 是否存在, 并且更新 token
+	public function checkToken($token)
+	{
+	    $user = new UserModel();
+	    $res = $user->field('time_out,user_id,user_name')->where('token', $token)->find();
+// 	   halt($res->toarray());
+	    if (!empty($res)) {
+	        //dump(time() - $res[0]['time_out']);
+	        if (time() - $res['time_out'] > 0) {
+	            return 90003; //token长时间未使用而过期，需重新登陆
+	        }
+	        $new_time_out = time() + config('token_expire'); //604800是七天
+	        $update = $user->isUpdate(true)
+    	        ->where('token', $token)
+    	        ->update(['time_out' => $new_time_out]);
+	        if ($update) {
+    	        session('user.user_id',$res['user_id']);
+    	        session('user.user_name',$res['user_name']);
+	            return 90001; //token验证成功，time_out刷新成功，可以获取接口信息
+	        }
+	    }
+	
+	    return 90002; //token错误验证失败
+	}
+	
+	//创建 token
+	public function makeToken()
+	{
+	
+	    $str = md5(uniqid(md5(microtime(true)), true)); //生成一个不会重复的字符串
+	    $str = sha1($str); //加密
+	    return $str;
+	}
+	
+	//这是测试用的，要删
+	public function test(){
+// 	    $time = time();
+// 	    echo date("Y-m-d H:i:s",$time);
+//         $phoneToken = $this->makeToken();
+//         echo strlen($phoneToken);
+//         cookie('phoneToken',$phoneToken);
+// 	    cookie('phoneToken', null);
+//         echo cookie('phoneToken')===null;
+//         Session::delete('user.user_id');
+// 		Session::delete('user.user_name'); 
+        echo session('user.user_id');
+        echo session('user.user_name');
+	}
 	/*
 	 $rule,要验证的规则名称；
 	 $uid,用户的id；

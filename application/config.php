@@ -312,6 +312,7 @@ return [
     'elevator'          =>  ['带电梯','无电梯'],
     'structuer'         =>  ['钢混结构','砖混结构','钢结构'],
     'region'            =>  ['思明区','湖里区','海沧区','集美区','同安区','翔安区'],
+    'token_expire'      =>  604800,             //token的保存时间，604800是七天
             //apprsal_cdh数据库配置
     'db_apprsal_cdh' => [
             // 数据库类型

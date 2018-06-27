@@ -41,6 +41,7 @@ class Login extends Controller
 	{
 		Session::delete('user.user_id');
 		Session::delete('user.user_name');
+		cookie('lxtoken',null);
 		$this->redirect('phone/index/index');
 	}
 	
