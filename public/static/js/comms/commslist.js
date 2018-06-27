@@ -179,13 +179,7 @@ jQuery(function($) {
             name: '其他', index: '', width: 80, fixed: true, sortable: false, resize: false,  
             //formatter:'actions',  
             formatter: function formatDjho(cellvalue, options, rowObject){  
-//                if(rowObject["name"] == ""){  
-//                    return "";  
-//                }  
-//                var cz = "<a href=\"javascript:getCbdjInfo(\'"+rowObject["comm_id"]+"\')\" >" + cellvalue + "</a>";  
-//                return cz;  
-//            }
-             return '<a href=\"#\" style=\"color:#f60\" class=\"recalculate\" thisid=\"'+rowObject["comm_id"]+' \">重算基价</a>' }  
+            	return '<a href=\"#\" style=\"color:#f60\" class=\"recalculate\" thisid=\"'+rowObject["comm_id"]+' \">重算基价</a>' }  
             },
 		],
 		viewrecords : true,
