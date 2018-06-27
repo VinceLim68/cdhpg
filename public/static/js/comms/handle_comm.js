@@ -354,7 +354,7 @@ jQuery(function($) {
      			usage:usage,
      		},
      		success:function(response){ 
-     			console.log(response);
+     			//console.log(response);
      			setModalPriceHistoryEcharts(response);
      			if(response.price.length != 0){
      				if(usage==''){

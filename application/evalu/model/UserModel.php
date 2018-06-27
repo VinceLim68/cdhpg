@@ -4,6 +4,7 @@ namespace app\evalu\model;
 use think\Model;
 use think\Loader;
 use app\evalu\logic\LoginLogic;
+use app\evalu\controller\Common;
 
 
 class UserModel extends Model
@@ -54,16 +55,20 @@ class UserModel extends Model
 		// 		3.写入session，更新数据库的最后登录时间，最后登录ip，总登录次数
 		session('user.user_id',$userInfo['user_id']);
 		session('user.user_name',$userInfo['user_name']);
-		$ip = LoginLogic::getIP();		
+		$token = (new Common())->makeToken();
+		cookie('lxtoken',$token);
+		$ip = LoginLogic::getIP();
 		LoginRecordsModel::create([
-				'user_name'	=>	$data['user_name'],
-				'login_ip'	=>	$ip,
+		    'user_name'	=>	$data['user_name'],
+		    'login_ip'	=>	$ip,
 		]);
 		$this->save([
-				'login_times'  => $userInfo['login_times']+1,
-				'last_ip' => $ip,
+		    'login_times'  => $userInfo['login_times']+1,
+		    'last_ip' => $ip,
+		    'token'   =>  $token,
+		    'time_out' => time() + config('token_expire'),
+		     
 		],['user_id' => $userInfo['user_id']]);
-
 		return ['valid'=>1,'msg'=>'登录成功'];
 	}
 	
@@ -93,6 +98,8 @@ class UserModel extends Model
 // 			直接执行登录了
 		session('user.user_id',$this->user_id);
 		session('user.user_name',$data['user_name']);
+		$token = (new Common())->makeToken();
+		cookie('lxtoken',$token);
 		$ip = LoginLogic::getIP();
 		LoginRecordsModel::create([
 		    'user_name'	=>	$data['user_name'],
@@ -101,6 +108,8 @@ class UserModel extends Model
 		$this->save([
 		    'login_times'  => 1,
 		    'last_ip' => $ip,
+		    'token'   =>  $token,
+		    'time_out' => time() + config('token_expire'),
 		],['user_id' => $this->user_id]);
 		//新注册用户默认权限是普通会员
 		$group=array(
