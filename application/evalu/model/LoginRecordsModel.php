@@ -11,11 +11,13 @@ class LoginRecordsModel extends Model {
 	protected $autoWriteTimestamp = true;		//自动转化时间戳
 	// 定义时间戳字段名
 	protected $createTime = 'login_date';
-	protected $updateTime = 'login_date';
+	protected $resultSetType = 'collection';
+// 	protected $updateTime = 'login_date';
 	
-	public function __construct() {
+	public function getLogindateAttr($value)
+	{
+	    return date("Y-m-d H:i:s",$value);
 	}
-	
 	
 }
 

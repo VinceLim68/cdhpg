@@ -28,6 +28,14 @@ class UserModel extends Model
 	    return md5($value);
 	}
 	
+	public function getTimeOutAttr($value){
+	    if (is_null($value)){
+	        return '未设置';
+	    }else{
+	        
+    	    return date("Y-m-d H:i:s",$value);
+	    }
+	}
 	//与角色表多对多关联,不成功
 // 	public function group(){
 // 	    return $this->belongsToMany('GroupModel','group_access','uid','user_id');
@@ -58,9 +66,12 @@ class UserModel extends Model
 		$token = (new Common())->makeToken();
 		cookie('lxtoken',$token);
 		$ip = LoginLogic::getIP();
+		$machine = LoginLogic::getMachine();
 		LoginRecordsModel::create([
 		    'user_name'	=>	$data['user_name'],
 		    'login_ip'	=>	$ip,
+		    'machine'     =>  $machine,
+		    'type'     =>  '重新登录',
 		]);
 		$this->save([
 		    'login_times'  => $userInfo['login_times']+1,
@@ -101,9 +112,12 @@ class UserModel extends Model
 		$token = (new Common())->makeToken();
 		cookie('lxtoken',$token);
 		$ip = LoginLogic::getIP();
+		$machine = LoginLogic::getMachine();
 		LoginRecordsModel::create([
 		    'user_name'	=>	$data['user_name'],
 		    'login_ip'	=>	$ip,
+		    'machine'     =>  $machine,
+		    'type'     =>  '注册登录',
 		]);
 		$this->save([
 		    'login_times'  => 1,

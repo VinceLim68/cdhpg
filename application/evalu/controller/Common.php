@@ -5,6 +5,8 @@ use think\Controller;
 use think\Request;
 use app\evalu\model\UserModel;
 use think\Session;
+use app\evalu\logic\LoginLogic;
+use app\evalu\model\LoginRecordsModel;
 // use think\Auth;
 
 class Common extends Controller
@@ -49,10 +51,17 @@ class Common extends Controller
 	{
 	    $user = new UserModel();
 	    $res = $user->field('time_out,user_id,user_name')->where('token', $token)->find();
-// 	   halt($res->toarray());
+	    $ip = LoginLogic::getIP();
+	    $machine = LoginLogic::getMachine();
 	    if (!empty($res)) {
 	        //dump(time() - $res[0]['time_out']);
 	        if (time() - $res['time_out'] > 0) {
+	            LoginRecordsModel::create([
+	                'user_name'	=>	$res['user_name'],
+	                'login_ip'	=>	$ip,
+	                'machine'     =>  $machine,
+	                'type'     =>  'token过期,原有效期'.$res['time_out'],
+	            ]);
 	            return 90003; //token长时间未使用而过期，需重新登陆
 	        }
 	        $new_time_out = time() + config('token_expire'); //604800是七天
@@ -62,11 +71,24 @@ class Common extends Controller
 	        if ($update) {
     	        session('user.user_id',$res['user_id']);
     	        session('user.user_name',$res['user_name']);
+    	        LoginRecordsModel::create([
+    	            'user_name'	=>	$res['user_name'],
+    	            'login_ip'	=>	$ip,
+    	            'machine'     =>  $machine,
+    	            'type'     =>  '免登录,token有效期'.$new_time_out,
+    	        ]);
 	            return 90001; //token验证成功，time_out刷新成功，可以获取接口信息
 	        }
+	    }else{
+	        LoginRecordsModel::create([
+	            'user_name'	=>	'无session',
+	            'login_ip'	=>	$ip,
+	            'machine'     =>  $machine,
+	            'type'     =>  'token未找到',
+	        ]);
+    	    return 90002; //token错误验证失败
 	    }
 	
-	    return 90002; //token错误验证失败
 	}
 	
 	//创建 token
@@ -135,22 +157,21 @@ class Common extends Controller
 // 		Session::delete('user.user_name'); 
 //         echo session('user.user_id');
 //         echo session('user.user_name');
-        $result = $this->isMobile();
+//         $result = $this->isMobile();
+        echo LoginLogic::getMachine();
         
 	}
 	
 	
-	/*
-	 * 这是抄来的程序，先放在这里备用
-	 $rule,要验证的规则名称；
+	//这是抄来的程序，先放在这里备用
+	/*$rule,要验证的规则名称；
 	 $uid,用户的id；
 	 $relation，规则组合方式，默认为‘or’，以上三个参数都是根据Auth的check（）函数来的，
 	 $t,符合规则后，执行的代码
 	 $f，不符合规则的，执行代码，默认为抛出字符串‘没有权限’
 	 在模板中调用 {:authcheck('adminmenu',$uid,'or','<a href="/Home/Admin/index">管理中心</a>','')}
 	 这时侯有权限的才会有<a href="/Home/Admin/index">管理中心</a>代码
-	 */
-/* 	function authcheck($rule,$uid,$relation='or',$t,$f='没有权限'){
+	function authcheck($rule,$uid,$relation='or',$t,$f='没有权限'){
 	    //判断当前用户UID是否在定义的超级管理员参数里
 	    if(in_array($uid,config('administrator'))){
 	        return $t;    //如果是，则直接返回真值，不需要进行权限验证

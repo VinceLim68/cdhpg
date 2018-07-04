@@ -30,5 +30,8 @@ class LoginLogic {
 		return $ip;
 	}
 	
+    public static function getMachine(){
+        return gethostbyaddr($_SERVER['REMOTE_ADDR']);
+    }
 }
 

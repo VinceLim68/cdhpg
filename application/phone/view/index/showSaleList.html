@@ -58,7 +58,7 @@
 			<table	class="table table-striped table-bordered table-hover table-condensed">
 				<thead>
 					{foreach name="title" item="v"}
-					<th {in name="v" value="序号,建成,小区"}
+					<th {in name="v" value="序号,建成,小区,名称"}
 							 class="hide-xs"
 						{/in}>{$v}</th>
 					{/foreach}
@@ -69,7 +69,7 @@
 					<td class="hide-xs">{$v['id']}</td>
 					<td>{$v['title']}</td>
 					<td  class="hide-xs">{$v['community_id']}</td>
-					<td>{$v['community_name']}</td>
+					<td class="hide-xs">{$v['community_name']}</td>
 					<td>{$v['price']}</td>
 					<td>{$v['total_price']}</td>
 					<td>{$v['total_floor']}</td>
