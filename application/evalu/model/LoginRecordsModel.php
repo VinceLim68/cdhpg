@@ -10,9 +10,9 @@ class LoginRecordsModel extends Model {
 	protected $table = 'login_records';
 	protected $autoWriteTimestamp = true;		//自动转化时间戳
 	// 定义时间戳字段名
-	protected $createTime = 'login_date';
+	protected $createTime = 'logindate';
 	protected $resultSetType = 'collection';
-// 	protected $updateTime = 'login_date';
+	protected $updateTime = 'logindate';
 	
 	public function getLogindateAttr($value)
 	{

@@ -32,7 +32,6 @@ class UserModel extends Model
 	    if (is_null($value)){
 	        return '未设置';
 	    }else{
-	        
     	    return date("Y-m-d H:i:s",$value);
 	    }
 	}
