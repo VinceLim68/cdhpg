@@ -53,9 +53,11 @@ class Common extends Controller
 	    $res = $user->field('time_out,user_id,user_name')->where('token', $token)->find();
 	    $ip = LoginLogic::getIP();
 	    $machine = LoginLogic::getMachine();
+	    
 	    if (!empty($res)) {
+	        $time = strtotime($res['time_out']);
 	        //dump(time() - $res[0]['time_out']);
-	        if (time() - $res['time_out'] > 0) {
+	        if (time() - $time > 0) {
 	            LoginRecordsModel::create([
 	                'user_name'	=>	$res['user_name'],
 	                'login_ip'	=>	$ip,
@@ -75,7 +77,7 @@ class Common extends Controller
     	            'user_name'	=>	$res['user_name'],
     	            'login_ip'	=>	$ip,
     	            'machine'     =>  $machine,
-    	            'type'     =>  '免登录,token有效期'.$new_time_out,
+    	            'type'     =>  '免登录,新token有效期'.date("Y-m-d H:i:s",$new_time_out),
     	        ]);
 	            return 90001; //token验证成功，time_out刷新成功，可以获取接口信息
 	        }
@@ -158,8 +160,22 @@ class Common extends Controller
 //         echo session('user.user_id');
 //         echo session('user.user_name');
 //         $result = $this->isMobile();
-        echo LoginLogic::getMachine();
-        
+//         echo LoginLogic::getMachine();
+	    $token = cookie('lxtoken');
+	    $user = new UserModel();
+	    $res = $user->field('time_out,user_id,user_name')->where('token', $token)->find();
+	    echo $res['time_out'].'</br>';
+	    $time = strtotime($res['time_out']);
+	    echo $time.'</br>';
+	    echo time().'</br>';
+	    
+	    
+	    if($time-time()>0){
+	        echo '超过';
+	    }else{
+	        echo '没超过';
+	    }
+	    
 	}
 	
 	
