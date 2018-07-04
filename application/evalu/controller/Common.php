@@ -23,6 +23,14 @@ class Common extends Controller
 		        $token = cookie('lxtoken');
 		        $res = $this->checkToken($token);//这里会更新token的有效时间
 		    }else{
+		        $ip = LoginLogic::getIP();
+		        $machine = LoginLogic::getMachine();
+		        LoginRecordsModel::create([
+		            'user_name'	=>	'无session',
+		            'login_ip'	=>	$ip,
+		            'machine'     =>  $machine,
+		            'type'     =>  '客户端无token',
+		        ]);
 		        $res = 90003;
 		    }
 		    if($res >= 90002){
@@ -86,7 +94,7 @@ class Common extends Controller
 	            'user_name'	=>	'无session',
 	            'login_ip'	=>	$ip,
 	            'machine'     =>  $machine,
-	            'type'     =>  'token未找到',
+	            'type'     =>  '数据表中token未找到',
 	        ]);
     	    return 90002; //token错误验证失败
 	    }
