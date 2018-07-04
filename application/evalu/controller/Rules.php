@@ -469,9 +469,20 @@ class Rules extends Common {
 
     //查询用户的登录记录
     public function loginRecords(){
-        dump(input());
+//         dump(input());
         $login = new LoginRecordsModel();
-        $data=$login->order('logindate desc')->paginate(20);
+        $param = input();
+        if(isset($param['user_name'])){
+            $data=$login->order('logindate desc')
+                        ->where('user_name',$param['user_name'])
+                        ->paginate(40,false,[
+                    	        'query' => request()->param(),
+                    	    ]);
+        }else{
+            $data=$login->order('logindate desc')->paginate(40,false,[
+        	        'query' => request()->param(),
+        	    ]);
+        };
         $this->assign([
             'data'=>$data
         ]);

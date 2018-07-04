@@ -41,8 +41,8 @@
 					<td>{$v['login_ip']}</td>
 					<td>{$v['machine']}</td>
 					<td>{$v['type']}</td>
-					<td><a href="{:url('edit_user',array('user_id'=>$v['id']))}">修改</a>
-					<a href="{:url('edit_user',array('user_id'=>$v['id']))}">登录记录</a></td>
+					<td>
+					<a href="{:url('loginRecords',array('user_name'=>$v['user_name']))}">登录记录</a></td>
 				</tr>
 				{/foreach}
 			</table>

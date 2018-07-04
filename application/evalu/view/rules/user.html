@@ -48,7 +48,7 @@
 					<td>{$v['status']}</td>
 					<td>{$v['title']}</td>
 					<td><a href="{:url('edit_user',array('user_id'=>$v['user_id']))}">修改</a>
-					<a href="{:url('loginRecords',array('user_id'=>$v['user_id']))}">登录记录</a></td>
+					<a href="{:url('loginRecords',array('user_name'=>$v['user_name']))}">登录记录</a></td>
 				</tr>
 				{/foreach}
 			</table>
