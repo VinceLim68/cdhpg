@@ -444,6 +444,7 @@ class Comms extends Common {
 	        $liststring .= '<td>'.$v['community_id'].'</td>';
 	        $liststring .= '<td>'.$v['community_name'].'</td>';
 	        $liststring .= '<td>'.$v['price'].'</td>';
+	        $liststring .= '<td>'.$v['total_price'].'</td>';
 	        $liststring .= '<td>'.$v['total_floor'].'</td>';
 	        $liststring .= '<td>'.$v['builded_year'].'</td>';
 	        $liststring .= '</tr>';

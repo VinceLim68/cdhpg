@@ -9,6 +9,7 @@ use app\evalu\model\RuleModel;
 use app\evalu\model\UserModel;
 use app\phone\model\QueryRecordsModel;
 use app\evalu\model\ErrorCommModel;
+use app\evalu\model\LoginRecordsModel;
 
 class Rules extends Common {
 	protected $db;
@@ -466,4 +467,13 @@ class Rules extends Common {
         
     }
 
+    //查询用户的登录记录
+    public function loginRecords(){
+        $login = new LoginRecordsModel();
+        $data=$login->order('logindate desc')->paginate(20);
+        $this->assign([
+            'data'=>$data
+        ]);
+        return $this->fetch();
+    }
 }
