@@ -19,8 +19,8 @@
 			<div class="row">
 				<h3 style="color: #3c763d;">
 					<div class="col-md-11 col-xs-9" style="margin-bottom: 10px;">
-						{$findresult[0]['comm_name']}
-						<small style="padding-left:3%">{$findresult[0]['region']}</small>
+						{$findresult['commInfo']['comm_name']}
+						<small style="padding-left:3%">{$findresult['commInfo']['region']}</small>
 					</div>
 					<div class="col-md-1 col-xs-3">
 							<a class="btn btn-success" href="{:url('getprice',['community_id'=>$param['community_id'],'price'=>$param['price']])}" 
@@ -34,9 +34,6 @@
 			<div id="addAddresses"></div>
 		</div>
 	</div>
-    
-
-	
 		
    
     <script src="__JS__/comms/buildAddCommAddressForm.js"></script>
@@ -44,7 +41,7 @@
     jQuery(function ($) {
     	var myjson = {:json_encode($findresult)}
     	//var myjson =  eval("("+myjson+")");		//把json转为对象
-    	//console.log(myjson);
+    	console.log(myjson);
     	var table_html = buildCommAddressList(myjson);
 	    var form_html = buildAddCommAddressForm(myjson);
     	$('#addAddresses').html(form_html +table_html ); 
