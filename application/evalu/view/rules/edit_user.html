@@ -1,10 +1,14 @@
 ﻿{extend name="mainbase" /} {block name="pg_cs"} {/block} {block
-name="breadcrumb"} {/block} {block name="main"}
-<div class="page-header">
-	<h1>
-		<i class="fa fa-home"></i> 首页 &gt; 后台管理 &gt; 修改用户
-	</h1>
-</div>
+name="breadcrumb"}
+<ul class="breadcrumb">
+	<li><i class="ace-icon fa fa-home home-icon"></i> <a href="#">大叔评估后台</a>
+	</li>
+	<li><a href="#">用户及权限管理</a></li>
+	<li><a href="#">修改用户</a></li>
+
+</ul>
+ {/block} {block name="main"}
+
 <div class="col-xs-12">
 	<div class="tabbable">
 		<ul class="nav nav-tabs padding-12 tab-color-blue background-blue"

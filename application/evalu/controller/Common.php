@@ -73,21 +73,29 @@ class Common extends Controller
 	                'type'     =>  'token过期,原有效期'.$res['time_out'],
 	            ]);
 	            return 90003; //token长时间未使用而过期，需重新登陆
-	        }
-	        $new_time_out = time() + config('token_expire'); //604800是七天
-	        $update = $user->isUpdate(true)
-    	        ->where('token', $token)
-    	        ->update(['time_out' => $new_time_out]);
-	        if ($update) {
+	        }else{
+    	        $new_time_out = time() + config('token_expire'); //604800是七天
+    	        $update = $user->isUpdate(true)
+        	        ->where('token', $token)
+        	        ->update(['time_out' => $new_time_out]);
     	        session('user.user_id',$res['user_id']);
     	        session('user.user_name',$res['user_name']);
-    	        LoginRecordsModel::create([
-    	            'user_name'	=>	$res['user_name'],
-    	            'login_ip'	=>	$ip,
-    	            'machine'     =>  $machine,
-    	            'type'     =>  '免登录,新token有效期'.date("Y-m-d H:i:s",$new_time_out),
-    	        ]);
-	            return 90001; //token验证成功，time_out刷新成功，可以获取接口信息
+    	        if ($update) {
+        	        LoginRecordsModel::create([
+        	            'user_name'	=>	$res['user_name'],
+        	            'login_ip'	=>	$ip,
+        	            'machine'     =>  $machine,
+        	            'type'     =>  '免登录,新token有效期'.date("Y-m-d H:i:s",$new_time_out),
+        	        ]);
+    	            return 90001; //token验证成功，time_out刷新成功，可以获取接口信息
+    	        }else{
+    	            LoginRecordsModel::create([
+    	                'user_name'	=>	$res['user_name'],
+    	                'login_ip'	=>	$ip,
+    	                'machine'     =>  $machine,
+    	                'type'     =>  '免登录,但没更新成功',
+    	            ]);
+    	        }
 	        }
 	    }else{
 	        LoginRecordsModel::create([
