@@ -62,9 +62,11 @@ class Common extends Controller
 	    $ip = LoginLogic::getIP();
 	    $machine = LoginLogic::getMachine();
 	    
+	    //token能找到
 	    if (!empty($res)) {
 	        $time = strtotime($res['time_out']);
-	        //dump(time() - $res[0]['time_out']);
+	        
+	        //token过期;
 	        if (time() - $time > 0) {
 	            LoginRecordsModel::create([
 	                'user_name'	=>	$res['user_name'],
@@ -80,6 +82,8 @@ class Common extends Controller
         	        ->update(['time_out' => $new_time_out]);
     	        session('user.user_id',$res['user_id']);
     	        session('user.user_name',$res['user_name']);
+    	        //把cookie再存一次
+    	        cookie('lxtoken',$token);
     	        if ($update) {
         	        LoginRecordsModel::create([
         	            'user_name'	=>	$res['user_name'],
@@ -177,21 +181,23 @@ class Common extends Controller
 //         echo session('user.user_name');
 //         $result = $this->isMobile();
 //         echo LoginLogic::getMachine();
-	    $token = cookie('lxtoken');
-	    $user = new UserModel();
-	    $res = $user->field('time_out,user_id,user_name')->where('token', $token)->find();
-	    echo $res['time_out'].'</br>';
-	    $time = strtotime($res['time_out']);
-	    echo $time.'</br>';
-	    echo time().'</br>';
+// 	    $token = cookie('lxtoken');
+// 	    $user = new UserModel();
+// 	    $res = $user->field('time_out,user_id,user_name')->where('token', $token)->find();
+// 	    echo $res['time_out'].'</br>';
+// 	    $time = strtotime($res['time_out']);
+// 	    echo $time.'</br>';
+// 	    echo time().'</br>';
 	    
 	    
-	    if($time-time()>0){
-	        echo '超过';
-	    }else{
-	        echo '没超过';
-	    }
-	    
+// 	    if($time-time()>0){
+// 	        echo '超过';
+// 	    }else{
+// 	        echo '没超过';
+// 	    }
+	    Session::delete('user.user_id');
+	    Session::delete('user.user_name');
+	    echo cookie('lxtoken');
 	}
 	
 	
