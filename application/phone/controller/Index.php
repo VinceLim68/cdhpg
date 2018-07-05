@@ -9,9 +9,9 @@ use app\evalu\model\ErrorCommModel;
 use app\phone\model\QueryRecordsModel;
 use app\evalu\model\SalesModel;
 use app\phone\model\TEnquiryModel;
-use app\phone\model\TCaseCfgModel;
+// use app\phone\model\TCaseCfgModel;
 use app\evalu\logic\CreatExcelLogic;
-use app\phone\model\CPGRecordModel;
+// use app\phone\model\CPGRecordModel;
 use app\evalu\model\CommRelateModel;
 use app\phone\model\EasyPGXjModel;
 use app\phone\model\EasyCjalkModel;
@@ -553,6 +553,7 @@ class Index extends Common {
     //移动端采集小区地址
     public function inputAddress(){
         $param = input();
+//         dump($param);
         $ca = new CommaddressModel();
         $findresult = $ca->alias('a')
             ->join('comm c','c.comm_id = a.comm_id')
@@ -562,17 +563,21 @@ class Index extends Common {
                     keywords')
             ->order(['road','doorplate'])
             ->select();
+//         dump($findresult);
+        $commInfo = (new Comm())->where('comm_id',$param['community_id'])->find()->toArray();
         if($findresult){
             $getconfigs = action('evalu/comms/getConfig');
             $findresult = $findresult->toArray();
             $findresult = array_merge($findresult,$getconfigs);
+            $findresult['commInfo'] = $commInfo;
         }else{
             $findresult = 0;
         }
-//         dump($findresult);
+//         halt($findresult);
         $this->assign([
             'param' => $param,
             'findresult'=> $findresult,    //往js里传递数组，要转化成json
+//             'commInfo'  =>  $commInfo,
         ]);
         return $this->fetch();
     }
