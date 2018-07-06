@@ -29,7 +29,7 @@ class Common extends Controller
 		            'user_name'	=>	'无session',
 		            'login_ip'	=>	$ip,
 		            'machine'     =>  $machine,
-		            'type'     =>  '客户端无token',
+		            'type'     =>  '客户端无token，需要重新登录',
 		        ]);
 		        $res = 90003;
 		    }
@@ -72,7 +72,7 @@ class Common extends Controller
 	                'user_name'	=>	$res['user_name'],
 	                'login_ip'	=>	$ip,
 	                'machine'     =>  $machine,
-	                'type'     =>  'token过期,原有效期'.$res['time_out'],
+	                'type'     =>  'token过期,待登录：'.$res['time_out'],
 	            ]);
 	            return 90003; //token长时间未使用而过期，需重新登陆
 	        }else{
@@ -89,7 +89,7 @@ class Common extends Controller
         	            'user_name'	=>	$res['user_name'],
         	            'login_ip'	=>	$ip,
         	            'machine'     =>  $machine,
-        	            'type'     =>  '免登录,新token有效期'.date("Y-m-d H:i:s",$new_time_out),
+        	            'type'     =>  '免登录,更新token有效期'.date("Y-m-d H:i:s",$new_time_out),
         	        ]);
     	            return 90001; //token验证成功，time_out刷新成功，可以获取接口信息
     	        }else{
@@ -106,7 +106,7 @@ class Common extends Controller
 	            'user_name'	=>	'无session',
 	            'login_ip'	=>	$ip,
 	            'machine'     =>  $machine,
-	            'type'     =>  '数据表中token未找到',
+	            'type'     =>  '未找到匹配的token',
 	        ]);
     	    return 90002; //token错误验证失败
 	    }
