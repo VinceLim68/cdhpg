@@ -307,6 +307,7 @@ jQuery(function($) {
 			}
     	}else{
     		$("textarea[name='remaining_land_value_desc']").val("收益期满时土地使用权也同时到期，故其剩余土地使用权价值为0。");
+    		$("input[name='remaining_land_value']").val(0);
     	};
     	
     	//收益价值
