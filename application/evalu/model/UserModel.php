@@ -47,39 +47,55 @@ class UserModel extends Model
 	{
 		//		1.验证
 		$validate = Loader::validate('UserValidate');
-		// 		如果验证不通过
-		if(!$validate->check($data)){
-			return ['valid'=>0,'msg'=>$validate->getError()];
-		}
-		// 		2.比对用户名和密码
-// 		halt($data);
-		$userInfo = $this->where('user_name',$data['user_name'])->where('pass',$data['pass'])->find();
-		if(!$userInfo)
-		{
-			//说明在数据库没找到用户
-			return ['valid'=>0,'msg'=>'用户名或者密码不正确']; 
-		}
-		// 		3.写入session，更新数据库的最后登录时间，最后登录ip，总登录次数
-		session('user.user_id',$userInfo['user_id']);
-		session('user.user_name',$userInfo['user_name']);
-		$token = (new Common())->makeToken();
-		cookie('lxtoken',$token);
 		$ip = LoginLogic::getIP();
 		$machine = LoginLogic::getMachine();
-		LoginRecordsModel::create([
-		    'user_name'	=>	$data['user_name'],
-		    'login_ip'	=>	$ip,
-		    'machine'     =>  $machine,
-		    'type'     =>  '重新登录',
-		]);
-		$this->save([
-		    'login_times'  => $userInfo['login_times']+1,
-		    'last_ip' => $ip,
-		    'token'   =>  $token,
-		    'time_out' => time() + config('token_expire'),
-		     
-		],['user_id' => $userInfo['user_id']]);
-		return ['valid'=>1,'msg'=>'登录成功'];
+		// 		如果验证不通过
+		if(!$validate->check($data)){
+		    LoginRecordsModel::create([
+		        'user_name'	=>	'待登录',
+		        'login_ip'	=>	$ip,
+		        'machine'     =>  $machine,
+		        'type'     =>  '输入数据验证未通过',
+		    ]);
+			return ['valid'=>0,'msg'=>$validate->getError()];
+		}else{
+    		// 		2.比对用户名和密码
+    // 		halt($data);
+    		$userInfo = $this->where('user_name',$data['user_name'])->where('pass',$data['pass'])->find();
+    		if(!$userInfo)
+    		{
+    			//说明在数据库没找到用户
+    		    LoginRecordsModel::create([
+    		        'user_name'	=>	'待登录',
+    		        'login_ip'	=>	$ip,
+    		        'machine'     =>  $machine,
+    		        'type'     =>  '用户名或者密码不正确',
+    		    ]);
+    			return ['valid'=>0,'msg'=>'用户名或者密码不正确']; 
+    		}else{
+        		// 		3.写入session，更新数据库的最后登录时间，最后登录ip，总登录次数
+        		session('user.user_id',$userInfo['user_id']);
+        		session('user.user_name',$userInfo['user_name']);
+        		$token = (new Common())->makeToken();
+        		cookie('lxtoken',$token);
+    
+        		LoginRecordsModel::create([
+        		    'user_name'	=>	$data['user_name'],
+        		    'login_ip'	=>	$ip,
+        		    'machine'     =>  $machine,
+        		    'type'     =>  '重新登录成功',
+        		]);
+        		$this->save([
+        		    'login_times'  => $userInfo['login_times']+1,
+        		    'last_ip' => $ip,
+        		    'token'   =>  $token,
+        		    'time_out' => time() + config('token_expire'),
+        		     
+        		],['user_id' => $userInfo['user_id']]);
+        		return ['valid'=>1,'msg'=>'登录成功'];
+    		}
+		    
+		}
 	}
 	
 	//注册
