@@ -308,7 +308,7 @@ jQuery(function($) {
 						+N+"/"+max_years+")="+land+"元/平方米");
 			}
     	}else{
-    		alert('进来');
+//    		alert('进来');
     		$("textarea[name='remaining_land_value_desc']").val("收益期满时土地使用权也同时到期，故其剩余土地使用权价值为0。");
     		land = 0;
     		$("input[name='remaining_land_value']").val(land);
