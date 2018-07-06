@@ -287,6 +287,8 @@ jQuery(function($) {
     			+"年内年净收益取逐年递增"+increase_rate+"%，之后净收益保持不变。");
     	
     	//剩余土地使用权价值
+//    	alert(foruse_land - N >0);
+//    	alert(N);
     	if(foruse_land - N > 0){
     		if($("input[name='base_land_price']").val() == 0){
     			$("textarea[name='remaining_land_value_desc']").val("需要输入基准地价！！！");
@@ -306,8 +308,10 @@ jQuery(function($) {
 						+N+"/"+max_years+")="+land+"元/平方米");
 			}
     	}else{
+    		alert('进来');
     		$("textarea[name='remaining_land_value_desc']").val("收益期满时土地使用权也同时到期，故其剩余土地使用权价值为0。");
-    		$("input[name='remaining_land_value']").val(0);
+    		land = 0;
+    		$("input[name='remaining_land_value']").val(land);
     	};
     	
     	//收益价值
