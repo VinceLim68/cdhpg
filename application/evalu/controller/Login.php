@@ -62,7 +62,6 @@ class Login extends Controller
 		        $this->redirect('evalu/sales/salesList');
 		    
 		    }
-// 			$this->success($res['msg'],'login');exit;
 		}else
 		{
 			//注册失败
