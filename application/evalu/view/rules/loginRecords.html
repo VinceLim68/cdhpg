@@ -30,6 +30,7 @@
 					<th>登录日期</th>
 					<th>登录IP</th>
 					<th>机器</th>
+					<th>手机</th>
 					<th>登录类型</th>
 					<th>操作</th>
 				</tr>
@@ -40,6 +41,7 @@
 					<td>{$v.logindate}</td>
 					<td>{$v['login_ip']}</td>
 					<td>{$v['machine']}</td>
+					<td>{$v['isphone']}</td>
 					<td>{$v['type']}</td>
 					<td>
 					<a href="{:url('loginRecords',array('user_name'=>$v['user_name']))}">登录记录</a></td>

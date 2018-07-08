@@ -49,6 +49,9 @@ class UserModel extends Model
 		$validate = Loader::validate('UserValidate');
 		$ip = LoginLogic::getIP();
 		$machine = LoginLogic::getMachine();
+// 		$common = new Common();
+		$isPhone = LoginLogic::isMobile()?'手机':'非手机';
+// 		$isPhone = (new Common())->isMobile()?'手机':'非手机';
 		// 		如果验证不通过
 		if(!$validate->check($data)){
 		    LoginRecordsModel::create([
@@ -56,6 +59,7 @@ class UserModel extends Model
 		        'login_ip'	=>	$ip,
 		        'machine'     =>  $machine,
 		        'type'     =>  '输入数据验证未通过',
+		        'isphone'     =>  $isPhone,
 		    ]);
 			return ['valid'=>0,'msg'=>$validate->getError()];
 		}else{
@@ -70,6 +74,7 @@ class UserModel extends Model
     		        'login_ip'	=>	$ip,
     		        'machine'     =>  $machine,
     		        'type'     =>  '用户名或者密码不正确',
+    		        'isphone'     =>  $isPhone,
     		    ]);
     			return ['valid'=>0,'msg'=>'用户名或者密码不正确']; 
     		}else{
@@ -77,6 +82,7 @@ class UserModel extends Model
         		session('user.user_id',$userInfo['user_id']);
         		session('user.user_name',$userInfo['user_name']);
         		$token = (new Common())->makeToken();
+//         		$token = $common->makeToken();
         		cookie('lxtoken',$token);
     
         		LoginRecordsModel::create([
@@ -84,6 +90,7 @@ class UserModel extends Model
         		    'login_ip'	=>	$ip,
         		    'machine'     =>  $machine,
         		    'type'     =>  '重新登录成功',
+        		    'isphone'     =>  $isPhone,
         		]);
         		$this->save([
         		    'login_times'  => $userInfo['login_times']+1,
