@@ -293,4 +293,8 @@ dump(getUID());
         ]);
         return $this->fetch();
     }
+
+    public function html5_localstage(){
+        return $this->fetch();
+    }
 }

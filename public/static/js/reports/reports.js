@@ -279,12 +279,21 @@ jQuery(function($) {
     	//递增率
     	var increase_rate = myround(parseFloat($("input[name='increase_rate']").val()));
     	var g = increase_rate/100;
+    	
     	//递增年限
     	var m = $("input[name='increase_years']").val();
-    	$("textarea[name='increase_years_desc']").val("根据对当地类似房地产租赁市场近年来的租金行情走势分析，"
-    			+"并对年净收益进行分析，同类物业年净收益逐年递增为"+ myround((increase_rate-1))+"%~"+(increase_rate+1)+"%。结合估价对象的实际情况和估价人员分析，"
-    			+"并采用长期趋势法预期未来，设定本次估价中，估价对象在价值时点未来"+ m 
-    			+"年内年净收益取逐年递增"+increase_rate+"%，之后净收益保持不变。");
+    	if(m<N){
+    		//如果递增年限小于收益期
+    		$("textarea[name='increase_years_desc']").val("根据对当地类似房地产租赁市场近年来的租金行情走势分析，"
+    				+"并对年净收益进行分析，同类物业年净收益逐年递增为"+ myround((increase_rate-1))+"%~"+(increase_rate+1)+"%。结合估价对象的实际情况和估价人员分析，"
+    				+"并采用长期趋势法预期未来，设定本次估价中，估价对象在价值时点未来"+ m 
+    				+"年内年净收益取逐年递增"+increase_rate+"%，之后净收益保持不变。");
+    	}else{
+    		//递增年限=收益期
+    		$("textarea[name='increase_years_desc']").val("根据对当地类似房地产租赁市场近年来的租金行情走势分析，"
+    				+"并对年净收益进行分析，同类物业年净收益逐年递增为"+ myround((increase_rate-1))+"%~"+(increase_rate+1)+"%。结合估价对象的实际情况和估价人员分析，"
+    				+"本次估价设定收益期内年净收益年递增"+increase_rate+"%。");
+    	}
     	
     	//剩余土地使用权价值
 //    	alert(foruse_land - N >0);
@@ -318,10 +327,18 @@ jQuery(function($) {
     	var income_value = A/(Y-g)*(1-Math.pow(((1+g)/(1+Y)),m))+
     		A*Math.pow(1+g,m)/Y/Math.pow(1+Y,m)*(1-1/Math.pow(1+Y,N-m))
     		+ land;
-    	income_value = myround(income_value);
+    	income_value = myround(income_value,0);
+//    	alert(income_value);
     	if(!isNaN(income_value)){
     		$("input[name='income_value']").val(income_value);
     		$("#result").html(income_value);
+    	}
+    	if(m<N){
+    		//如果递增年限小于收益期
+    		$("textarea[name='reason_formula']").val("V=A/(Y-g)×{1-[(1+g)/(1+Y)]^t}+A×(1+g)^t/Y/(1+Y)^t×[1-1/(1+Y)^(N-t)];式中：V—估价对象收益价值;A—未来第1年净收益； Y—房地产报酬率；g—净收益逐年递增比率；N—收益期；t—年净收益递增年数。");
+    	}else{
+    		$("textarea[name='reason_formula']").val("V=A/(Y-g)×{1-[(1+g)/(1+Y)]^N};式中：V—估价对象收益价值;A—未来第1年净收益； Y—房地产报酬率；g—净收益逐年递增比率；N—收益期。");
+    		
     	}
     	
 	};
@@ -417,16 +434,19 @@ jQuery(function($) {
 			dataType:'json',
 			url:ajaxSaveIncomeValueProcess,
 			success:function(rep){
-				
+				alert("保存成功")
 			}
 		
 			
 		});
 	});
 	
-	function myround(num){
-		var newnum = parseFloat(num).toRound(2);
-		return(newnum);
+	
+	function myround()
+	{
+		var num = arguments[0] ;//参数第一位为要转化的数字
+		var b = arguments.length>=2 ? arguments[1] : 2;//参数第二位为小数位数，如果没有传入，设置默认小数位数为2
+		return parseFloat(num).toRound(b);
 	};
 	
 	//计算两个时间相差多少年
@@ -486,7 +506,7 @@ jQuery(function($) {
 
 	//四舍五入法
 	Number.prototype.toRound = function (num) {
-	return Math.round(this * Math.pow(10, num)) / Math.pow(10, num);
+		return Math.round(this * Math.pow(10, num)) / Math.pow(10, num);
 	};
 	
 	//鼠标进入后textarea自动展开
