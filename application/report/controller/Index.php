@@ -106,8 +106,11 @@ class Index extends Controller {
                 'memo'=>'income_period_desc','readonly'=>false,],
             ['serial'=>'(八)','caption'=>'收益期结束后剩余土地使用权价值','name'=>'remaining_land_value',
                 'memo'=>'remaining_land_value_desc','readonly'=>false,],
+/*             ['serial'=>'(九)','caption'=>'收益价格','name'=>'income_value',
+                'memo'=>'*收益公式','readonly'=>false,], */
             ['serial'=>'(九)','caption'=>'收益价格','name'=>'income_value',
-                'memo'=>'*收益公式','readonly'=>false,],
+                'memo'=>'reason_formula','readonly'=>false,], 
+//             reason_formula
         ];
         $this->assign([
             'fields'=>$fields,
