@@ -89,7 +89,14 @@
 								<th class="col-md-1">序号</th>
 								<th class="col-md-3">内容(元/平方米)</th>
 								<th class="col-md-1">数量</th>
-								<th class="col-md-7">收益价值：<span id="result"></span><small>元/平方米</small></th>
+								<th class="col-md-7" style="padding-top: 12px;">收益价值：<span id="result"></span><small>元/平方米</small>
+									<div class="checkbox" style="float:right;padding-top: 0px;">
+									  <label>
+									    <input type="checkbox" name="isAfterTax" value="1">
+									    是否税后收入
+									  </label>
+									</div>
+								</th>
 							</tr>
 							{volist name="fields" id="vo"}
 								<tr>
