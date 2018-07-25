@@ -1,24 +1,7 @@
 jQuery(function($) {
-//	function form_refresh(object){
-//		//刷新页面
-//		for(var Key in object){
-//			$("textarea[name='"+ Key +"']").val(object[Key]);
-//			$("input[name='"+ Key +"']").val(object[Key]);
-//		}
-//	};
-//    $("input[name='username']").val()
+
 	$("form input,form select").on('change',function(){
 		form_default();
-		//当与税收有关的内容发生变动时，重新获得税率
-//		$.ajax({
-//			url:getRentTaxRate,
-//			data:$('#income_value_process').serializeArray(),
-//			type:'post',
-//			dataType:"json",
-//			success:function(response){  
-//				form_refresh(response);
-//	        }  
-//		});
 	})
 	
 	function form_default(){
@@ -34,6 +17,7 @@ jQuery(function($) {
 		var VAT_start_value = $("input[name='VAT_start_value']").val();
 		var area = $("input[name='area']").val();
 		var location_type = $("select[name='location_type']").val();
+		var isaftertax = $("input[name='isAfterTax']:checked").val();
 
 		$("input[name='rent_loss']").val(rent_loss);
 		$("textarea[name='vacancy_rate_desc']").val('根据估价人员对类似'+
@@ -49,134 +33,170 @@ jQuery(function($) {
 		var annual_income = myround(monthly_rent*12 - rent_loss + other_income);
 		$("input[name='annual_income']").val(annual_income);
 		
-		//增值税率
-		var $rent = myround(monthly_rent*area/1.05);
-	    if(authority_type=='个人'){            //如何是个人
-	    	if($rent <= VAT_start_value){        //月租金小于起征点,不区分住宅与否
-	    		$("input[name='value_added_tax_rate']").val('0');
-	    		var value_added_tax_rate = $("input[name='value_added_tax_rate']").val();
-            	$("textarea[name='value_added_tax_rate_desc']").val('根据国家及当地政府有关增值税征收规定，私房出租增值税起征点为'+
-            			VAT_start_value+'元，本估价对象的不含税收入为'+$rent+'元，小于增值税起征点，属于免征范围。');
-	    	}else{
-	    		if(property_type == '住宅'){       //是住宅
-	    			$("input[name='value_added_tax_rate']").val('1.5');
-	            	var value_added_tax_rate = $("input[name='value_added_tax_rate']").val();
+		if(isaftertax == undefined){
+			//如果不是采用税后收入，要正常扣税
+			//增值税率
+			var $rent = myround(monthly_rent*area/1.05);
+			if(authority_type=='个人'){            //如何是个人
+				if($rent <= VAT_start_value){        //月租金小于起征点,不区分住宅与否
+					$("input[name='value_added_tax_rate']").val('0');
+					var value_added_tax_rate = $("input[name='value_added_tax_rate']").val();
+					$("textarea[name='value_added_tax_rate_desc']").val('根据国家及当地政府有关增值税征收规定，私房出租增值税起征点为'+
+							VAT_start_value+'元，本估价对象的不含税收入为'+$rent+'元，小于增值税起征点，属于免征范围。');
+				}else{
+					if(property_type == '住宅'){       //是住宅
+						$("input[name='value_added_tax_rate']").val('1.5');
+						var value_added_tax_rate = $("input[name='value_added_tax_rate']").val();
 //	                $value_added_tax = $input['monthly_rent']/1.05 * $input['value_added_tax_rate']/100;
-	            	$("textarea[name='value_added_tax_rate_desc']").val('根据国家及当地政府有关增值税征收规定，个人出租住房类增值税起征点为'
-	            			+VAT_start_value+'元，本估价对象的不含税收入为'+$rent+'元，其增值税减按'
-		   	                +value_added_tax_rate+'%征收率：增值税 ＝ 年有效毛收入/（1+5%） × 增值税率 = '
-		   	                +annual_income+'/(1+5%)×'+value_added_tax_rate+'%。');
-	    		}else{
-	    			$("input[name='value_added_tax_rate']").val('5');
-	    			var value_added_tax_rate = $("input[name='value_added_tax_rate']").val();
-	    			$("textarea[name='value_added_tax_rate_desc']").val('本估价对象的不含税收入为'+$rent+
-	    					'元，需要缴纳增值税。根据国家及当地政府有关增值税征收规定，个人出租非住房类增值税按'+value_added_tax_rate
-	    					+'%征收率：增值税 ＝ 月租金收入/（1+5%） × 增值税率 = '
-	    					+annual_income+'/(1+5%)×'+value_added_tax_rate+'%。');
-	    		}
-	    	}
-        }else{			//企业的增值税
-        	var Have_time = $("select[name='Have_time']").val();
-        	if(authority_type=='一般纳税人' && Have_time=='2016年5月1日后'){ 
-        		$("input[name='value_added_tax_rate']").val('11');
-    			$("textarea[name='value_added_tax_rate_desc']").val('一般纳税人出租其2016年5月1日后取得的不动产，适用一般计税方法计税，'
-    					+'适用税率11%。应预缴税款＝含税销售额÷（1+11%）×3%='+annual_income+'/(1+11%)×3%。');
-        	}else{
-        		$("input[name='value_added_tax_rate']").val('5');
-    			$("textarea[name='value_added_tax_rate_desc']").val('一般纳税人出租其2016年4月30日前取得的不动产，或小规模纳税人'
-    					+'出租不动产，按照5%的征收率计算应纳税额。应预缴税款＝含税销售额 ÷（1+5%）×5%='+annual_income+' ÷（1+5%）×5%。');
-        	}
-        	var value_added_tax_rate = $("input[name='value_added_tax_rate']").val();
-        };
-        
-        //增值税附加
-	    if(location_type=='市区'){
-	    	$("input[name='addition_rate']").val('12');
-	        $("textarea[name='addition_rate_desc']").val('增值税附加以增值税为征收基数，包括城建税、教育费附加、地方教育附加，在'
-	           +location_type+'，城建税税率为7%，教育费附加3%，地方教育附加2%，增值税附加 = 增值税 ×(7%+3%+2%)= 增值税 ×'
-	           +$("input[name='addition_rate']").val()+'%。');
-	    }else if (location_type=='县镇'){
-	    	$("input[name='addition_rate']").val('10');
-	        $("textarea[name='addition_rate_desc']").val('增值税附加以增值税为征收基数，包括城建税、教育费附加、地方教育附加，在'
-	           +location_type+'，城建税税率为5%，教育费附加3%，地方教育附加2%，增值税附加 = 增值税 ×(5%+3%+2%)= 增值税 ×'
-	           +$("input[name='addition_rate']").val()+'%。');
-	    }else{
-	    	$("input[name='addition_rate']").val('6');
-	        $("textarea[name='addition_rate_desc']").val('增值税附加以增值税为征收基数，包括城建税、教育费附加、地方教育附加，在'
-	           +location_type+'，城建税税率为1%，教育费附加3%，地方教育附加2%，增值税附加 = 增值税 ×(1%+3%+2%)= 增值税 ×'
-	           +$("input[name='addition_rate']").val()+'%。');
-	    };
-	    var addition_rate = $("input[name='addition_rate']").val();
-	    
-	    
-	    //增值税及说明
-	    if(authority_type=='一般纳税人' && Have_time=='2016年5月1日后'){
-	    	var value_added_tax_and_additional = myround(annual_income/1.11*0.03*(1+addition_rate/100));
-	    	$("input[name='value_added_tax_and_additional']").val(value_added_tax_and_additional);
-	    	$("textarea[name='value_added_tax_and_additional_desc']").val('增值税 ＝ 年有效毛收入/（1+11%） ×'+
-	    			'3%×（1+增值税附加）='+annual_income+'/（1+11%） ×3%×（1+'+addition_rate+'%）='
-	    			+value_added_tax_and_additional+'元/平方米。');
-	    }else{
-	    	var value_added_tax_and_additional = myround(annual_income/1.05*value_added_tax_rate/100*(1+addition_rate/100));
-	    	$("input[name='value_added_tax_and_additional']").val(value_added_tax_and_additional);
-	    	$("textarea[name='value_added_tax_and_additional_desc']").val('增值税 ＝ 年有效毛收入/（1+5%） ×'+
-	    			value_added_tax_rate+'%×（1+增值税附加）='+annual_income+'/（1+5%） ×'+
-	    			value_added_tax_rate+'%×（1+'+addition_rate+'%）='+value_added_tax_and_additional+'元/平方米。');
-	    }
-	    
-	    //房产税
-	    if(property_type == '住宅'){
-	    	//无论企业个人
-	    	var property_tax = myround(0.04*annual_income/1.05);
-	    	$("input[name='property_tax']").val(property_tax);
-	    	$("textarea[name='property_tax_desc']").val('个人出租住房，企事业单位、社会团体以及其他组织按市场价格向个人出租用于居住的住房，减按4%的税率征收房产税：房产税＝年有效毛收入/(1+5%)×4% = '
-	    			+annual_income+'/(1+5%)×4% ='+property_tax+'元/平方米。');
-	    }else{
-	    	var property_tax = myround(0.12*annual_income/1.05);
-	    	$("input[name='property_tax']").val(property_tax);
-	    	$("textarea[name='property_tax_desc']").val('出租非住房类，根据税务规定，房产税税率为12%：房产税＝年有效毛收入/(1+5%)×12%='
-	    			+annual_income+'/(1+5%)×12% ='+property_tax+'元/平方米。');
-	    };
-	    
-	    //所得税
-	    if(authority_type=='个人'){            //如何是个人缴纳所得税
-	    	if(property_type == '住宅'){
-	    		var income_tax = myround(annual_income/1.05*0.05*0.1);
-	    		$("input[name='income_tax']").val(income_tax);
-	    		$("textarea[name='income_tax_desc']").val('个人出租住房时，应纳个人所得税=增值税不含税收入×5%×税率 '+
-	    				'，根据有关规定，其所得减按10％的税率征收，所得税='+annual_income+'/(1+5%)×5%×10% ='
-	    				+income_tax+'元/平方米。');
-	    	}else{
-	    		var income_tax = myround(annual_income/1.05*0.05*0.2);
-	    		$("input[name='income_tax']").val(income_tax);
-	    		$("textarea[name='income_tax_desc']").val('个人出租其他房屋时，应纳个人所得税=增值税不含税收入×5%×税率 '+
-	    				'，根据有关规定，其所得按照20%税率征收个人所得税，所得税='+annual_income+'/(1+5%)×5%×20% ='
-	    				+income_tax+'元/平方米。');
-	    	}
-	    }else{
-	    	var income_tax = 0;
-    		$("input[name='income_tax']").val(income_tax);
-    		$("textarea[name='income_tax_desc']").val('因企业出租房屋所得与其他收入合并计算所得税，各企业构成相差较大，'+
-    				'理论上不动产的价值不会因为不同的持有者而不同，为保证估价测算的客观性，在这里中暂不考虑企业所得税对价值的影响。');
-	    };
-	    
-	    //其他零星税收
-	    if(authority_type=='个人' && property_type == '住宅'){
-	    	var little_tax = 0;
-	    	$("input[name='little_tax']").val(little_tax);
-	    	$("textarea[name='little_tax_desc']").val('其他零星税收主要包括土地使用税、印花税等，对个人出租住房均予免征。');
-	    }else{
-	    	var little_tax = myround(annual_income/1.05*0.01);
-	    	$("input[name='little_tax']").val(little_tax);
-	    	$("textarea[name='little_tax_desc']").val('其他零星税收主要包括土地使用税、印花税等，其中：土地使用税 ＝ 每平方米土地年税额÷12×占地面积（土地使用税根据所处地段年税额每平方米4至25元），'
-	    			+'印花税 ＝ 租赁合同总金额×0.01%,这类税收金额较小，统一按不含税收入的1%计取。');
-	    };
-	    
-	    //其他税收合计
-	    var other_tax = myround(parseFloat(little_tax) + parseFloat(income_tax) + parseFloat(property_tax));
-    	$("input[name='other_tax']").val(other_tax);
-    	$("textarea[name='other_tax_desc']").val('其他税收 = 房产税 + 所得税 + 其他零星税收='+property_tax+'+'
-    			+income_tax+'+'+little_tax+'='+other_tax+'元/平方米。');
+						$("textarea[name='value_added_tax_rate_desc']").val('根据国家及当地政府有关增值税征收规定，个人出租住房类增值税起征点为'
+								+VAT_start_value+'元，本估价对象的不含税收入为'+$rent+'元，其增值税减按'
+								+value_added_tax_rate+'%征收率：增值税 ＝ 年有效毛收入/（1+5%） × 增值税率 = '
+								+annual_income+'/(1+5%)×'+value_added_tax_rate+'%。');
+					}else{
+						$("input[name='value_added_tax_rate']").val('5');
+						var value_added_tax_rate = $("input[name='value_added_tax_rate']").val();
+						$("textarea[name='value_added_tax_rate_desc']").val('本估价对象的不含税收入为'+$rent+
+								'元，需要缴纳增值税。根据国家及当地政府有关增值税征收规定，个人出租非住房类增值税按'+value_added_tax_rate
+								+'%征收率：增值税 ＝ 月租金收入/（1+5%） × 增值税率 = '
+								+annual_income+'/(1+5%)×'+value_added_tax_rate+'%。');
+					}
+				}
+			}else{			//企业的增值税
+				var Have_time = $("select[name='Have_time']").val();
+				if(authority_type=='一般纳税人' && Have_time=='2016年5月1日后'){ 
+					$("input[name='value_added_tax_rate']").val('11');
+					$("textarea[name='value_added_tax_rate_desc']").val('一般纳税人出租其2016年5月1日后取得的不动产，适用一般计税方法计税，'
+							+'适用税率11%。应预缴税款＝含税销售额÷（1+11%）×3%='+annual_income+'/(1+11%)×3%。');
+				}else{
+					$("input[name='value_added_tax_rate']").val('5');
+					$("textarea[name='value_added_tax_rate_desc']").val('一般纳税人出租其2016年4月30日前取得的不动产，或小规模纳税人'
+							+'出租不动产，按照5%的征收率计算应纳税额。应预缴税款＝含税销售额 ÷（1+5%）×5%='+annual_income+' ÷（1+5%）×5%。');
+				}
+				var value_added_tax_rate = $("input[name='value_added_tax_rate']").val();
+			};
+			
+			//增值税附加
+			if(location_type=='市区'){
+				$("input[name='addition_rate']").val('12');
+				$("textarea[name='addition_rate_desc']").val('增值税附加以增值税为征收基数，包括城建税、教育费附加、地方教育附加，在'
+						+location_type+'，城建税税率为7%，教育费附加3%，地方教育附加2%，增值税附加 = 增值税 ×(7%+3%+2%)= 增值税 ×'
+						+$("input[name='addition_rate']").val()+'%。');
+			}else if (location_type=='县镇'){
+				$("input[name='addition_rate']").val('10');
+				$("textarea[name='addition_rate_desc']").val('增值税附加以增值税为征收基数，包括城建税、教育费附加、地方教育附加，在'
+						+location_type+'，城建税税率为5%，教育费附加3%，地方教育附加2%，增值税附加 = 增值税 ×(5%+3%+2%)= 增值税 ×'
+						+$("input[name='addition_rate']").val()+'%。');
+			}else{
+				$("input[name='addition_rate']").val('6');
+				$("textarea[name='addition_rate_desc']").val('增值税附加以增值税为征收基数，包括城建税、教育费附加、地方教育附加，在'
+						+location_type+'，城建税税率为1%，教育费附加3%，地方教育附加2%，增值税附加 = 增值税 ×(1%+3%+2%)= 增值税 ×'
+						+$("input[name='addition_rate']").val()+'%。');
+			};
+			var addition_rate = $("input[name='addition_rate']").val();
+			
+			
+			//增值税及说明
+			if(authority_type=='一般纳税人' && Have_time=='2016年5月1日后'){
+				var value_added_tax_and_additional = myround(annual_income/1.11*0.03*(1+addition_rate/100));
+				$("input[name='value_added_tax_and_additional']").val(value_added_tax_and_additional);
+				$("textarea[name='value_added_tax_and_additional_desc']").val('增值税 ＝ 年有效毛收入/（1+11%） ×'+
+						'3%×（1+增值税附加）='+annual_income+'/（1+11%） ×3%×（1+'+addition_rate+'%）='
+						+value_added_tax_and_additional+'元/平方米。');
+			}else{
+				var value_added_tax_and_additional = myround(annual_income/1.05*value_added_tax_rate/100*(1+addition_rate/100));
+				$("input[name='value_added_tax_and_additional']").val(value_added_tax_and_additional);
+				$("textarea[name='value_added_tax_and_additional_desc']").val('增值税 ＝ 年有效毛收入/（1+5%） ×'+
+						value_added_tax_rate+'%×（1+增值税附加）='+annual_income+'/（1+5%） ×'+
+						value_added_tax_rate+'%×（1+'+addition_rate+'%）='+value_added_tax_and_additional+'元/平方米。');
+			}
+			
+			//房产税
+			if(property_type == '住宅'){
+				//无论企业个人
+				var property_tax = myround(0.04*annual_income/1.05);
+				$("input[name='property_tax']").val(property_tax);
+				$("textarea[name='property_tax_desc']").val('个人出租住房，企事业单位、社会团体以及其他组织按市场价格向个人出租用于居住的住房，减按4%的税率征收房产税：房产税＝年有效毛收入/(1+5%)×4% = '
+						+annual_income+'/(1+5%)×4% ='+property_tax+'元/平方米。');
+			}else{
+				var property_tax = myround(0.12*annual_income/1.05);
+				$("input[name='property_tax']").val(property_tax);
+				$("textarea[name='property_tax_desc']").val('出租非住房类，根据税务规定，房产税税率为12%：房产税＝年有效毛收入/(1+5%)×12%='
+						+annual_income+'/(1+5%)×12% ='+property_tax+'元/平方米。');
+			};
+			
+			//所得税
+			if(authority_type=='个人'){            //如何是个人缴纳所得税
+				if(property_type == '住宅'){
+					var income_tax = myround(annual_income/1.05*0.05*0.1);
+					$("input[name='income_tax']").val(income_tax);
+					$("textarea[name='income_tax_desc']").val('个人出租住房时，应纳个人所得税=增值税不含税收入×5%×税率 '+
+							'，根据有关规定，其所得减按10％的税率征收，所得税='+annual_income+'/(1+5%)×5%×10% ='
+							+income_tax+'元/平方米。');
+				}else{
+					var income_tax = myround(annual_income/1.05*0.05*0.2);
+					$("input[name='income_tax']").val(income_tax);
+					$("textarea[name='income_tax_desc']").val('个人出租其他房屋时，应纳个人所得税=增值税不含税收入×5%×税率 '+
+							'，根据有关规定，其所得按照20%税率征收个人所得税，所得税='+annual_income+'/(1+5%)×5%×20% ='
+							+income_tax+'元/平方米。');
+				}
+			}else{
+				var income_tax = 0;
+				$("input[name='income_tax']").val(income_tax);
+				$("textarea[name='income_tax_desc']").val('因企业出租房屋所得与其他收入合并计算所得税，各企业构成相差较大，'+
+				'理论上不动产的价值不会因为不同的持有者而不同，为保证估价测算的客观性，在这里中暂不考虑企业所得税对价值的影响。');
+			};
+			
+			//其他零星税收
+			if(authority_type=='个人' && property_type == '住宅'){
+				var little_tax = 0;
+				$("input[name='little_tax']").val(little_tax);
+				$("textarea[name='little_tax_desc']").val('其他零星税收主要包括土地使用税、印花税等，对个人出租住房均予免征。');
+			}else{
+				var little_tax = myround(annual_income/1.05*0.01);
+				$("input[name='little_tax']").val(little_tax);
+				$("textarea[name='little_tax_desc']").val('其他零星税收主要包括土地使用税、印花税等，其中：土地使用税 ＝ 每平方米土地年税额÷12×占地面积（土地使用税根据所处地段年税额每平方米4至25元），'
+						+'印花税 ＝ 租赁合同总金额×0.01%,这类税收金额较小，统一按不含税收入的1%计取。');
+			};
+			
+			//其他税收合计
+			var other_tax = myround(parseFloat(little_tax) + parseFloat(income_tax) + parseFloat(property_tax));
+			$("input[name='other_tax']").val(other_tax);
+			$("textarea[name='other_tax_desc']").val('其他税收 = 房产税 + 所得税 + 其他零星税收='+property_tax+'+'
+					+income_tax+'+'+little_tax+'='+other_tax+'元/平方米。');
+		}else{
+			//采用税后收益来计算
+			//增值税率
+			$("input[name='value_added_tax_rate']").val('0');
+			$("textarea[name='value_added_tax_rate_desc']").val('');
+			
+			//增值税附加
+			$("input[name='addition_rate']").val('0');
+			$("textarea[name='addition_rate_desc']").val('');
+			
+			//增值税及说明
+			var value_added_tax_and_additional = 0 ;
+			$("input[name='value_added_tax_and_additional']").val(value_added_tax_and_additional);
+			$("textarea[name='value_added_tax_and_additional_desc']").val('根据本地租赁惯例，本次估价的年有效收入采用的是税后收入，故这里不再考虑税收的影响。');
+			
+			
+			//房产税
+			$("input[name='property_tax']").val('0');
+			$("textarea[name='property_tax_desc']").val('');
+						
+			//所得税
+			$("input[name='income_tax']").val('0');
+			$("textarea[name='income_tax_desc']").val('');
+			
+			
+			//其他零星税收
+			$("input[name='little_tax']").val('0');
+			$("textarea[name='little_tax_desc']").val('');
+			
+			//其他税收合计
+			var other_tax = 0;
+			$("input[name='other_tax']").val(other_tax);
+			$("textarea[name='other_tax_desc']").val('理由同(1)。');
+		}
 	    
     	//重置成本
     	var building_cost = parseFloat($("input[name='building_cost']").val());
@@ -271,7 +291,7 @@ jQuery(function($) {
     	t_desc += "价值时点还剩余"+ foruse_build +"年。根据孰短原则，收益期取" +N + "年。";
     	
     	if(foruse_build > foruse_land){
-    		t_desc += "由于无法获知土地出让合同约定建筑物收回时室无偿或有偿，根据抵押估价谨慎原则及本次估价假设，收益期结束后建筑物无偿收回，故不计建筑物残余价值。";
+    		t_desc += "由于无法获知土地出让合同约定建筑物收回时无偿或有偿，根据抵押估价谨慎原则及本次估价假设，收益期结束后建筑物无偿收回，故不计建筑物残余价值。";
     	}
     	
     	$("textarea[name='income_period_desc']").val(t_desc);
@@ -335,13 +355,19 @@ jQuery(function($) {
     	}
     	if(m<N){
     		//如果递增年限小于收益期
-    		$("textarea[name='reason_formula']").val("V=A/(Y-g)×{1-[(1+g)/(1+Y)]^t}+A×(1+g)^t/Y/(1+Y)^t×[1-1/(1+Y)^(N-t)];式中：V—估价对象收益价值;A—未来第1年净收益； Y—房地产报酬率；g—净收益逐年递增比率；N—收益期；t—年净收益递增年数。");
+    		$("textarea[name='reason_formula']").val("本估价选取t年前年净收益逐年递增，之后年净收益稳定不变的收益法计算公式。即：V=A/(Y-g)×{1-[(1+g)/(1+Y)]^^t}+A×(1+g)^^t/Y/(1+Y)^^t×[1-1/(1+Y)^^(N-t)];式中：V—估价对象收益价值;A—未来第1年净收益； Y—房地产报酬率；g—净收益逐年递增比率；N—收益期；t—年净收益递增年数。");
     	}else{
-    		$("textarea[name='reason_formula']").val("V=A/(Y-g)×{1-[(1+g)/(1+Y)]^N};式中：V—估价对象收益价值;A—未来第1年净收益； Y—房地产报酬率；g—净收益逐年递增比率；N—收益期。");
+    		$("textarea[name='reason_formula']").val("本次估价选取有限年期年净收益年递增收益公式，即V=A/(Y-g)×{1-[(1+g)/(1+Y)]^^N};式中：V—估价对象收益价值;A—未来第1年净收益； Y—房地产报酬率；g—净收益逐年递增比率；N—收益期。");
     		
     	}
     	
 	};
+	
+	//是否采用税后收入（计算时不考虑税收的影响）
+	$("input[name='isAfterTax']").on('change',function(){
+		
+		form_default()
+	});
 	
 	$("#report_No").on('change',function(){
 		//报告编号改变后，自动查询数据库并修改option
