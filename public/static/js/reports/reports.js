@@ -167,7 +167,7 @@ jQuery(function($) {
 			//采用税后收益来计算
 			//增值税率
 			$("input[name='value_added_tax_rate']").val('0');
-			$("textarea[name='value_added_tax_rate_desc']").val('');
+			$("textarea[name='value_added_tax_rate_desc']").val('根据本地租赁惯例，本次估价的年有效收入采用的是税后收入，故这里不再考虑税收的影响。');
 			
 			//增值税附加
 			$("input[name='addition_rate']").val('0');
@@ -176,26 +176,26 @@ jQuery(function($) {
 			//增值税及说明
 			var value_added_tax_and_additional = 0 ;
 			$("input[name='value_added_tax_and_additional']").val(value_added_tax_and_additional);
-			$("textarea[name='value_added_tax_and_additional_desc']").val('根据本地租赁惯例，本次估价的年有效收入采用的是税后收入，故这里不再考虑税收的影响。');
+			$("textarea[name='value_added_tax_and_additional_desc']").val('');
 			
 			
 			//房产税
 			$("input[name='property_tax']").val('0');
-			$("textarea[name='property_tax_desc']").val('');
+			$("textarea[name='property_tax_desc']").val('略。');
 						
 			//所得税
 			$("input[name='income_tax']").val('0');
-			$("textarea[name='income_tax_desc']").val('');
+			$("textarea[name='income_tax_desc']").val('略。');
 			
 			
 			//其他零星税收
 			$("input[name='little_tax']").val('0');
-			$("textarea[name='little_tax_desc']").val('');
+			$("textarea[name='little_tax_desc']").val('略。');
 			
 			//其他税收合计
 			var other_tax = 0;
 			$("input[name='other_tax']").val(other_tax);
-			$("textarea[name='other_tax_desc']").val('理由同(1)。');
+			$("textarea[name='other_tax_desc']").val('理由同上，不计。');
 		}
 	    
     	//重置成本
