@@ -383,6 +383,7 @@ class Index extends Common {
         $renameData['Xjxqjcnf'] = $data['PA_YearBuilt'];
         $renameData['Xjxqjzjg'] = $data['PA_Structure'];
         $renameData['Xjynxqdt'] = $data['PA_Elevator'];
+        $renameData['Xjfcmj'] = $data['Xjfcmj'];
         
         if(!isset($enq)){
             $EasyPGXj = new EasyPGXjModel();
