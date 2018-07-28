@@ -53,14 +53,15 @@ function login_handle(user_name,pass,machineID,type){
             		storage["user"] = user_name;
             		storage["password"] = pass;
             	}
-            	origin_url = '/'+module+'/'+controller+'/'+action;
-            	//alert(origin_url);
+            	
+//            	alert(origin_url);
+//            	alert(real_url);
             	if(('/evalu/login/login' == origin_url) || ('///' == origin_url)){
             		//如果起始就是登录模块，则跳到询价链接
             		window.location.href = phone_url;
             	}else{
             		//否则跳转原链接
-            		window.location.href = origin_url;			//	跳回原链接
+            		window.location.href = real_url;			//	跳回原链接
             	}
 //                if('phone' == mod){
 //                	window.location.href = phone_url;

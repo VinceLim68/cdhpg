@@ -82,6 +82,11 @@ class Login extends Controller
 	//ajax验证登录
 	public function ajax_login_verify(){
 	    $data = input();
+	    
+	    //把用户名和密码解密
+// 	    $data['user_name'] = base_decode($data['user_name']);
+// 	    $data['pass'] = base_decode($data['pass']);
+	    
 	    //验证用户名和密码，如果成功，会自动写入session
 	    $res = (new UserModel())->login($data);
 	    //登录成功，记入登录记录
