@@ -15,6 +15,11 @@
 			var module = "{$module}";
 			var controller = "{$controller}";
 			var action = "{$action}";
+			var origin_url = '/'+module+'/'+controller+'/'+action;
+			var real_url = "{$Request.root.true}"+origin_url;
+			//var real_url = "{:url('/'+$module+'/'+$controller+'/'+$action)}";
+			//alert(real_url);
+			//alert(origin_url);
 			
 			$(document).ready(function() {
 				//这里两个函数都在localstorage.js里
