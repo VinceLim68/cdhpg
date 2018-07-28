@@ -15,30 +15,45 @@ class Common extends Controller
 	{
 		parent::__construct($request);
 		//执行登录验证
+		$controller = request()->controller();
+		$action = request()->action();
+		$module = request()->module();
+		$act = strtolower($module.'/'.$controller.'/'.$action);
+// 		$url = $request->url();
+// 		$url = base_encode(ltrim(rtrim($url,'.html'),'/'));
+//         $url = base_encode($url);
+		
+// 		halt($act) ;
 		$isPhone = LoginLogic::isMobile()?'手机':'非手机';
-// 		halt($isPhone);
+
 		if(!session('user.user_id') )
 		{
-		    //没有session，再取token.设置的token为“lxtoken”
-		    if(cookie('lxtoken')){
-		        $token = cookie('lxtoken');
-		        $res = $this->checkToken($token);//这里会更新token的有效时间
-		    }else{
-		        $ip = LoginLogic::getIP();
-		        $machine = LoginLogic::getMachine();
-		        LoginRecordsModel::create([
-		            'user_name'	=>	'无session',
-		            'login_ip'	=>	$ip,
-		            'machine'     =>  $machine,
-		            'type'     =>  '客户端无token，需要重新登录',
-		            'isphone'     =>  $isPhone,
-		        ]);
-		        $res = 90003;
-		    }
-		    if($res >= 90002){
-                // 			注意这里传递了参数，但是用url方式，接收时要使用$_GET
-    		    $this->redirect('evalu/login/login',['modulestr' => $request->module()]);
-		    }
+// 		    $this->redirect('evalu/login/auto_jump',['mod'=>base_encode($act),'origin_url'=>$url]);
+		    $this->redirect('evalu/login/auto_jump',[
+		        'controller'=>$controller,
+		        'module'=>$module,
+		        'action'=>$action,
+		    ]);
+// 		    //没有session，再取token.设置的token为“lxtoken”
+// 		    if(cookie('lxtoken')){
+// 		        $token = cookie('lxtoken');
+// 		        $res = $this->checkToken($token);//这里会更新token的有效时间
+// 		    }else{
+// 		        $ip = LoginLogic::getIP();
+// 		        $machine = LoginLogic::getMachine();
+// 		        LoginRecordsModel::create([
+// 		            'user_name'	=>	'无session',
+// 		            'login_ip'	=>	$ip,
+// 		            'machine'     =>  $machine,
+// 		            'type'     =>  '客户端无token，需要重新登录',
+// 		            'isphone'     =>  $isPhone,
+// 		        ]);
+// 		        $res = 90003;
+// 		    }
+// 		    if($res >= 90002){
+//                 // 			注意这里传递了参数，但是用url方式，接收时要使用$_GET
+//     		    $this->redirect('evalu/login/login',['modulestr' => $request->module()]);
+// 		    }
 		}
 		$auth = new \Auth();
  		if($isPhone=='非手机'){
@@ -47,119 +62,118 @@ class Common extends Controller
     		    $this->error('程序出错了！！！如需要合作开发或者业务联系，请找18006006153林先生！！');
     		}
 		} 
-		$controller = request()->controller();
-		$action = request()->action();
-		$module = request()->module();
-		$act = strtolower($module.'/'.$controller.'/'.$action);       //$controller . '/' . $action
  		if(!$auth->check($act,session('user.user_id'))){
 		    $this->error(session('user.user_name').':'.$act.'你没有权限访问');
 		} 
 	}
+
 	
-	//用于检验 token 是否存在, 并且更新 token
-	public function checkToken($token)
-	{
-	    $user = new UserModel();
-	    $res = $user->field('time_out,user_id,user_name')->where('token', $token)->find();
-	    $ip = LoginLogic::getIP();
-	    $machine = LoginLogic::getMachine();
-	    $isPhone = LoginLogic::isMobile()?'手机':'非手机';
-	    //token能找到
-	    if (!empty($res)) {
-	        $time = strtotime($res['time_out']);
-	        
-	        //token过期;
-	        if (time() - $time > 0) {
-	            LoginRecordsModel::create([
-	                'user_name'	=>	$res['user_name'],
-	                'login_ip'	=>	$ip,
-	                'machine'     =>  $machine,
-	                'type'     =>  'token过期,待登录：'.$res['time_out'],
-	                'isphone'     =>  $isPhone,
-	            ]);
-	            return 90003; //token长时间未使用而过期，需重新登陆
-	        }else{
-    	        $new_time_out = time() + config('token_expire'); //604800是七天
-    	        $update = $user->isUpdate(true)
-        	        ->where('token', $token)
-        	        ->update(['time_out' => $new_time_out]);
-    	        session('user.user_id',$res['user_id']);
-    	        session('user.user_name',$res['user_name']);
-    	        //把cookie再存一次
-    	        cookie('lxtoken',$token);
-    	        if ($update) {
-        	        LoginRecordsModel::create([
-        	            'user_name'	=>	$res['user_name'],
-        	            'login_ip'	=>	$ip,
-        	            'machine'     =>  $machine,
-        	            'type'     =>  '免登录,更新token有效期'.date("Y-m-d H:i:s",$new_time_out),
-        	            'isphone'     =>  $isPhone,
-        	        ]);
-    	            return 90001; //token验证成功，time_out刷新成功，可以获取接口信息
-    	        }else{
-    	            LoginRecordsModel::create([
-    	                'user_name'	=>	$res['user_name'],
-    	                'login_ip'	=>	$ip,
-    	                'machine'     =>  $machine,
-    	                'type'     =>  '免登录,但没更新成功',
-    	                'isphone'     =>  $isPhone,
-    	            ]);
-    	        }
-	        }
-	    }else{
-	        LoginRecordsModel::create([
-	            'user_name'	=>	'无session',
-	            'login_ip'	=>	$ip,
-	            'machine'     =>  $machine,
-	            'type'     =>  '未找到匹配的token',
-	            'isphone'     =>  $isPhone,
-	        ]);
-    	    return 90002; //token错误验证失败
-	    }
+
 	
-	}
-	
-	//创建 token
-	public function makeToken()
-	{
-	    $str = md5(uniqid(md5(microtime(true)), true)); //生成一个不会重复的字符串
-	    $str = sha1($str); //加密
-	    return $str;
-	}
-	
-	//这是测试用的，要删
-	public function del_test(){
-// 	    $time = time();
-// 	    echo date("Y-m-d H:i:s",$time);
-//         $phoneToken = $this->makeToken();
-//         echo strlen($phoneToken);
-//         cookie('phoneToken',$phoneToken);
-// 	    cookie('phoneToken', null);
-//         echo cookie('phoneToken')===null;
-//         Session::delete('user.user_id');
-// 		Session::delete('user.user_name'); 
-//         echo session('user.user_id');
-//         echo session('user.user_name');
-//         $result = $this->isMobile();
-//         echo LoginLogic::getMachine();
-// 	    $token = cookie('lxtoken');
+// 	//用于检验 token 是否存在, 并且更新 token
+// 	public function checkToken($token)
+// 	{
 // 	    $user = new UserModel();
 // 	    $res = $user->field('time_out,user_id,user_name')->where('token', $token)->find();
-// 	    echo $res['time_out'].'</br>';
-// 	    $time = strtotime($res['time_out']);
-// 	    echo $time.'</br>';
-// 	    echo time().'</br>';
-	    
-	    
-// 	    if($time-time()>0){
-// 	        echo '超过';
+// 	    $ip = LoginLogic::getIP();
+// 	    $machine = LoginLogic::getMachine();
+// 	    $isPhone = LoginLogic::isMobile()?'手机':'非手机';
+// 	    //token能找到
+// 	    if (!empty($res)) {
+// 	        $time = strtotime($res['time_out']);
+	        
+// 	        //token过期;
+// 	        if (time() - $time > 0) {
+// 	            LoginRecordsModel::create([
+// 	                'user_name'	=>	$res['user_name'],
+// 	                'login_ip'	=>	$ip,
+// 	                'machine'     =>  $machine,
+// 	                'type'     =>  'token过期,待登录：'.$res['time_out'],
+// 	                'isphone'     =>  $isPhone,
+// 	            ]);
+// 	            return 90003; //token长时间未使用而过期，需重新登陆
+// 	        }else{
+//     	        $new_time_out = time() + config('token_expire'); //604800是七天
+//     	        $update = $user->isUpdate(true)
+//         	        ->where('token', $token)
+//         	        ->update(['time_out' => $new_time_out]);
+//     	        session('user.user_id',$res['user_id']);
+//     	        session('user.user_name',$res['user_name']);
+//     	        //把cookie再存一次
+//     	        cookie('lxtoken',$token);
+//     	        if ($update) {
+//         	        LoginRecordsModel::create([
+//         	            'user_name'	=>	$res['user_name'],
+//         	            'login_ip'	=>	$ip,
+//         	            'machine'     =>  $machine,
+//         	            'type'     =>  '免登录,更新token有效期'.date("Y-m-d H:i:s",$new_time_out),
+//         	            'isphone'     =>  $isPhone,
+//         	        ]);
+//     	            return 90001; //token验证成功，time_out刷新成功，可以获取接口信息
+//     	        }else{
+//     	            LoginRecordsModel::create([
+//     	                'user_name'	=>	$res['user_name'],
+//     	                'login_ip'	=>	$ip,
+//     	                'machine'     =>  $machine,
+//     	                'type'     =>  '免登录,但没更新成功',
+//     	                'isphone'     =>  $isPhone,
+//     	            ]);
+//     	        }
+// 	        }
 // 	    }else{
-// 	        echo '没超过';
+// 	        LoginRecordsModel::create([
+// 	            'user_name'	=>	'无session',
+// 	            'login_ip'	=>	$ip,
+// 	            'machine'     =>  $machine,
+// 	            'type'     =>  '未找到匹配的token',
+// 	            'isphone'     =>  $isPhone,
+// 	        ]);
+//     	    return 90002; //token错误验证失败
 // 	    }
-	    Session::delete('user.user_id');
-	    Session::delete('user.user_name');
-	    echo cookie('lxtoken');
-	}
+	
+// 	}
+	
+// 	//创建 token
+// 	public function makeToken()
+// 	{
+// 	    $str = md5(uniqid(md5(microtime(true)), true)); //生成一个不会重复的字符串
+// 	    $str = sha1($str); //加密
+// 	    return $str;
+// 	}
+	
+// 	//这是测试用的，要删
+// 	public function del_test(){
+// // 	    $time = time();
+// // 	    echo date("Y-m-d H:i:s",$time);
+// //         $phoneToken = $this->makeToken();
+// //         echo strlen($phoneToken);
+// //         cookie('phoneToken',$phoneToken);
+// // 	    cookie('phoneToken', null);
+// //         echo cookie('phoneToken')===null;
+// //         Session::delete('user.user_id');
+// // 		Session::delete('user.user_name'); 
+// //         echo session('user.user_id');
+// //         echo session('user.user_name');
+// //         $result = $this->isMobile();
+// //         echo LoginLogic::getMachine();
+// // 	    $token = cookie('lxtoken');
+// // 	    $user = new UserModel();
+// // 	    $res = $user->field('time_out,user_id,user_name')->where('token', $token)->find();
+// // 	    echo $res['time_out'].'</br>';
+// // 	    $time = strtotime($res['time_out']);
+// // 	    echo $time.'</br>';
+// // 	    echo time().'</br>';
+	    
+	    
+// // 	    if($time-time()>0){
+// // 	        echo '超过';
+// // 	    }else{
+// // 	        echo '没超过';
+// // 	    }
+// 	    Session::delete('user.user_id');
+// 	    Session::delete('user.user_name');
+// 	    echo cookie('lxtoken');
+// 	}
 	
 	
 	//这是抄来的程序，先放在这里备用

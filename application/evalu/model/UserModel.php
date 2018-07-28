@@ -48,14 +48,14 @@ class UserModel extends Model
 		//		1.验证
 		$validate = Loader::validate('UserValidate');
 		$ip = LoginLogic::getIP();
-		$machine = LoginLogic::getMachine();
-// 		$common = new Common();
+// 		$machine = LoginLogic::getMachine();
+		$machine = $data['matchineID'];
 		$isPhone = LoginLogic::isMobile()?'手机':'非手机';
-// 		$isPhone = (new Common())->isMobile()?'手机':'非手机';
-		// 		如果验证不通过
+		// 		数据类型如果验证不通过
 		if(!$validate->check($data)){
 		    LoginRecordsModel::create([
-		        'user_name'	=>	'待登录',
+// 		        'user_name'	=>	'待登录',
+		        'user_name'	=>	$data['user_name'],
 		        'login_ip'	=>	$ip,
 		        'machine'     =>  $machine,
 		        'type'     =>  '输入数据验证未通过',
@@ -70,7 +70,7 @@ class UserModel extends Model
     		{
     			//说明在数据库没找到用户
     		    LoginRecordsModel::create([
-    		        'user_name'	=>	'待登录',
+    		        'user_name'	=>	$data['user_name'],
     		        'login_ip'	=>	$ip,
     		        'machine'     =>  $machine,
     		        'type'     =>  '用户名或者密码不正确',
@@ -81,21 +81,20 @@ class UserModel extends Model
         		// 		3.写入session，更新数据库的最后登录时间，最后登录ip，总登录次数
         		session('user.user_id',$userInfo['user_id']);
         		session('user.user_name',$userInfo['user_name']);
-        		$token = (new Common())->makeToken();
-//         		$token = $common->makeToken();
-        		cookie('lxtoken',$token);
+//         		$token = (new Common())->makeToken();
+//         		cookie('lxtoken',$token);
     
         		LoginRecordsModel::create([
         		    'user_name'	=>	$data['user_name'],
         		    'login_ip'	=>	$ip,
         		    'machine'     =>  $machine,
-        		    'type'     =>  '重新登录成功',
+        		    'type'     =>  $data['type'],
         		    'isphone'     =>  $isPhone,
         		]);
         		$this->save([
         		    'login_times'  => $userInfo['login_times']+1,
         		    'last_ip' => $ip,
-        		    'token'   =>  $token,
+//         		    'token'   =>  $token,
         		    'time_out' => time() + config('token_expire'),
         		     
         		],['user_id' => $userInfo['user_id']]);
@@ -105,20 +104,16 @@ class UserModel extends Model
 		}
 	}
 	
-	//注册
-	public function signup($data)
-	{
-// 	    halt($data);
-		$validate = Loader::validate('UserSignupValidate');
+	//使用ajax注册模块,重写了
+	public function signup($data){
+
+	    $validate = Loader::validate('UserSignupValidate');
 		// 		如果验证不通过
 		if(!$validate->check($data)){
 			return ['valid'=>0,'msg'=>$validate->getError()];
 		}
-		
 		try{
-		    
 			$res = $this->data($data)->allowField(true)->save();
-// 			halt($data);
 		}catch(\Exception $e){
 			//	插入失败，错误代码是10501时，表示用户名重复
 			if($e->getCode()==10501)
@@ -128,24 +123,24 @@ class UserModel extends Model
 				dump($e);
 			}
 		}
-// 			直接执行登录了
+		// 			直接执行登录了
 		session('user.user_id',$this->user_id);
 		session('user.user_name',$data['user_name']);
-		$token = (new Common())->makeToken();
-		cookie('lxtoken',$token);
+		// 		$token = (new Common())->makeToken();
+		// 		cookie('lxtoken',$token);
 		$ip = LoginLogic::getIP();
-		$machine = LoginLogic::getMachine();
+		$machine = $data['matchineID'];
+		$isPhone = LoginLogic::isMobile()?'手机':'非手机';
 		LoginRecordsModel::create([
 		    'user_name'	=>	$data['user_name'],
 		    'login_ip'	=>	$ip,
-		    'machine'     =>  $machine,
-		    'type'     =>  '注册登录',
+		    'machine'   =>  $machine,
+		    'type'      =>  '注册登录',
+		    'isphone'   =>  $isPhone,
 		]);
 		$this->save([
 		    'login_times'  => 1,
 		    'last_ip' => $ip,
-		    'token'   =>  $token,
-		    'time_out' => time() + config('token_expire'),
 		],['user_id' => $this->user_id]);
 		//新注册用户默认权限是普通会员
 		$group=array(
@@ -154,8 +149,56 @@ class UserModel extends Model
 		);
 		(new GroupAccessModel()) ->insert($group);
 		return ['valid'=>1,'msg'=>'注册成功，请登录'];
-			
 	}
+	
+	//注册
+// 	public function signup($data)
+// 	{
+// 		$validate = Loader::validate('UserSignupValidate');
+// 		// 		如果验证不通过
+// 		if(!$validate->check($data)){
+// 			return ['valid'=>0,'msg'=>$validate->getError()];
+// 		}
+		
+// 		try{
+		    
+// 			$res = $this->data($data)->allowField(true)->save();
+// // 			halt($data);
+// 		}catch(\Exception $e){
+// 			//	插入失败，错误代码是10501时，表示用户名重复
+// 			if($e->getCode()==10501)
+// 			{
+// 				return ['valid'=>0,'msg'=>'用户名已被使用,再想一个吧'];;
+// 			}else{
+// 				dump($e);
+// 			}
+// 		}
+// // 			直接执行登录了
+// 		session('user.user_id',$this->user_id);
+// 		session('user.user_name',$data['user_name']);
+// // 		$token = (new Common())->makeToken();
+// // 		cookie('lxtoken',$token);
+// 		$ip = LoginLogic::getIP();
+// 		$machine = LoginLogic::getMachine();
+// 		LoginRecordsModel::create([
+// 		    'user_name'	=>	$data['user_name'],
+// 		    'login_ip'	=>	$ip,
+// 		    'machine'     =>  $machine,
+// 		    'type'     =>  '注册登录',
+// 		]);
+// 		$this->save([
+// 		    'login_times'  => 1,
+// 		    'last_ip' => $ip,
+// 		],['user_id' => $this->user_id]);
+// 		//新注册用户默认权限是普通会员
+// 		$group=array(
+// 		    'uid'=>$this->user_id,
+// 		    'group_id'=>4
+// 		);
+// 		(new GroupAccessModel()) ->insert($group);
+// 		return ['valid'=>1,'msg'=>'注册成功，请登录'];
+			
+// 	}
 	
 	//使用后台添加用户
 	public function add_user($data){

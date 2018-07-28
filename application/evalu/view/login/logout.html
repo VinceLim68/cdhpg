@@ -1,0 +1,21 @@
+<!DOCTYPE html>
+<html lang="en" class="no-js">
+    
+    <head>
+
+        <script type="text/javascript" src="__JS__/jquery.min.js"></script>
+    </head>
+        <script type="text/javascript">
+			$(document).ready(function() {
+				var Jumpurl = "{:url('login/login')}";
+				//alert(Jumpurl);
+				var storage = window.localStorage;
+				storage.removeItem('user');
+				storage.removeItem('password');
+				window.location.href = Jumpurl;
+			});
+		</script>
+    <body>
+    </body>
+
+</html>
