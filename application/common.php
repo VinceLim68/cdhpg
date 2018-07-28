@@ -28,6 +28,7 @@ function base_decode($str) {
     return $new;
 }
 
+//生成唯一码，36位
 function getUID(){
     $charid = strtoupper(md5(uniqid(mt_rand(), true)));
     $uuid = substr($charid, 0, 8).'-'.substr($charid, 8, 4).'-'

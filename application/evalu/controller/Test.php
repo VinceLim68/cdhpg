@@ -9,8 +9,11 @@ use think\Exception;
 use think\File;
 use app\phone\model\GeneralLayoutModel;
 use app\evalu\model\SalesModel;
+use app\evalu\model\UserModel;
+use think\Controller;
+use think\Session;
 
-class Test extends Common {
+class Test extends Controller {
     //做一个测试模块,项目完成后删除
     
 	protected function _initialize() {
@@ -297,4 +300,35 @@ dump(getUID());
     public function html5_localstage(){
         return $this->fetch();
     }
+
+    //测试自动跳转页面(进入页面去取localstorage)
+    public function auto_jump(){
+//         $str="我是密码";
+        $this->assign([
+            'mod'  => request()->module(),
+        ]);
+        return $this->fetch();
+    }
+    
+    //ajax返回uid
+    public function ajax_getUid(){
+        return getUID();
+    }
+    
+    //ajax验证登录
+    public function ajax_login_verify(){
+        $data = input();
+//         halt($data);
+        //验证用户名和密码，如果成功，会自动写入session
+        $res = (new UserModel())->login($data);
+        return $res;
+    }
+    
+    //只删除session,用于测试localstorage自动登录功能
+    public function del_session(){
+        Session::delete('user.user_id');
+        Session::delete('user.user_name');
+        echo '删除成功';
+    }
+    
 }

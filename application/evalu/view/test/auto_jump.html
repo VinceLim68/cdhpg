@@ -1,0 +1,33 @@
+<!DOCTYPE html>
+<html lang="en" class="no-js">
+    
+    <head>
+
+        <script type="text/javascript" src="__JS__/jquery.min.js"></script>
+    </head>
+        <script type="text/javascript" src="__JS__/common/localstorage.js"></script>
+        <script type="text/javascript">
+			var Jumpurl = "{:url('login/login')}";
+			var getUIDurl = "{:url('test/ajax_getUid')}";
+			var ajax_login_verify_url = "{:url('test/ajax_login_verify')}";
+			var phone_url = "{:url('phone/index/index')}";
+			var evalu_url = "{:url('evalu/sales/salesList')}";
+			var mod = "{$mod}";
+			$(document).ready(function() {
+				//这里两个函数都在localstorage.js里
+				MachineID_handle();
+				if ((undefined == getUser) || ("" == getUser) || (null == getUser) || (undefined == getPwd) || ("" == getPwd) || (null == getPwd)){
+					 //如果没有用户数据-->跳转登录页面
+					 alert('没数据，请重新登录！');
+					 window.location.href=Jumpurl;
+				}else{
+					 //否则直接跳转
+					 //alert(getUser+','+getPwd+','+getMachineID);
+					 login_handle(getUser,getPwd,getMachineID);
+				}
+			});
+		</script>
+    <body>
+    </body>
+
+</html>
