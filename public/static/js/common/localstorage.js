@@ -35,6 +35,7 @@ function MachineID_handle(){
 
 //ajax验证用户名和密码
 function login_handle(user_name,pass,machineID,type){
+	//alert('111');
 	$.ajax({
         url: ajax_login_verify_url,
         data: {
@@ -45,8 +46,8 @@ function login_handle(user_name,pass,machineID,type){
         },
         success: function(data) {
         	//console.log(data);
+        	//alert('2'+real_url)
             if(data.valid == 1){
-            	//alert('login success!')
             	if((undefined == getUser) || ("" == getUser) || (null == getUser)){
             		//如果localstorage中未设置，则把用户名和密码存入localstorage,
             		//机器码用MachineID_handle（）已经建立了，不必存。
@@ -58,18 +59,13 @@ function login_handle(user_name,pass,machineID,type){
 //            	alert(real_url);
             	if(('/evalu/login/login' == origin_url) || ('///' == origin_url)){
             		//如果起始就是登录模块，则跳到询价链接
+            		//alert(origin_url);
             		window.location.href = phone_url;
             	}else{
             		//否则跳转原链接
+            		//alert('跳转')
             		window.location.href = real_url;			//	跳回原链接
             	}
-//                if('phone' == mod){
-//                	window.location.href = phone_url;
-//                }else if ('evalu' == mod){
-//                	window.location.href = evalu_url;
-//                }else{
-//                	window.location.href = phone_url;
-//                }
             }else{
             	//如果验证不通过，应该返回登录页面
             	alert(data.msg);

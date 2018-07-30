@@ -331,4 +331,32 @@ dump(getUID());
         echo '删除成功';
     }
     
+    //获试获取pathinfo中的参数
+    public function get_url_info(){
+        $input = input();
+        $controller = request()->controller();
+        $action = request()->action();
+        $module = request()->module();
+//         $this->redirect('evalu/login/auto_jump',[
+//             'controller'=>$controller,
+//             'module'=>$module,
+//             'action'=>$action,
+//             'input'=>$input,
+//         ]);
+        $query_str = "";
+        //dump($input);
+        foreach ($input as $key => $value){
+            echo $key,': ',$value,'<br />';
+            $query_str .= $key."=".$value."&";
+        }
+        echo($query_str);
+        $this->assign([
+            'controller'=>$controller,
+            'module'=>$module,
+            'action'=>$action,
+            'input'=> $query_str,
+        ]);
+        return $this->fetch();
+    }
+    
 }

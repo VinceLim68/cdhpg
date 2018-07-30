@@ -15,10 +15,19 @@ class Login extends Controller
 	public function login(){
 	    //把从哪里登录的模块记下来，从phone登录，返回phone，从evalu登录，返回evalu
 //         $this->assign('mod',input('modulestr'));
+	    $input = input('input');
+	    $query_str = "";
+	    //dump($input);
+	    if($input != null){
+    	    foreach ($input as $key => $value){
+    	        $query_str .= $key."=".$value."&";
+    	    }
+	    }
 	    $this->assign([
 	        'controller'=>input('controller'),
 	        'module'=>input('module'),
 	        'action'=>input('action'),
+	        'input'=> $query_str,
 // 	        'mod'          =>  input('mod'),
 // 	        'origin_url'   =>  input('origin_url'),
 	    ]);
@@ -84,37 +93,24 @@ class Login extends Controller
 	    $data = input();
 	    
 	    //把用户名和密码解密
-// 	    $data['user_name'] = base_decode($data['user_name']);
-// 	    $data['pass'] = base_decode($data['pass']);
-	    
 	    //验证用户名和密码，如果成功，会自动写入session
 	    $res = (new UserModel())->login($data);
-	    //登录成功，记入登录记录
-// 	    if($res['valid']){
-// 	        $ip = LoginLogic::getIP();
-// 	        $isPhone = LoginLogic::isMobile()?'手机':'非手机';
-// 	        LoginRecordsModel::create([
-// 		        'user_name'	=>	$data['user_name'],
-// 		        'login_ip'	=>	$ip,
-// 		        'machine'   =>  $data['matchineID'],
-//                 'type'      =>  '通过localstorage登录',
-// 		        'isphone'   =>  $isPhone,
-// 		    ]);
-// 	    }
-	    
+	    //halt($res);
 	    return $res;
 	}
 	
 
 	//自动跳转页面(进入页面去取localstorage)
 	public function auto_jump(){
-// 	    dump(input());
+	    //dump(input());
         //传递的参数还是加密状态，使用时才解密
 	    $this->assign([
 	        'controller'=>input('controller'),
 	        'module'=>input('module'),
 	        'action'=>input('action'),
+	        'input'=> input('input'),
 	    ]);
+	    //halt(input('input'));
 	    return $this->fetch();
 	}
 }
