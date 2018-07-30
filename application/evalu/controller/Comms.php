@@ -365,14 +365,6 @@ class Comms extends Common {
 // 	    dump($data);
 	    
         $commrelate = new CommRelateModel();
-//         if(isset($data['action']) and $data['action']==1){
-//             //如果是增加关联规则，先保存
-//             if(!$commrelate->where('community_id',$data['community_id'])->where('usage',$data['usage'])->find()){
-//                 //如果没有相同community_id和用途的记录，才能追加
-//                 // 过滤post数组中的非数据表字段数据
-//                 $see = $commrelate->data($data)->allowField(true)->save();
-//             }
-//         }
 	    
 	    $rela_list = $commrelate->where('community_id',$data['community_id'])->select()->toArray();
         $this->assign('rela_list',$rela_list);

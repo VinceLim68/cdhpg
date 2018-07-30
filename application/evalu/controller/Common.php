@@ -29,10 +29,17 @@ class Common extends Controller
 		if(!session('user.user_id') )
 		{
 // 		    $this->redirect('evalu/login/auto_jump',['mod'=>base_encode($act),'origin_url'=>$url]);
+		    $input = input();
+		    $query_str = "";
+		    foreach ($input as $key => $value){
+		        $query_str .= $key."=".$value."&";
+		    }
+// 		    halt($query_str);
 		    $this->redirect('evalu/login/auto_jump',[
 		        'controller'=>$controller,
 		        'module'=>$module,
 		        'action'=>$action,
+		        'input'=> $query_str,
 		    ]);
 // 		    //没有session，再取token.设置的token为“lxtoken”
 // 		    if(cookie('lxtoken')){

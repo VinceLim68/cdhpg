@@ -7,7 +7,7 @@
     </head>
         <script type="text/javascript" src="__JS__/common/localstorage.js"></script>
         <script type="text/javascript">
-			var Jumpurl = "{:url('login/login',['module' => $module,'controller'=>$controller,'action'=>$action])}";
+			var Jumpurl = "{:url('login/login',['module' => $module,'controller'=>$controller,'action'=>$action,'input'=>$input])}";
 			var getUIDurl = "{:url('login/ajax_getUid')}";
 			var ajax_login_verify_url = "{:url('login/ajax_login_verify')}";
 			var phone_url = "{:url('phone/index/index')}";
@@ -16,9 +16,17 @@
 			var controller = "{$controller}";
 			var action = "{$action}";
 			var origin_url = '/'+module+'/'+controller+'/'+action;
-			var real_url = "{$Request.root.true}"+origin_url;
+			//alert('00'+origin_url);
+			//var real_url = "{$Request.root.true}"+origin_url;
+			var real_url = "{:url('',$input)}";
+			//alert('0  '+real_url);
+			real_url = (real_url.replace(/\/evalu\/login\/auto_jump/,origin_url));
+			//alert(typeof(real_url));
+			//		/evalu/login/auto_jump/community_id/1109008/price/0.html
+			 //evalu/login/auto_jump
+			//var input = "{$input}";
 			//var real_url = "{:url('/'+$module+'/'+$controller+'/'+$action)}";
-			//alert(real_url);
+			//alert('1  '+real_url);
 			//alert(origin_url);
 			
 			$(document).ready(function() {
@@ -28,12 +36,14 @@
 				MachineID_handle();
 				if ((undefined == getUser) || ("" == getUser) || (null == getUser) || (undefined == getPwd) || ("" == getPwd) || (null == getPwd)){
 					 //如果没有用户数据-->跳转登录页面
-					 //alert('没数据，请重新登录！');
+					 alert('没数据，请重新登录！');
 					 window.location.href = Jumpurl;
 				}else{
 					 //否则直接跳转
+					 //alert('1'+real_url);
 					 //alert(getUser+','+getPwd+','+getMachineID);
 					 login_handle(getUser,getPwd,getMachineID,"localstorage登录");
+					 //alert('222');
 				}
 			});
 		</script>

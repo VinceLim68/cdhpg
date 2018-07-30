@@ -227,7 +227,7 @@
 </body>
 <script type="text/javascript" src="__JS__/common/localstorage.js"></script>
 <script type="text/javascript">
-	var Jumpurl = "{:url('login/login',['module' => $module,'controller'=>$controller,'action'=>$action])}";
+	var Jumpurl = "{:url('login/login',['module' => $module,'controller'=>$controller,'action'=>$action,'input'=>$input])}";
 	var getUIDurl = "{:url('login/ajax_getUid')}";
 	var ajax_login_verify_url = "{:url('login/ajax_login_verify')}";
 	var phone_url = "{:url('phone/index/index')}";
@@ -236,7 +236,11 @@
 	var controller = "{$controller}";
 	var action = "{$action}";	
 	var origin_url = '/'+module+'/'+controller+'/'+action;
-	var real_url = "{$Request.root.true}"+origin_url;
+	//var real_url = "{$Request.root.true}"+origin_url;
+	var real_url = "{:url('',$input)}";
+			//alert('0  '+real_url);
+	real_url = (real_url.replace(/\/evalu\/login\/auto_jump/,origin_url));
+	//var real_url = "{:url($module+'/'+$controller+'/'+$action,$input)}";
 	//var real_url = "{:url($module+'/'+$controller+'/'+$action)}";
 
 	//登录函数
@@ -246,6 +250,7 @@
 		var user = $("#login_user_name").val();
 		var pass = $("#login_pass").val();
 //		alert(user_encode);
+		//alert('logining。。。。')
 		login_handle(user,pass,getMachineID,"重新登录成功");
 	}
 	
