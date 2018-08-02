@@ -175,11 +175,15 @@ class Index extends Controller {
 	    $input = input();
 	    $save = new EasyPGLxIncomeFiniteModel();
 	    $find = $save->where('gjxmdetailID',$input['gjxmdetailID'])->value('id');
+// 	    dump($find);
+// 	    halt($input);
 	    if($find){
-    	    $save->allowField(true)->save($input,['gjxmdetailID' =>$input['gjxmdetailID']]);
+    	    $result = $save->allowField(true)->save($input,['gjxmdetailID' =>$input['gjxmdetailID']]);
 	    }else{
-    	    $save->allowField(true)->save($input);
+    	    $result = $save->allowField(true)->save($input);
+//     	    halt($result);
 	    };
+	    return $result;
 	}
 	
 	public function ajaxGetLXIncomeFiniteData(){
