@@ -16,18 +16,8 @@
 			var controller = "{$controller}";
 			var action = "{$action}";
 			var origin_url = '/'+module+'/'+controller+'/'+action;
-			//alert('00'+origin_url);
-			//var real_url = "{$Request.root.true}"+origin_url;
 			var real_url = "{:url('',$input)}";
-			//alert('0  '+real_url);
 			real_url = (real_url.replace(/\/evalu\/login\/auto_jump/,origin_url));
-			//alert(typeof(real_url));
-			//		/evalu/login/auto_jump/community_id/1109008/price/0.html
-			 //evalu/login/auto_jump
-			//var input = "{$input}";
-			//var real_url = "{:url('/'+$module+'/'+$controller+'/'+$action)}";
-			//alert('1  '+real_url);
-			//alert(origin_url);
 			
 			$(document).ready(function() {
 				//这里两个函数都在localstorage.js里
@@ -40,10 +30,7 @@
 					 window.location.href = Jumpurl;
 				}else{
 					 //否则直接跳转
-					 //alert('1'+real_url);
-					 //alert(getUser+','+getPwd+','+getMachineID);
 					 login_handle(getUser,getPwd,getMachineID,"localstorage登录");
-					 //alert('222');
 				}
 			});
 		</script>

@@ -25,7 +25,7 @@ function MachineID_handle(){
 			   getMachineID = storage["UID"];
 		   },
 		   error: function() {
-			   alert("系统错误");
+			   alert("系统错误，未能完成设置");
 	       }
 	   })
 	}else{
@@ -35,7 +35,9 @@ function MachineID_handle(){
 
 //ajax验证用户名和密码
 function login_handle(user_name,pass,machineID,type){
-	//alert('111');
+	//alert('跳回原页，原页是：' + origin_url + ',real_url是：' + real_url);
+	//跳回原页，原页是：///,real_url是：/evalu/login/login.html
+	//跳回原页，原页是：/phone/Index/index,real_url是：/evalu/login/login.html
 	$.ajax({
         url: ajax_login_verify_url,
         data: {
@@ -44,9 +46,9 @@ function login_handle(user_name,pass,machineID,type){
             matchineID:machineID,
             type:type,
         },
+        async:false,
         success: function(data) {
         	//console.log(data);
-        	//alert('2'+real_url)
             if(data.valid == 1){
             	if((undefined == getUser) || ("" == getUser) || (null == getUser)){
             		//如果localstorage中未设置，则把用户名和密码存入localstorage,
@@ -57,13 +59,15 @@ function login_handle(user_name,pass,machineID,type){
             	
 //            	alert(origin_url);
 //            	alert(real_url);
-            	if(('/evalu/login/login' == origin_url) || ('///' == origin_url)){
+            	if(('/evalu/login/login' == origin_url) || ('///' == origin_url) ||(real_url.indexOf("/evalu/login/login") != -1)){
             		//如果起始就是登录模块，则跳到询价链接
             		//alert(origin_url);
+            		//alert('当前页面是登录页面：'+origin_url);
             		window.location.href = phone_url;
             	}else{
             		//否则跳转原链接
             		//alert('跳转')
+            		//alert('跳回原页，原页是：'+origin_url+',real_url是：'+real_url);
             		window.location.href = real_url;			//	跳回原链接
             	}
             }else{
@@ -73,7 +77,7 @@ function login_handle(user_name,pass,machineID,type){
             };
         },
         error: function() {
-            alert("系统错误");
+            alert("系统错误，未能完成登录验证");
         }
     });
 }

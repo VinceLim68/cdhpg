@@ -28,7 +28,6 @@ class Common extends Controller
 
 		if(!session('user.user_id') )
 		{
-// 		    $this->redirect('evalu/login/auto_jump',['mod'=>base_encode($act),'origin_url'=>$url]);
 		    $input = input();
 		    $query_str = "";
 		    foreach ($input as $key => $value){
