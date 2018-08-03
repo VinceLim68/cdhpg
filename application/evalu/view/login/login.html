@@ -279,7 +279,7 @@
 	            	
 	           		//origin_url = '/'+module+'/'+controller+'/'+action;
 	            	//alert(origin_url);
-	            	if(('/evalu/login/login' == origin_url) || ('///' == origin_url)){
+	            	if(('/evalu/login/login' == origin_url) || ('///' == origin_url)  ||(real_url.indexOf("/evalu/login/login") != -1)){
 	            		//如果起始就是登录模块，则跳到询价链接
 	            		window.location.href = phone_url;
 	            	}else{
@@ -293,7 +293,7 @@
 	            };
 	        },
 	        error: function() {
-	            alert("系统错误");
+	            alert("系统错误，未能完成注册验证");
 	        }
 	    });
 	}

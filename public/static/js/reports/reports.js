@@ -461,9 +461,11 @@ jQuery(function($) {
 			url:ajaxSaveIncomeValueProcess,
 			success:function(rep){
 				alert("保存成功")
+			},
+			error:function(e){
+				console.log(e);
+				alert("保存失败，请检查");
 			}
-		
-			
 		});
 	});
 	
