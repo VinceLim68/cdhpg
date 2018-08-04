@@ -62,12 +62,14 @@ class MatchLogic {
 		$matchId = array();		
 		self::getComms();
 		foreach (self::$comms[$type] as $commItem){
+// 		    echo '11111111111111';
 			$key = explode ( "/", $commItem ['keyword'] );
 
 			// 			在小区名称中查找关键字
 			$start = stripos($commName,$key[0]);
 			// 			必须使用 !== false 的方式，否则会把位置0 当成没找到
 			if($start !== FALSE) {
+// 			    echo $key[0];
 				$len = count($key);
 				if($len>1){
 					$temp = $commName . $title;
@@ -82,6 +84,8 @@ class MatchLogic {
 					$t = array($start,$key[0],$commItem['id']);
 					$matchId[] = $t;
 				}
+// 				dump($matchId);
+// 				echo '==========================';
 			}
 		}
 		return $matchId;//返回列表（开始位置，关键字，id)

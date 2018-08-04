@@ -69,12 +69,12 @@ class LoginLogic {
     }
 
     //判断是否是微信内置浏览器，这是抄来的程序，先放在这里备用
-    /*     public static function isWeixin() {
+    public static function isWeixin() {
         if (strpos($_SERVER['HTTP_USER_AGENT'], 'MicroMessenger') !== false) {
             return true;
          } else {
             return false;
          }
-     } */
+     } 
 }
 

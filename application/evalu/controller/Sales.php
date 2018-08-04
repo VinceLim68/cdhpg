@@ -165,11 +165,17 @@ class Sales extends Common {
 	public function matchComm(){
 		/*
 		 * 通过传入的id来匹配小区id,只匹配当前的一条记录
+		 * 仅仅匹配小区级的，没有匹配区块级
+		 * 需要传入小区名和小区标题
 		 */
 // 		$byId = input('id');
 		$commName = input('commName');
 		$title = input('title');
 		$idArr = MatchLogic::getId($commName,$title );
+		if (!$idArr){
+    		$idArr = MatchLogic::getId($commName,$title,"roads" );
+		}
+// 		dump($idArr);
 		return ($idArr);
 		
 	}
