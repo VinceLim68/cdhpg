@@ -12,6 +12,7 @@ use app\evalu\model\SalesModel;
 use app\evalu\model\UserModel;
 use think\Controller;
 use think\Session;
+use app\evalu\logic\LoginLogic;
 
 class Test extends Controller {
     //做一个测试模块,项目完成后删除
@@ -359,4 +360,19 @@ dump(getUID());
         return $this->fetch();
     }
     
+    //测试匹配小区id功能
+    public function getCommID(){
+        $commName = '瑞景新村';
+        $title = ' 	r:同安 b:城北 a:洋坂里238-247号 新华都锦华金都对面 洋坂里满二 单价1.1万左右 黄';
+        MatchLogic::getId($commName,$title );
+    }
+    
+    //是否是微信过来的请求
+    public function isWX(){
+       if(LoginLogic::isWeixin()){
+           echo '是微信';
+       }else{
+           echo '不是微信';
+       }
+    }
 }

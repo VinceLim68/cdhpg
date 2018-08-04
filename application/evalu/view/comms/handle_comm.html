@@ -2,6 +2,7 @@
 {block name="pg_cs"}
 <link rel="stylesheet" href="__CSS__/jquery-ui.min.css" />
 <link rel="stylesheet" type="text/css" href="__CSS__/comms/handle_comm.css">
+<link rel="stylesheet" href="__CSS__/jquery-ui.min.css" />
 {/block} 
 {block name="breadcrumb"}
 <ul class="breadcrumb">
@@ -348,10 +349,12 @@
 </div><!-- /.modal -->
 
 <!-- 挂牌信息列表右键菜单 -->
-<div class="contextMenu" id="salelistmenu">
+<div class="contextMenu" id="salelistmenu" >
 	<ul>
-		<li id="jump" style="margin-left: 20px">跳转详细页面</li>
+		<li id="jump" >跳转详细页面</li>
 		<li id="detail">查询完整信息</li>
+		<li id="matchIDs" >匹配出所有小区id</li>
+    	<li id="getFinalID" >最终小区id</li>
 	</ul>
 </div>
 
@@ -406,6 +409,45 @@
 
 	                    });
 	                },
+	                'matchIDs':function(t){
+	               	 //匹配所有符合的id值
+	               	 var id = $(t).parent().find("td").eq(0).html();		//取序号
+	               	 var title = $(t).parent().find("td").eq(1).html();		//取标题
+	               	 var commname = $(t).parent().find("td").eq(3).html();		//取小区名称
+	               	 //alert(id + '\n,' + title + ',' + commname);
+	               	 $.ajax({
+	                		url:"{:url('Sales/matchComm')}",
+	                		data:{
+	                			id:id,
+	                			commName : commname,
+	                			title : title,
+	                		},
+	                		success:function(response){  
+	                			alert(id + '\n' + title + '\n' + commname + '\n匹配结果是：\n' + response) ; 
+	                			//alert(response);
+	        		        }  
+	                		
+	              		});
+	               	 
+	                },
+	                'getFinalID':function(t){
+	               	//综合匹配出唯一的id值
+	               	 var id = $(t).parent().find("td").eq(0).html();		//取序号
+	               	 var title = $(t).parent().find("td").eq(1).html();		//取标题
+	               	 var commname = $(t).parent().find("td").eq(3).html();		//取小区名称
+	               	 $.ajax({
+	               			url:"{:url('Sales/match')}",
+	                		type:'POST',
+	                		data:{
+	                			id:id,
+	                			commName : commname,
+	                			title : title,
+	                		},
+	                		success:function(response){  
+	                			alert(id + '\n' + title + '\n' + commname + '\n综合匹配的小区ID是 ： ' + response) ; 
+	        		        }  
+	                	});
+	                }
 	        }
 	    };
 	

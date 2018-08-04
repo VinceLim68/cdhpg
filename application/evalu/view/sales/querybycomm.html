@@ -73,10 +73,12 @@
 	</div>
 </div>
 
-<div class="contextMenu" id="myMenu1">
-  <ul>
-    <li id="jump" style="margin-left:20px">跳转详细页面</li>
-    <li id="detail">查询完整信息</li>
+<div class="contextMenu" id="myMenu1" style="width:500px;">
+  <ul style="width: 160px;">
+    <li id="jump" style="display: inline-block; width: 160px;">跳转详细页面</li>
+    <li id="detail" style="display: inline-block; width: 160px;">查询完整信息</li>
+    <li id="matchIDs" style="display: inline-block; width: 160px;">匹配出所有小区id</li>
+    <li id="getFinalID" style="display: inline-block; width: 160px;">最终小区id</li>
   </ul>
 </div> 
 
@@ -93,47 +95,6 @@ function add() {
 jQuery(function($) {
 	$('.modal').draggable();
 	$(".modal").css("overflow", "hidden");//禁止模态对话框的半透明背景滚动
-	//利用下拉列表，协助生成where查询
-	/* jQuery("#wherefield").on("change", 		
-		function(){
-			var where = $("input[name='where']").val();
-			var thisval =  $("#wherefield").val() + ' = ""';
-			if('' == where){
-				where = thisval;
-			}else{
-				where += ' AND ' + thisval
-			}
-			$("input[name='where']").val(where);
-	});
-	
-	//利用下拉列表，协助生成order查询
-	jQuery("#orderfield").on("change", 		
-		function(){
-			var thisval =  $("#orderfield").val() ;
-			$("input[name='order']").val(thisval);
-	});
-	
-	//利用下拉列表，协助生成update查询
-	jQuery("#setfield").on("change", 		
-		function(){
-			var set = $("input[name='set']").val();
-			var thisval =  $("#setfield").val()+ ' = ""';
-			if('' == set){
-				set = thisval ;
-			}else{
-				set += ' ,' + thisval ;
-			}
-			$("input[name='set']").val(set);
-	});
-	
-	//重置按钮
-	jQuery("#reset").on("click", 		
-		function(){
-		$("input[name='set']").val('');
-		$("input[name='order']").val('') ;
-		$("input[name='where']").val('');
-	}); */
-	
 	
 	 $('div.tab-content table td').contextMenu('myMenu1', 
       {
@@ -157,7 +118,7 @@ jQuery(function($) {
              },
              'detail': function(t) {
             	//取出当前行的序号
-            	 	var id = $(t).parent().find("td").eq(0).html();
+           	 	var id = $(t).parent().find("td").eq(0).html();
             	 	//alert(id);
  	           	 $.ajax({
  	         		url:'getFullById',
@@ -172,6 +133,44 @@ jQuery(function($) {
  	         		
  	         	});
              },
+             'matchIDs':function(t){
+            	 //匹配所有符合的id值
+            	 var id = $(t).parent().find("td").eq(0).html();		//取序号
+            	 var title = $(t).parent().find("td").eq(1).html();		//取标题
+            	 var commname = $(t).parent().find("td").eq(3).html();		//取小区名称
+            	 //alert(id + '\n,' + title + ',' + commname);
+            	 $.ajax({
+             		url:'matchComm',
+             		data:{
+             			id:id,
+             			commName : commname,
+             			title : title,
+             		},
+             		success:function(response){  
+             			alert(id + '\n' + title + '\n' + commname + '\n匹配结果是：\n' + response) ; 
+     		        }  
+             		
+           		});
+            	 
+             },
+             'getFinalID':function(t){
+            	//综合匹配出唯一的id值
+            	 var id = $(t).parent().find("td").eq(0).html();		//取序号
+            	 var title = $(t).parent().find("td").eq(1).html();		//取标题
+            	 var commname = $(t).parent().find("td").eq(3).html();		//取小区名称
+            	 $.ajax({
+             		url:'match',
+             		type:'POST',
+             		data:{
+             			id:id,
+             			commName : commname,
+             			title : title,
+             		},
+             		success:function(response){  
+             			alert(id + '\n' + title + '\n' + commname + '\n综合匹配的小区ID是 ： ' + response) ; 
+     		        }  
+             	});
+             }
             
            }
      });

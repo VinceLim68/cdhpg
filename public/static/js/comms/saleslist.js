@@ -244,6 +244,7 @@ jQuery(function($) {
                     }
                 },
                 'edit': function (t) {
+                	//匹配小区id（如果有多个会取出多个）
                 	var rowKey = $(grid_selector).jqGrid('getGridParam',"selrow");
                     if (rowKey){
                     	var rowData = $(grid_selector).jqGrid('getRowData',rowKey);
@@ -270,6 +271,7 @@ jQuery(function($) {
                     jQuery(grid_selector).jqGrid('setSelection',rowKey);
                 },
                 'matchid':function(t){
+                	//综合匹配小区id(取唯一值）
                 	var rowKey = $(grid_selector).jqGrid('getGridParam',"selrow");
                     if (rowKey){
                     	var rowData = $(grid_selector).jqGrid('getRowData',rowKey);
