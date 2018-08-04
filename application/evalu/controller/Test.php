@@ -370,9 +370,9 @@ dump(getUID());
     //是否是微信过来的请求
     public function isWX(){
        if(LoginLogic::isWeixin()){
-           echo '是微信';
+           return '是微信';
        }else{
-           echo '不是微信';
+           return '不是微信';
        }
     }
 }
