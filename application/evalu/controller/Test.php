@@ -375,4 +375,11 @@ dump(getUID());
            return '不是微信';
        }
     }
+
+    //显示session
+    public function listSesstion(){
+        echo Session::get('user.user_id')."\n";
+        echo "\n";
+        echo Session::get('user.user_name');
+    }
 }

@@ -17,11 +17,15 @@ class Login extends Controller
 //         $this->assign('mod',input('modulestr'));
 	    $input = input('input');
 	    $query_str = "";
-	    //dump($input);
-	    if($input != null){
-    	    foreach ($input as $key => $value){
-    	        $query_str .= $key."=".$value."&";
-    	    }
+// 	    dump($input);
+	    if($input != null ){
+	        if(is_string($input)){
+	            $query_str = $input;
+	        }else{
+        	    foreach ($input as $key => $value){
+        	        $query_str .= $key."=".$value."&";
+        	    }
+	        }
 	    }
 	    $this->assign([
 	        'controller'=>input('controller'),

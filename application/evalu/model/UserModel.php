@@ -40,6 +40,52 @@ class UserModel extends Model
 // 	    return $this->belongsToMany('GroupModel','group_access','uid','user_id');
 // 	}
 	
+	
+	//使用微信登录
+	public function loginByWeiXin($data){
+	    //使用微信登录，都会写session
+	    //$data传过来只有nickname
+	    $ip = LoginLogic::getIP();
+	    $isPhone = LoginLogic::isMobile()?'手机':'非手机';
+	    $userInfo = $this->where('user_name',$data['nickname'])->find();
+	    if(!$userInfo){
+	        //说明在数据库没找到用户,就增加一个
+// 	        $userInfo = $this->data([
+//                     'name'  =>  $data['nickname'],
+//                     'email' =>  '微信',
+//                     'last_ip'   =>  $ip,
+//                     'login_times'  => 1,
+//                 ])->allowField(true)->save();
+	        $userInfo = self::create([
+	            'user_name'  =>  $data['nickname'],
+                'email' =>  '微信',
+                'last_ip'   =>  $ip,
+                'login_times'  => 1, 
+	        ]);
+	        //新注册用户默认权限是普通会员
+	        $group=array(
+	            'uid'=>$userInfo->user_id,
+	            'group_id'=>4
+	        );
+	        (new GroupAccessModel()) ->insert($group);
+	    }else{
+	        //如果已经有用户，就修改登录次数
+	        $this->save([
+	            'login_times'  => $userInfo['login_times']+1,
+	            'last_ip' => $ip,
+	        ],['user_id' => $userInfo['user_id']]);
+	    }
+	    session('user.user_id',$userInfo['user_id']);
+	    session('user.user_name',$userInfo['user_name']);
+	    LoginRecordsModel::create([
+	        'user_name'	=>	$userInfo['user_name'],
+	        'login_ip'	=>	$ip,
+	        'type'     =>  '微信登录',
+	        'isphone'     =>  $isPhone,
+	    ]);
+	    return ;
+	}
+	
 	/*
 	 * 登录
 	 */
@@ -113,7 +159,7 @@ class UserModel extends Model
 			return ['valid'=>0,'msg'=>$validate->getError()];
 		}
 		try{
-			$res = $this->data($data)->allowField(true)->save();
+			$res = $this->data($data)->allowField(true)->save();//这个就是新增用户了
 		}catch(\Exception $e){
 			//	插入失败，错误代码是10501时，表示用户名重复
 			if($e->getCode()==10501)
