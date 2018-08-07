@@ -28,18 +28,29 @@ class Common extends Controller
 
 		if(!session('user.user_id') )
 		{
-		    $input = input();
-		    $query_str = "";
-		    foreach ($input as $key => $value){
-		        $query_str .= $key."=".$value."&";
+	        $input = input();
+		    //如果是微信并且有微信名,LoginLogic::isWeixin() and 
+// 		    dump($input);
+		    if(isset($input['nickname']) and '' != trim($input['nickname'])){
+		        //只要进到这里，无论有没有用户信息，都会登录了。
+		        $nickname = trim($input['nickname']);
+		        $input['nickname'] = $nickname;
+		        $user = new UserModel;
+		        $user->loginByWeiXin($input);
+		    }else{
+    		    //去页面找看看有没有localstorage
+    		    //先把传入的参数连接成字符串，以便传递
+    		    $query_str = "";
+    		    foreach ($input as $key => $value){
+    		        $query_str .= $key."=".$value."&";
+    		    }
+    		    $this->redirect('evalu/login/auto_jump',[
+    		        'controller'=>$controller,
+    		        'module'=>$module,
+    		        'action'=>$action,
+    		        'input'=> $query_str,
+    		    ]);
 		    }
-// 		    halt($query_str);
-		    $this->redirect('evalu/login/auto_jump',[
-		        'controller'=>$controller,
-		        'module'=>$module,
-		        'action'=>$action,
-		        'input'=> $query_str,
-		    ]);
 // 		    //没有session，再取token.设置的token为“lxtoken”
 // 		    if(cookie('lxtoken')){
 // 		        $token = cookie('lxtoken');
