@@ -382,4 +382,10 @@ dump(getUID());
         echo "\n";
         echo Session::get('user.user_name');
     }
+    
+    //看看微信传递参数
+    public function showinput(){
+        $input = input();
+        dump($input);
+    }
 }
