@@ -388,4 +388,9 @@ dump(getUID());
         $input = input();
         dump($input);
     }
+
+    //跳转错误信息
+    public function jump_errorpage(){
+        $this->error('测试成功');
+    }
 }

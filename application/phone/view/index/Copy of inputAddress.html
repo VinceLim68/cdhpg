@@ -1,0 +1,68 @@
+<!DOCTYPE html>
+<!-- release v4.1.8, copyright 2014 - 2015 Kartik Visweswaran -->
+<html lang="en">
+    <head>
+        <meta charset="UTF-8"/>
+        <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no">
+        <title>采集小区地址</title>
+
+        <link href="__CSS__/bootstrap.min.css" rel="stylesheet">
+        <link rel="stylesheet" type="text/css" href="__CSS__/comms/commAddressList.css">
+       <!--  <link href="__CSS__/fileinput.min.css" media="all" rel="stylesheet" type="text/css" /> -->
+
+        <script src="__JS__/jquery-2.1.4.min.js"></script>
+        <!-- <script src="__JS__/fileinput.js" type="text/javascript"></script> -->
+        <script src="__JS__/bootstrap.min.js" type="text/javascript"></script>
+        <!-- 中文化 -->
+        <!-- <script src="__JS__/fileinput-zh.js" type="text/javascript"></script> -->
+
+    </head>
+    <body>
+    <div style="margin:0 1%;">
+	    <div class="row">
+	    	<h3 style="margin-left: 2%;letter-spacing: 2px;">{$findresult[0]['comm_name']}地址<small>
+	    	<a class="btn btn-info" href="{:url('getprice',['community_id'=>$param['community_id'],'price'=>$param['price']])}" style="margin-left: 2%;" role="button">返回</a>
+	    	</small></h3>
+	    </div>
+
+	    <div id="addAddresses"></div>
+	
+		
+   
+    <script src="__JS__/comms/buildAddCommAddressForm.js"></script>
+    <script>
+    jQuery(function ($) {
+    	var myjson = {:json_encode($findresult)}
+    	//var myjson =  eval("("+myjson+")");		//把json转为对象
+    	//console.log(myjson);
+    	var table_html = buildCommAddressList(myjson);
+	    var form_html = buildAddCommAddressForm(myjson);
+    	$('#addAddresses').html(form_html +table_html ); 
+    	//批量增加小区地址
+    	
+    	$('#addcommaddresses').on('click',function(event){
+    		$.ajax({
+    			url:"{:url('evalu/comms/ajaxAddCommAddressAction')}",
+    			type:'POST',
+    			data:$('#addCommAddressForm').serialize(),
+    			success: function(msg){
+    				if(isNaN(msg)){
+    					alert(msg);
+    				}else if(msg == 0){
+    					alert('记录未增加成功');
+    				}else{
+    					msg = msg + ' ';
+    					alert('记录增加成功 ' + msg + '个');
+    				}
+    				window.location.reload();
+    			},	
+    		});
+    	})
+    });
+
+    
+   	
+   
+    </script>
+     </body>
+</html>

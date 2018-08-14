@@ -167,7 +167,6 @@ class Index extends Common {
         //1.如何有当月的报价记录，就直接读取
         //2.如果没有，就查询挂牌数据库进行计算，并把计算结果写入查询记录中去
         //或者如果有成交记录，也可以重新计算，并把成交记录记入成交表中去
-//         halt(input());
         $data = input();
         //dump($data);
         if(isset($data['usage'])){$data['usage'] = base_decode($data['usage']);};
@@ -199,10 +198,8 @@ class Index extends Common {
         
         if(count($result[1])>0){
             //如果能查询出数据
-//             halt($result);
             $PL = new PriceLogic($result);
             $getPrice_result = $PL->getStatic($getComm,$data['price']);
-//             dump($getPrice_result);
             $getPrice_result['emplorers'] = config('emplorers');
             $getPrice_result['use'] = config('use');
             $getPrice_result['elevator'] = config('elevator');
@@ -244,6 +241,9 @@ class Index extends Common {
                         ]);
                     }
                 };
+                //自动插入我的询价记录
+//                 halt($getPrice_result);
+                $this->autoInsertQueryIntoEasyPG($getPrice_result);
             }
             //===================还要分配一下权限===============================================
             //得到用户的权限
@@ -275,6 +275,58 @@ class Index extends Common {
 
     }
     
+    //自动插入查询记录
+    private function autoInsertQueryIntoEasyPG($B){
+        $gjs = ['林晓','匡宾','李志林',"李成军","李智婕","游加丽","吴丽敏","吴福海","陈淑华","张少芬",'admin'];
+        $name = session('user.user_name');              //取当前用户名
+//         halt(in_array($name,$gjs));
+        if(!in_array($name,$gjs)){                      //如果非估价师
+            $employers = config('emplorers');
+//             halt($B);
+            //根据EasyPG的询价管理库表的字段把内容转换一下
+            $renameData['Xjyjrname'] = '林晓';
+            $renameData['Xjxqname'] = $B['comm']['comm_name'];
+            $renameData['Xjbjdjms'] = $B['mortgagePrice'];
+            if(in_array($name, $employers)){
+                $renameData['Xjrname'] = $name;
+            }else{
+                $renameData['Xjrname'] = '外部客户';
+            }
+            $renameData['Mark'] = $B['len']."个数据，挂牌价格".$B['min']."-".$B['max']."元/平方米";
+            $renameData['Xjxqaddr'] = "二手房提供合同后的最高价".$B['dealPrice'];
+            $renameData['Xjyt'] = '住宅';
+            $renameData['Xjlcs'] = $B['avg_floor_index'];
+            $renameData['Xjzlcs'] = $B['avg_total_floor'];
+            $renameData['Xjxqjcnf'] = $B['avg_builded_year'];
+            $renameData['Xjxqjzjg'] = $B['avg_total_floor'] > 7 ? '钢混结构' : '砖混结构';
+            $renameData['Xjynxqdt'] = $B['avg_total_floor'] > 8 ? '带电梯' : '无电梯';
+            $renameData['Xjfcmj'] = $B['avg_area'];
+            //以下几个是为了验证输入信息
+            $renameData['Enquiry_CellName']	= $renameData['Xjxqname'];
+            $renameData['Apprsal_Up'] = $renameData['Xjbjdjms'];
+            $renameData['Enquiry_PmName'] = $renameData['Xjrname'];
+            $renameData['Apprsal_Use'] = $renameData['Xjyt'] ;
+            $renameData['OfferPeople'] = $renameData['Xjyjrname'];
+//             dump($renameData);
+            $result = $this->validate($renameData,'InsertQueryValidate');
+//             halt($result);
+            if(true !== $result){
+                // 验证失败 输出错误信息
+                return ['status'=>'输入不规范','msg'=> $result];
+            }else{
+                if(!isset($EasyPGXj)){
+                    $EasyPGXj = new EasyPGXjModel();
+                };
+                if(!$EasyPGXj->findEnqueryByOfferAndDateAndComm($renameData)){
+//                     halt($renameData);
+                    $insertEnguery = $EasyPGXj->insertRecord($renameData);
+//                     halt($insertEnguery);
+                    return ['status'=>'登记成功','msg'=> '已将询价记录成功记入数据库中'];
+                }
+            }
+        };
+    }
+    
     public function dispute(){
        //在查询结果中，如果有争议可以进行记录
        //1、先看数据是否合法
@@ -294,30 +346,6 @@ class Index extends Common {
            }
            return  QueryRecordsModel::update_dispute(input());
        }
-    }
-    
-    public function test(){
-//         $commrelate = new CommRelateModel;
-//         $commrelate->data([
-//             'community_id'  => 1209002,
-//             'rela_comm_id'  => 1209001,
-//             'rela_ratio'    => 0.83,
-//         ])->save();
-//         $res = Db::query('SHOW COLUMNS FROM for_sale_property');
-//         foreach ($res as $item){
-//             dump($item['Field']);
-//         }
-//         halt($res);
-//         $a='30456~35000';
-// //         $b = preg_match('/\d+/',$a,$arr);
-//         preg_match_all('/\d+/',$a,$arr);
-//         dump($arr[0][0]);
-//         $reportid = input('id');
-//         $dbDB = new CPGRecordModel();
-//         $resu = $dbDB->field('RName,RAddress,RMoney,ZID')->where('ZID',$reportid)->find();
-// //         halt($resu); 
-//         $this->assign('res',$resu);
-//         return $this->fetch();
     }
     
     public function insertquery(){
@@ -357,10 +385,9 @@ class Index extends Common {
         
     }
     
+    //把询价记录插入至easyPg的询价库中去
     public function insertQueryIntoEasyPG(){
-        //把询价记录插入至easyPg的询价库中去
         $data = input();
-//         halt($data);
         $result = $this->validate($data,'InsertQueryValidate');
         if(true !== $result){
             // 验证失败 输出错误信息
@@ -385,7 +412,9 @@ class Index extends Common {
         $renameData['Xjynxqdt'] = $data['PA_Elevator'];
         $renameData['Xjfcmj'] = $data['Xjfcmj'];
         
-        if(!isset($enq)){
+        
+//         if(!isset($enq)){
+        if(!isset($EasyPGXj)){
             $EasyPGXj = new EasyPGXjModel();
         }
         //不同估价师，同一小区，同一用途，在一段时间内不允许报相同的价;但管理员不受此限
