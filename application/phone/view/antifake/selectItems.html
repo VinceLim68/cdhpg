@@ -1,0 +1,158 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport"
+	content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no">
+<title>详细报告信息</title>
+<link rel="stylesheet" type="text/css" href="__CSS__/bootstrap.min.css">
+<link rel="stylesheet" type="text/css"
+	href="__CSS__/font-awesome.min.css">
+<style type="text/css">
+body {
+	font-family: "Hiragino Sans GB", "Microsoft Yahei UI", "Microsoft Yahei",
+		微软雅黑, "Segoe UI", Tahoma, 宋体b8b体, SimSun, sans-serif;
+	color: #636467;
+}
+
+.list-info {
+	float: left;
+	margin-left: 20px;
+	border-bottom: 1px solid #F3F3F3;
+	width: 100%
+}
+
+h3 {
+	color: #00ae66;
+	white-space: nowrap;
+	text-overflow: ellipsis;
+	overflow: hidden;
+}
+.baseinfo{
+	white-space: nowrap;
+	text-overflow: ellipsis;
+	overflow: hidden; 
+	padding:5px 0;
+}
+.detail-info{
+	padding-top:20px;
+}
+h1{
+	text-align: center;
+	margin: 20px;
+	background-color: rgb(228, 231, 232);
+	padding: 30px;
+	color: rgb(99, 100, 103);
+	font-weight: 600;
+	letter-spacing: 5px;
+}
+</style>
+
+</head>
+<body>
+	<h1>估价项目详情</h1>
+	<ul class="house-list-wrap">
+		{volist name="result" id="vo"}
+		<div class="list-info" item="item{$i}">
+			<h3 class="title">{$vo.RAddress}</h3>
+			<div class="baseinfo">
+				{present name="vo.pa_locatedregion"}
+					<span>{$vo.pa_locatedregion}</span>
+				{/present}
+				{present name="vo.yt"}
+					-<span>{$vo.yt}</span>
+				{/present} 
+				{present name="vo.ZID"}
+					 <span>{$vo.ZID}</span>
+				{/present} 
+			</div>
+			<div class="baseinfo">
+				{present name="vo.bank"}
+					 <span>{$vo.bank}&nbsp;&nbsp;&nbsp;&nbsp;</span>
+				{/present} 
+				{present name="vo.cqr"}
+					<span>产权人:{$vo.cqr}&nbsp;</span> 
+				{/present}
+				{present name="vo.Wtf"}
+					 <span>委托方:{$vo.Wtf}</span> 
+				{/present} 
+			</div>
+			<div class="baseinfo">
+				{present name="vo.ywy"}
+					 <span>项目经理:{$vo.ywy}&nbsp;&nbsp;&nbsp;&nbsp;</span>
+				{/present} 
+				本对象的评估价格:&nbsp;&nbsp;
+				{present name="vo.detail_total_price"}
+					<span>{$vo.detail_total_price/1}万&nbsp;</span> 
+				{else /}
+					{present name="vo.RMoney"}
+						<span>{$vo.RMoney/10000}万&nbsp;</span> 
+					{/present} 
+				{/present}
+				{present name="vo.pgdj"}
+					 <span>{$vo.pgdj/1}元/㎡</span> 
+				{/present} 
+			</div>
+			<div class="detail-info" style="display: none;" id="item{$i}" isshow="hide">
+				<div class="baseinfo">
+					本报告的评估价格:&nbsp;&nbsp;
+					{present name="vo.RMoney"}
+						{present name="vo.detail_total_price"}
+							<span>{$vo.RMoney/1}万&nbsp;</span> 
+						{else /}
+							<span>{$vo.RMoney/10000}万&nbsp;</span> 
+						{/present}
+					{/present}
+					{present name="vo.RArea"}
+						 <span>{$vo.RArea/1}㎡</span> 
+					{/present}
+				</div>
+				<div class="baseinfo">
+					{present name="vo.detail_area"}
+						 本估价对象的面积:&nbsp;&nbsp;<span>{$vo.detail_area/1}㎡&nbsp;&nbsp;&nbsp;&nbsp;</span> 
+					{/present}
+					{present name="vo.gjs"}
+						 <span>签字:{$vo.gjs}</span>
+					{/present}
+				</div>
+				<div class="baseinfo">
+					{present name="vo.PhotoName"}
+						 <span>勘察:{$vo.PhotoName}</span>
+					{/present}
+					{present name="vo.zgr"}
+						 <span>&nbsp;&nbsp;&nbsp;&nbsp;撰稿:{$vo.zgr}</span>
+					{/present}
+				</div>
+				<div class="baseinfo">
+					{present name="vo.CustomerFrom"}
+						 <span>来源:{$vo.CustomerFrom}</span>
+					{/present}
+					{present name="vo.getreportmethod"}
+						 <span>&nbsp;&nbsp;&nbsp;&nbsp;取报告:{$vo.getreportmethod}</span>
+					{/present}
+					{present name="vo.ywyname"}
+						 <span>&nbsp;&nbsp;&nbsp;&nbsp;业务员:{$vo.ywyname}</span>
+					{/present}
+				</div>
+			</div>
+		</div>
+		{/volist}
+	</ul>
+	<script src="__JS__/jquery-2.1.4.min.js"></script>
+	<script type="text/javascript">
+		$(document).ready(function() {
+			$(".list-info").on('click',function(e) {
+				var thisID = $(this).attr('item');
+				$(".detail-info").hide();
+				if($("#"+thisID).attr('isshow')=='hide'){
+					$("#"+thisID).show('400');
+					$("#"+thisID).attr('isshow','show');
+				}else{
+					$("#"+thisID).hide('400');
+					$("#"+thisID).attr('isshow','hide');
+				}
+			});
+		});
+	</script>
+</body>
+</html>

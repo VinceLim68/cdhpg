@@ -31,5 +31,6 @@ return [
 		],
     'bg/:id'    =>'phone/antifake/index',
     'bgindex'    =>'phone/antifake/propaganda',
+    'bg'    =>'phone/antifake/myitem',
 ]
 ;

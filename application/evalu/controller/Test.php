@@ -211,8 +211,9 @@ dump(getUID());
 // 	    $pattern = '/^(\d{4})-(\d{2})-(\d{2}) \d{2}:\d{2}:\d{2}.\d{3}$/';
 // 	    $string = '2066-06-05 00:00:00.000';
 // 	    $pattern = config('pattern');
-	    $pattern = '/^(\d*)-?(\d+)?号(之[三二一四五六七八九十]*)?/';
-	    $string = '864-800号之三十一';
+// 	    $pattern = '/^(\d*)-?(\d+)?号(之[三二一四五六七八九十]*)?/';
+	    $pattern = '/(^\D+)(\d{10})(.*)/';
+	    $string = '漳2018050023';
 	    if(preg_match($pattern,$string,$match)){
 // 	        $string .= '号';
             dump($match);
