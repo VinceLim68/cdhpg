@@ -47,12 +47,11 @@ class Antifake extends Controller {
     //查询报告的详细信息,处理查询
     public function selectItems(){
         $input = input();
-        dump($input);
         $map_old = [];
         $map_new = [];
         if('' != trim($input['address'])){
             $map_old['RAddress|pa_locatedregion'] = ['like','%'.trim($input['address']).'%'];
-            $map_new['dz|XqName'] = ['like','%'.trim($input['address']).'%'];
+            $map_new['concat(fwlp,fwdy)|XqName'] = ['like','%'.trim($input['address']).'%'];
         }
         if('' != trim($input['name'])){
             $map_old['RName|customer'] = ['like','%'.trim($input['name']).'%'];
@@ -73,49 +72,65 @@ class Antifake extends Controller {
             ->join('B_Employee e3','a.qzid2 = e3.EmpID','LEFT')
             ->join('B_Employee e4','a.PGid1 = e4.EmpID','LEFT')
             ->join('C_SendRecord e5','a.SendID = e5.SendID','LEFT')
-            ->field('RName,
-                RAddress,
-                RMoney,
-                ZID,
-                RArea,
-                a.CustomerFrom,
-                a.customer,
-                a.getreportmethod,
-                efee1,
-                efor1,
-                pa_locatedregion,
-                e2.name as gjs1,
-                e3.name as gjs2,
-                e4.name as zgr,
-                e1.name as ywy,
-                e5.bank,
-                PhotoName')
+            ->field(['RName' => 'cqr',
+                'RAddress',
+                'RMoney',           //在旧系统里，这是报告的评估总价
+                'ZID',
+                'RArea',
+                'a.CustomerFrom',
+                'a.customer' => 'Wtf',
+                'a.getreportmethod',
+                'efee1' => 'pgdj',
+                'efor1' => 'yt',
+                'pa_locatedregion',
+                "e2.name+','+e3.name" => "gjs",
+                'e4.name' => 'zgr',
+                'e1.name' => 'ywy',
+                'e5.bank',
+                'PhotoName'])
             ->where($map_old)->select()->toArray();
-        dump($resu_old);
+//         dump($resu_old);
         $resu_new = (new EasyPGGjxmdetailModel())
             ->alias('d')
             ->join('PG_SE_Gjxmglk g','d.KID = g.KID','LEFT')
-            ->field('Wtf as RName,
-                dz as RAddress,
-                g.PgAmt*10000 as RMoney,
-                BgCD as ZID,
-                Pgzmj as RArea,
-                Ywly as CustomerFrom,
-                cqr as customer,
-                pgdj,
-                yt,
-                XqName as pa_locatedregion,
-                jzmj as detail_area,
-                d.pgAmt as detail_total_price,
-                g.gjs1,
-                g.gjs2,
-                concat_ws(',',g.zgr1,g.zgr2) as zgr,
-                g.xmjl as ywy,
-                g.bankname as bank,
-                concat_ws(',',mxkcgjs1,mxkcgjs2) as PhotoName')
+            ->field(['Wtf',
+                "concat(fwlp,'-',fwdy)" => "RAddress",
+                'g.PgAmt' => 'RMoney',      //报告的评估总价
+                'BgCD' => 'ZID',
+                'Pgzmj' => 'RArea',         //报告总面积
+                'Ywly' => 'CustomerFrom',
+                'cqr',
+                'pgdj',
+                'yt',
+                'XqName' => 'pa_locatedregion',
+                'jzmj' => 'detail_area',
+                'd.pgAmt' => 'detail_total_price',      //估价对象的评估总价
+                "concat(g.gjs1,',',g.gjs2)" => "gjs",
+                "concat(g.zgr1,',',g.zgr2)" => 'zgr',
+                'g.xmjl' => 'ywy',                      //项目经理
+                'ywyname',
+                'g.bankname' => 'bank',
+                "concat(mxkcgjs1,',',mxkcgjs2)" => 'PhotoName'])
             ->where($map_new)
             ->select()->toArray();
-        dump($resu_new);
+        $resu = array_merge($resu_old,$resu_new);
+        
+        //用正则取出报告编号，组成一个sort字段
+        $pattern = '/(^\D+)(\d{10})(.*)/';
+        foreach ($resu as $k=>$v){
+            preg_match($pattern, $v['ZID'],$match);
+//             dump($match[2]);
+            $resu[$k]['sort'] = $match[2];
+        }
+//         dump($resu);
+        
+        //把记录排倒序
+        array_multisort(array_column($resu, 'sort'),SORT_DESC,$resu);
+//         dump($resu);
+        $this->assign([
+            'result'  => $resu,
+        ]);
+        return $this->fetch();
         
     }
     
@@ -148,12 +163,12 @@ class Antifake extends Controller {
             zcs	varchar	50		YES	总层数
             GjxmglkKID	varchar	36		YES	项目KID
     CPGRecordModel
-        RName   委托人
+        RName   产权人
         RAddress    地址
         RArea       建筑面积
         zid     报告编号
         CustomerFrom    客户来源
-        customer    产权人
+        customer    委托方
         getreportmethod 取报告人联系方式
         efee1   单价1
         efor1   用途1

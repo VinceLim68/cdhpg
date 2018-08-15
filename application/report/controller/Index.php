@@ -6,7 +6,6 @@ namespace app\report\controller;
 //use app\evalu\controller\Common;
 use think\Db;
 use think\Controller;
-use app\report\model\EasyPGGjxmdetailModel;
 use app\report\model\EasyPGLxIncomeFiniteModel;
 
 class Index extends Controller {

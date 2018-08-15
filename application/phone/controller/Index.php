@@ -242,7 +242,6 @@ class Index extends Common {
                     }
                 };
                 //自动插入我的询价记录
-//                 halt($getPrice_result);
                 $this->autoInsertQueryIntoEasyPG($getPrice_result);
             }
             //===================还要分配一下权限===============================================
@@ -279,10 +278,8 @@ class Index extends Common {
     private function autoInsertQueryIntoEasyPG($B){
         $gjs = ['林晓','匡宾','李志林',"李成军","李智婕","游加丽","吴丽敏","吴福海","陈淑华","张少芬",'admin'];
         $name = session('user.user_name');              //取当前用户名
-//         halt(in_array($name,$gjs));
         if(!in_array($name,$gjs)){                      //如果非估价师
             $employers = config('emplorers');
-//             halt($B);
             //根据EasyPG的询价管理库表的字段把内容转换一下
             $renameData['Xjyjrname'] = '林晓';
             $renameData['Xjxqname'] = $B['comm']['comm_name'];
@@ -307,9 +304,7 @@ class Index extends Common {
             $renameData['Enquiry_PmName'] = $renameData['Xjrname'];
             $renameData['Apprsal_Use'] = $renameData['Xjyt'] ;
             $renameData['OfferPeople'] = $renameData['Xjyjrname'];
-//             dump($renameData);
             $result = $this->validate($renameData,'InsertQueryValidate');
-//             halt($result);
             if(true !== $result){
                 // 验证失败 输出错误信息
                 return ['status'=>'输入不规范','msg'=> $result];
@@ -318,9 +313,7 @@ class Index extends Common {
                     $EasyPGXj = new EasyPGXjModel();
                 };
                 if(!$EasyPGXj->findEnqueryByOfferAndDateAndComm($renameData)){
-//                     halt($renameData);
                     $insertEnguery = $EasyPGXj->insertRecord($renameData);
-//                     halt($insertEnguery);
                     return ['status'=>'登记成功','msg'=> '已将询价记录成功记入数据库中'];
                 }
             }
