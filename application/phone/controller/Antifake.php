@@ -89,12 +89,11 @@ class Antifake extends Controller {
                 'e5.bank',
                 'PhotoName'])
             ->where($map_old)->select()->toArray();
-//         dump($resu_old);
         $resu_new = (new EasyPGGjxmdetailModel())
             ->alias('d')
             ->join('PG_SE_Gjxmglk g','d.KID = g.KID','LEFT')
             ->field(['Wtf',
-                "concat(fwlp,'-',fwdy)" => "RAddress",
+                "concat(fwlp,fwdy)" => "RAddress",
                 'g.PgAmt' => 'RMoney',      //报告的评估总价
                 'BgCD' => 'ZID',
                 'Pgzmj' => 'RArea',         //报告总面积
@@ -119,14 +118,11 @@ class Antifake extends Controller {
         $pattern = '/(^\D+)(\d{10})(.*)/';
         foreach ($resu as $k=>$v){
             preg_match($pattern, $v['ZID'],$match);
-//             dump($match[2]);
             $resu[$k]['sort'] = $match[2];
         }
-//         dump($resu);
         
         //把记录排倒序
         array_multisort(array_column($resu, 'sort'),SORT_DESC,$resu);
-//         dump($resu);
         $this->assign([
             'result'  => $resu,
         ]);
