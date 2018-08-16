@@ -31,7 +31,7 @@ class Index extends Common {
     //把输入的小区名称转化成相应的小区编号，如果有多个匹配小区id，则返回页面手工进行选择
     //得到小区id后，再跳转到getCommChild进行小区内的子分类选择
     public function getCommName(){
-        if (request()->isPost()) {
+        if (request()->isPost() or request()->isGet()) {
 //             halt(input());
             $result = $this->validate ( input ( 'param.' ), [
                 'comm' => 'require|max:70|min:2',
