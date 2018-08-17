@@ -389,6 +389,14 @@ dump(getUID());
         $input = input();
         dump($input);
     }
+    public function showinput1(){
+        $input = input();
+        return dump($input);
+    }
+    public function showinput2(){
+        
+        return 'hello iphone';
+    }
 
     //跳转错误信息
     public function jump_errorpage(){
