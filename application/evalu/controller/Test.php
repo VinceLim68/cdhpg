@@ -391,6 +391,10 @@ dump(getUID());
     }
     public function showinput1(){
         $input = input();
+        foreach ($input as $key=>$value){
+            $input[$key]=urldecode($value);
+            echo($input[$key]);
+        }
         return dump($input);
     }
     public function showinput2(){
