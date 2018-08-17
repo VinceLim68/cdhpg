@@ -44,18 +44,12 @@ class UserModel extends Model
 	//使用微信登录
 	public function loginByWeiXin($data){
 	    //使用微信登录，都会写session
-	    //$data传过来只有nickname
+	    //$data传过来只有nickname，machine
 	    $ip = LoginLogic::getIP();
 	    $isPhone = LoginLogic::isMobile()?'手机':'非手机';
 	    $userInfo = $this->where('user_name',$data['nickname'])->find();
 	    if(!$userInfo){
 	        //说明在数据库没找到用户,就增加一个
-// 	        $userInfo = $this->data([
-//                     'name'  =>  $data['nickname'],
-//                     'email' =>  '微信',
-//                     'last_ip'   =>  $ip,
-//                     'login_times'  => 1,
-//                 ])->allowField(true)->save();
 	        $userInfo = self::create([
 	            'user_name'  =>  $data['nickname'],
                 'email' =>  '微信',
@@ -78,10 +72,11 @@ class UserModel extends Model
 	    session('user.user_id',$userInfo['user_id']);
 	    session('user.user_name',$userInfo['user_name']);
 	    LoginRecordsModel::create([
-	        'user_name'	=>	$userInfo['user_name'],
-	        'login_ip'	=>	$ip,
-	        'type'     =>  '微信登录',
-	        'isphone'     =>  $isPhone,
+	        'user_name'	=>	   $userInfo['user_name'],
+	        'login_ip'	=>	   $ip,
+            'type'      =>     '微信登录',
+	        'isphone'   =>     $isPhone,
+	        'machine'   =>     $data['machine']
 	    ]);
 	    return ;
 	}
