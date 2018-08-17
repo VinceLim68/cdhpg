@@ -35,6 +35,11 @@ class Common extends Controller
 		        //只要进到这里，无论有没有用户信息，都会登录了。
 		        $nickname = trim($input['nickname']);
 		        $input['nickname'] = $nickname;
+		        
+		        //微信传递过来的，都是经过两次encodeURI的数据，要解码一下
+		        foreach ($input as $key=>$value){
+		            $input[$key]=urldecode($value);
+		        }
 		        $user = new UserModel;
 		        $user->loginByWeiXin($input);
 		    }else{

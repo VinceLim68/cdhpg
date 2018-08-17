@@ -389,6 +389,8 @@ dump(getUID());
         $input = input();
         dump($input);
     }
+    
+    //url参数在javascript用encodeURI两次,在php里用urldecode解码看看
     public function showinput1(){
         $input = input();
         foreach ($input as $key=>$value){
@@ -396,10 +398,6 @@ dump(getUID());
             echo($input[$key]);
         }
         return dump($input);
-    }
-    public function showinput2(){
-        
-        return 'hello iphone';
     }
 
     //跳转错误信息
