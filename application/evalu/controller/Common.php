@@ -19,11 +19,7 @@ class Common extends Controller
 		$action = request()->action();
 		$module = request()->module();
 		$act = strtolower($module.'/'.$controller.'/'.$action);
-// 		$url = $request->url();
-// 		$url = base_encode(ltrim(rtrim($url,'.html'),'/'));
-//         $url = base_encode($url);
-		
-// 		halt($act) ;
+
 		$isPhone = LoginLogic::isMobile()?'手机':'非手机';
 
 		if(!session('user.user_id') )
