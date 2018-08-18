@@ -62,7 +62,7 @@ class Antifake extends Controller {
             $map_new['BgCD'] = ['like','%'.trim($input['zid']).'%'];
         }
         if('' != trim($input['from'])){
-            $map_old['CustomerFrom|getreportmethod|e1.name'] = ['like','%'.trim($input['from']).'%'];
+            $map_old['a.CustomerFrom|getreportmethod|e1.name'] = ['like','%'.trim($input['from']).'%'];
             $map_new['Ywly|g.xmjl'] = ['like','%'.trim($input['from']).'%'];
         }
         $resu_old = (new CPGRecordModel())
@@ -113,17 +113,21 @@ class Antifake extends Controller {
             ->where($map_new)
             ->select()->toArray();
         $resu = array_merge($resu_old,$resu_new);
-        halt($resu);
-//         if(count($resu)>0){
+//         halt($resu);
+        if(count($resu)>0){
             //用正则取出报告编号，组成一个sort字段
             $pattern = '/(^\D+)(\d{10})(.*)/';
             foreach ($resu as $k=>$v){
                 preg_match($pattern, $v['ZID'],$match);
-                $resu[$k]['sort'] = $match[2];
+                if(count($match)>=3){
+                    $resu[$k]['sort'] = $match[2];
+                }else{
+                    $resu[$k]['sort'] = $v['ZID'];
+                }
             }
             //把记录排倒序
             array_multisort(array_column($resu, 'sort'),SORT_DESC,$resu);
-//         }
+        }
         
         $this->assign([
             'result'  => $resu,
