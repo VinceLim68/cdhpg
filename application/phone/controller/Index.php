@@ -115,8 +115,8 @@ class Index extends Common {
         if(!isset($input['price'])){
             $input['price']=0;
         }
-        if (isset($input['nickname']) and '' != trim($input['nickname'])) {
-//         if (LoginLogic::isWeixin() and  isset($input['nickname']) and '' != trim($input['nickname'])) {
+//         if (isset($input['nickname']) and '' != trim($input['nickname'])) {
+        if (LoginLogic::isWeixin() and  isset($input['nickname']) and '' != trim($input['nickname'])) {
             $result = $this->validate(input(),'GetCommNameValidate');
             if (true !== $result) {
                 // 验证失败 输出错误信息
