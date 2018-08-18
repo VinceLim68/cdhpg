@@ -112,20 +112,12 @@ class Index extends Common {
         foreach ($input as $key=>$value){
             $input[$key]=urldecode($value);
         }
+        if(!isset($input['price'])){
+            $input['price']=0;
+        }
+//         if (isset($input['nickname']) and '' != trim($input['nickname'])) {
         if (LoginLogic::isWeixin() and  isset($input['nickname']) and '' != trim($input['nickname'])) {
             $result = $this->validate(input(),'GetCommNameValidate');
-//             $result = $this->validate ( $input, [
-//                 'comm' => 'require|max:70|min:2',
-//                 'price'=>   'number|between:100,12000000',
-//             ],
-//                 [
-//                     'comm.require' => '请问您要查询哪个小区？',
-//                     'comm.max'     => '名称最多不能超过70个字符',
-//                     'comm.min'     => '名称最少要两个字',
-//                     'price.number'  =>'成交价请输入数字',
-//                     'price.between'  =>'认真一点，把你的成交价填进去',
-//                 ] );
-             
             if (true !== $result) {
                 // 验证失败 输出错误信息
                 $this->error ( $result );
@@ -171,10 +163,11 @@ class Index extends Common {
                     }
                     $this->assign ( 'fields', $commArr );
                     $this->assign('price',$input['price']);
-                    return $this->fetch();
+                    return $this->fetch('getCommName');
+//                     $this->redirect('getCommName',['fields'=>$commArr,'price'=>$input['price']]);
                 }else{
                     //3如果查到一个，转入子功能分类进行选择
-                    if(!isset($input['price'])){
+                    if(!($input['price'])){
                         $this->redirect('getCommChild', ['comm_id' => $commnames[0]['comm_id']]);
                     }else{
                         $this->redirect('getCommChild', ['comm_id' => $commnames[0]['comm_id'],'price'=>$input['price']]);
