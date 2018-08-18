@@ -174,7 +174,7 @@ class Index extends Common {
                     return $this->fetch();
                 }else{
                     //3如果查到一个，转入子功能分类进行选择
-                    if(!$input['price']){
+                    if(!isset($input['price'])){
                         $this->redirect('getCommChild', ['comm_id' => $commnames[0]['comm_id']]);
                     }else{
                         $this->redirect('getCommChild', ['comm_id' => $commnames[0]['comm_id'],'price'=>$input['price']]);
