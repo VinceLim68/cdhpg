@@ -9,7 +9,6 @@
 <!-- <link rel="stylesheet" type="text/css"	href="__CSS__/font-awesome.min.css"> -->
 <style type="text/css">
 body{
-
 	font-family: "Hiragino Sans GB", "Microsoft Yahei UI", "Microsoft Yahei", 微软雅黑, "Segoe UI", Tahoma, 宋体b8b体, SimSun, sans-serif;
     text-rendering: optimizeLegibility;
     text-size-adjust: 100%;
@@ -42,26 +41,26 @@ input{
 }
 h1{
 	text-align: center;
-	margin: 20px;
+	margin: 0 10px;
 	background-color: #F16D6D;
-	padding: 30px;
+	padding: 20px;
 	color: whitesmoke;
 	font-weight:400;
-	letter-spacing: 4px;
-}
-.btn-grey{
-	width: 50%;
-	font-size: 20px;
-	padding: 15px 0px;
-	background-color: #F25F60;
-	color: white;
-	font-weight: 700;
+	letter-spacing: 2px;
 }
 .btn-grey:hover{
 	border: none; 
 	background-color: #F25F60;
 	opacity:0.7;
 	color: white;
+}
+.btn-grey,.btn-grey:active {
+	width: 40%;
+	font-size: 20px;
+	padding: 15px 0px;
+	background-color: #F25F60;
+	color: white;
+	font-weight: 700;
 }
 .formbutton{
 	padding: 10px;
@@ -85,13 +84,14 @@ h1{
 	  </div>
 	  <div class="display-block">
 	    <label class=" form_label">姓名</label>
-	      <input type="text"  class="form_input" name="name" placeholder="请输入委托人或者权属人姓名">
+	      <input type="text"  class="form_input" name="name" placeholder="委托人或者权属人姓名">
 	  </div>
 	  <div class="display-block">
 	    <label class=" form_label">业务来源</label>
-	      <input type="text"  class="form_input" name="from" placeholder="请输入业务员或者客户来源">
+	      <input type="text"  class="form_input" name="from" placeholder="业务员或者客户来源">
 	  </div>
 	  <div class="formbutton">
+	  	<button type="reset" class="btn btn-default btn-lg btn-grey">重置</button>
 	  	<button type="submit" class="btn btn-default btn-lg btn-grey">查  询</button>
 	  </div>
     </form>

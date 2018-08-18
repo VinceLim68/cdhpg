@@ -18,6 +18,7 @@ use app\phone\model\EasyCjalkModel;
 use app\evalu\model\Comm;
 use app\phone\model\GeneralLayoutModel;
 use app\evalu\model\CommaddressModel;
+use app\evalu\logic\LoginLogic;
 
 //手机端的询价系统
 class Index extends Common {
@@ -33,17 +34,18 @@ class Index extends Common {
     public function getCommName(){
         if (request()->isPost() or request()->isGet()) {
 //             halt(input());
-            $result = $this->validate ( input ( 'param.' ), [
-                'comm' => 'require|max:70|min:2',
-                'price'=>   'number|between:100,12000000',
-            ],
-            [
-                'comm.require' => '请问您要查询哪个小区？',
-                'comm.max'     => '名称最多不能超过70个字符',
-                'comm.min'     => '名称最少要两个字',
-                'price.number'  =>'成交价请输入数字',
-                'price.between'  =>'认真一点，把你的成交价填进去',
-            ] );
+            $result = $this->validate(input(),'GetCommNameValidate');
+//             $result = $this->validate ( input( 'param.' ), [
+//                 'comm' => 'require|max:70|min:2',
+//                 'price'=>   'number|between:100,12000000',
+//             ],
+//             [
+//                 'comm.require' => '请问您要查询哪个小区？',
+//                 'comm.max'     => '名称最多不能超过70个字符',
+//                 'comm.min'     => '名称最少要两个字',
+//                 'price.number'  =>'成交价请输入数字',
+//                 'price.between'  =>'认真一点，把你的成交价填进去',
+//             ] );
             	
             if (true !== $result) {
                 // 验证失败 输出错误信息
@@ -101,9 +103,86 @@ class Index extends Common {
                 }
             }
         }
-        
     }
     
+    //通过微信来询价，基本上就是重写一次
+    public function getCommNameByWX(){
+        $input = input();
+        //微信传递过来的，都是经过两次encodeURI的数据，要解码一下
+        foreach ($input as $key=>$value){
+            $input[$key]=urldecode($value);
+        }
+        if (LoginLogic::isWeixin() and  isset($input['nickname']) and '' != trim($input['nickname'])) {
+            $result = $this->validate(input(),'GetCommNameValidate');
+//             $result = $this->validate ( $input, [
+//                 'comm' => 'require|max:70|min:2',
+//                 'price'=>   'number|between:100,12000000',
+//             ],
+//                 [
+//                     'comm.require' => '请问您要查询哪个小区？',
+//                     'comm.max'     => '名称最多不能超过70个字符',
+//                     'comm.min'     => '名称最少要两个字',
+//                     'price.number'  =>'成交价请输入数字',
+//                     'price.between'  =>'认真一点，把你的成交价填进去',
+//                 ] );
+             
+            if (true !== $result) {
+                // 验证失败 输出错误信息
+                $this->error ( $result );
+                exit ();
+            } else {
+                //1查询数据,把comm存入session中
+                session('user.comm',$input['comm']);
+        
+                //返回$pickitem数组，每个元素中包含comm_id,comm_name,pri_level,keywords
+                $commnames = MatchLogic::matchSearch($input['comm']);
+        
+                //2如果没有查到，转到小区地址表中去查询
+                if(!$commnames){
+                    $address = MatchLogic::matchIDByAddress($input['comm']);
+                    if(isset($address['comm_id']) and $address['comm_id']>999 ){
+                        $commnames[] = (new Comm())->field ( "comm_id,comm_name,pri_level,keywords" )
+                        ->where('comm_id', $address['comm_id'])
+                        ->find()
+                        ->toArray();
+                        session('user.comm',$commnames[0]['comm_name']);
+                        //                        halt($commnames);
+                    }
+                }
+                if(!$commnames){
+                    //如果还是没有查到，记录到miss_comm表中去
+                    try{
+                        $errorcomm = ErrorCommModel::create([
+                            'memo'     =>  '没有小区名',
+                            'user_id'       =>  session('user.user_id'),
+                            'user_name'     =>  session('user.user_name'),
+                            'type'          =>  1,
+                            'comm_name'     =>  $input['comm'],
+                        ]);
+                    }catch(\Exception $e){
+                        $this->error('没有查询到叫"'.$input['comm'].'"的地方');
+                    }
+                    $this->error('没有查询到叫"'.$input['comm'].'"的地方');
+                }elseif(count($commnames)>1){
+                    //4如果查到多个，列表展示，让用户手动挑选后，再转入子功能分类进行选择
+                    $commArr = [];      //取出完整的数据
+                    foreach ($commnames as $comm){
+                        $commArr[] = Db::table('comm')->where('comm_id',$comm['comm_id'])->find();
+                    }
+                    $this->assign ( 'fields', $commArr );
+                    $this->assign('price',$input['price']);
+                    return $this->fetch();
+                }else{
+                    //3如果查到一个，转入子功能分类进行选择
+                    if(!$input['price']){
+                        $this->redirect('getCommChild', ['comm_id' => $commnames[0]['comm_id']]);
+                    }else{
+                        $this->redirect('getCommChild', ['comm_id' => $commnames[0]['comm_id'],'price'=>$input['price']]);
+                    }
+                }
+            }
+        }
+    }
     //处理小区的子分类，如果有子分类进行选择，如果没有则跳转
     public function getCommChild($comm_id ='',$price = 0){
         $commrelate = new CommRelateModel;
