@@ -27,7 +27,8 @@ class Common extends Controller
 	        $input = input();
 		    //如果是微信并且有微信名,LoginLogic::isWeixin() and 
 // 		    dump($input);
-		    if(LoginLogic::isWeixin() and  isset($input['nickname']) and '' != trim($input['nickname'])){
+// 		    if(LoginLogic::isWeixin() and  isset($input['nickname']) and '' != trim($input['nickname'])){
+		    if(isset($input['nickname']) and '' != trim($input['nickname'])){
 		        //只要进到这里，无论有没有用户信息，都会登录了。
 		        $nickname = trim($input['nickname']);
 		        $input['nickname'] = $nickname;
