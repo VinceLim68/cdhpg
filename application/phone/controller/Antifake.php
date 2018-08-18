@@ -54,7 +54,7 @@ class Antifake extends Controller {
             $map_new['concat(fwlp,fwdy)|XqName'] = ['like','%'.trim($input['address']).'%'];
         }
         if('' != trim($input['name'])){
-            $map_old['RName|customer'] = ['like','%'.trim($input['name']).'%'];
+            $map_old['RName|a.customer'] = ['like','%'.trim($input['name']).'%'];
             $map_new['Wtf|cqr'] = ['like','%'.trim($input['name']).'%'];
         }
         if('' != trim($input['zid'])){
@@ -62,7 +62,7 @@ class Antifake extends Controller {
             $map_new['BgCD'] = ['like','%'.trim($input['zid']).'%'];
         }
         if('' != trim($input['from'])){
-            $map_old['a.CustomerFrom|getreportmethod|e1.name'] = ['like','%'.trim($input['from']).'%'];
+            $map_old['a.CustomerFrom|a.getreportmethod|e1.name'] = ['like','%'.trim($input['from']).'%'];
             $map_new['Ywly|g.xmjl'] = ['like','%'.trim($input['from']).'%'];
         }
         $resu_old = (new CPGRecordModel())
