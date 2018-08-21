@@ -295,7 +295,7 @@ class Comms extends Common {
 	            $commnames = MatchLogic::matchSearch(input('commName'));
                 if(!$commnames){
                     //如果没有查到
-                    return ('没有查询到叫"'.input('param.commName').'"的地方');
+                    return ('没有查询123到叫"'.input('param.commName').'"的地方');
                 }elseif(count($commnames)>1){
                     //4如果查到多个，列表展示，让用户手动挑选后，再转入统计模块
                     $commArr = [];      //取出完整的数据
