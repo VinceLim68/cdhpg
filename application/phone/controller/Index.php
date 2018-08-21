@@ -342,7 +342,7 @@ class Index extends Common {
     //自动插入查询记录
     private function autoInsertQueryIntoEasyPG($B){
         $gjs = ['林晓','匡宾','李志林',"李成军","李智婕A","游加丽","吴丽敏","吴福海","陈淑华","张少芬",'admin',
-            'hope','Aimee','张S FEN','阿敏','鑫贵人生'];
+            'hope','Aimee','张S FEN','阿敏','鑫贵人生','大叔'];
         $name = session('user.user_name');              //取当前用户名
         if(!in_array($name,$gjs)){                      //如果非估价师
             $employers = config('emplorers');
