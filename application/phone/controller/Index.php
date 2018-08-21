@@ -110,6 +110,7 @@ class Index extends Common {
         }
         //如果字符串里有两个以上%，表示已经被encodeURL过了
         if(substr_count($input['comm'],"%")>2){
+            dump(input());
             halt($input);
         }
 //         if (isset($input['nickname']) and '' != trim($input['nickname'])) {
