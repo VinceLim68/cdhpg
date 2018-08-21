@@ -74,9 +74,9 @@ class Index extends Common {
                             'comm_name'     =>  $thiscomm,
                         ]);
                     }catch(\Exception $e){
-                        $this->error('没有查询到叫"'.$thiscomm.'"的地方');
+                        $this->error('没有查222询到叫"'.$thiscomm.'"的地方');
                     }
-                    $this->error('没有查询到叫"'.$thiscomm.'"的地方');
+                    $this->error('没有查333询到叫"'.$thiscomm.'"的地方');
                 }elseif(count($commnames)>1){
                 //4如果查到多个，列表展示，让用户手动挑选后，再转入子功能分类进行选择
                     $commArr = [];      //取出完整的数据
@@ -145,9 +145,9 @@ class Index extends Common {
                             'comm_name'     =>  $input['comm'],
                         ]);
                     }catch(\Exception $e){
-                        $this->error('没有查询到叫"'.$input['comm'].'"的地方');
+                        $this->error('没有查444询到叫"'.$input['comm'].'"的地方');
                     }
-                    $this->error('没有查询到叫"'.$input['comm'].'"的地方');
+                    $this->error('没有查555询到叫"'.$input['comm'].'"的地方');
                 }elseif(count($commnames)>1){
                     //4如果查到多个，列表展示，让用户手动挑选后，再转入子功能分类进行选择
                     $commArr = [];      //取出完整的数据
