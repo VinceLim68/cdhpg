@@ -108,6 +108,10 @@ class Index extends Common {
         if(!isset($input['price'])){
             $input['price']=0;
         }
+        //如果字符串里有两个以上%，表示已经被encodeURL过了
+        if(substr_count($input['comm'],"%")>2){
+            halt($input);
+        }
 //         if (isset($input['nickname']) and '' != trim($input['nickname'])) {
         if (LoginLogic::isWeixin() and  isset($input['nickname']) and '' != trim($input['nickname'])) {
             $result = $this->validate(input(),'GetCommNameValidate');
