@@ -30,6 +30,7 @@ function base_decode($str) {
 
 //循环解码直至成功
 function round_decode($string){
+    //如果有两个以上%说明还需要解码
     while(substr_count($string,"%") > 2){
         $string = urldecode($string);
     }
