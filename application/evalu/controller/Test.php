@@ -212,12 +212,17 @@ dump(getUID());
 // 	    $string = '2066-06-05 00:00:00.000';
 // 	    $pattern = config('pattern');
 // 	    $pattern = '/^(\d*)-?(\d+)?号(之[三二一四五六七八九十]*)?/';
-	    $pattern = '/(^\D+)(\d{10})(.*)/';
-	    $string = '漳2018050023';
-	    if(preg_match($pattern,$string,$match)){
-// 	        $string .= '号';
-            dump($match);
-	    }
+// 	    $pattern = '/(^\D+)(\d{10})(.*)/';
+// 	    $string = '漳2018050023';
+// 	    if(preg_match($pattern,$string,$match)){
+//             dump($match);
+// 	    }
+// 	    $pattern = '/(%).?/';
+	    $string = '%E9%BE%99%E5%B1%B1%E5%B1%B1%E5%BA%84';
+// 	    if(preg_match($pattern,$string,$match)){
+// 	        dump($match);
+// 	    }
+	    echo substr_count($string,"%")<3;
 // 	    $result = preg_match($pattern,$string,$match);
 // 	    dump($match);
 	}

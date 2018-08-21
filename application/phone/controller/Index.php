@@ -35,17 +35,6 @@ class Index extends Common {
         if (request()->isPost() or request()->isGet()) {
 //             halt(input());
             $result = $this->validate(input(),'GetCommNameValidate');
-//             $result = $this->validate ( input( 'param.' ), [
-//                 'comm' => 'require|max:70|min:2',
-//                 'price'=>   'number|between:100,12000000',
-//             ],
-//             [
-//                 'comm.require' => '请问您要查询哪个小区？',
-//                 'comm.max'     => '名称最多不能超过70个字符',
-//                 'comm.min'     => '名称最少要两个字',
-//                 'price.number'  =>'成交价请输入数字',
-//                 'price.between'  =>'认真一点，把你的成交价填进去',
-//             ] );
             	
             if (true !== $result) {
                 // 验证失败 输出错误信息
@@ -53,21 +42,25 @@ class Index extends Common {
                 exit ();
             } else {
                 //1查询数据,把comm存入session中
-                session('user.comm',input('comm'));
+                $thiscomm = input('comm');
+                //如果字符串里有两个以上%，表示已经被encodeURL过了
+                if(substr_count($thiscomm,"%")>2){
+                    $thiscomm = urldecode($thiscomm);
+                }
+                session('user.comm',$thiscomm);
                 
                 //返回$pickitem数组，每个元素中包含comm_id,comm_name,pri_level,keywords
-                $commnames = MatchLogic::matchSearch(input('param.comm'));
+                $commnames = MatchLogic::matchSearch($thiscomm);
                 
                 //2如果没有查到，转到小区地址表中去查询
                 if(!$commnames){
-                   $address = MatchLogic::matchIDByAddress(input('param.comm'));
+                   $address = MatchLogic::matchIDByAddress($thiscomm);
                    if(isset($address['comm_id']) and $address['comm_id']>999 ){
                         $commnames[] = (new Comm())->field ( "comm_id,comm_name,pri_level,keywords" )
                             ->where('comm_id', $address['comm_id'])
                             ->find()
                             ->toArray();
                         session('user.comm',$commnames[0]['comm_name']);
-//                        halt($commnames);
                    }
                 }
                 if(!$commnames){
@@ -78,12 +71,12 @@ class Index extends Common {
                             'user_id'       =>  session('user.user_id'),
                             'user_name'     =>  session('user.user_name'),
                             'type'          =>  1,
-                            'comm_name'     =>  input('param.comm'),
+                            'comm_name'     =>  $thiscomm,
                         ]);
                     }catch(\Exception $e){
-                        $this->error('没有查询到叫"'.input('param.comm').'"的地方');
+                        $this->error('没有查询到叫"'.$thiscomm.'"的地方');
                     }
-                    $this->error('没有查询到叫"'.input('param.comm').'"的地方');
+                    $this->error('没有查询到叫"'.$thiscomm.'"的地方');
                 }elseif(count($commnames)>1){
                 //4如果查到多个，列表展示，让用户手动挑选后，再转入子功能分类进行选择
                     $commArr = [];      //取出完整的数据
@@ -348,7 +341,8 @@ class Index extends Common {
     
     //自动插入查询记录
     private function autoInsertQueryIntoEasyPG($B){
-        $gjs = ['林晓','匡宾','李志林',"李成军","李智婕A","游加丽","吴丽敏","吴福海","陈淑华","张少芬",'admin','hope','Aimee'];
+        $gjs = ['林晓','匡宾','李志林',"李成军","李智婕A","游加丽","吴丽敏","吴福海","陈淑华","张少芬",'admin',
+            'hope','Aimee','张S FEN','阿敏','鑫贵人生'];
         $name = session('user.user_name');              //取当前用户名
         if(!in_array($name,$gjs)){                      //如果非估价师
             $employers = config('emplorers');
