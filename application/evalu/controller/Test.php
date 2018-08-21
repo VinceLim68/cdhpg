@@ -409,4 +409,12 @@ dump(getUID());
     public function jump_errorpage(){
         $this->error('测试成功');
     }
+
+    public function decodeURL_round(){
+        $string = "%2525E9%2525BE%252599%2525E5%2525B1%2525B1%2525E5%2525B1%2525B1%2525E5%2525BA%252584";
+        while(substr_count($string,"%") > 2){
+            $string = urldecode($string);
+        }
+        echo $string;
+    }
 }

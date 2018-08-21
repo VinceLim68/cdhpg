@@ -28,6 +28,13 @@ function base_decode($str) {
     return $new;
 }
 
+//循环解码直至成功
+function round_decode($string){
+    while(substr_count($string,"%") > 2){
+        $string = urldecode($string);
+    }
+    return $string;
+}
 //生成唯一码，36位
 function getUID(){
     $charid = strtoupper(md5(uniqid(mt_rand(), true)));
