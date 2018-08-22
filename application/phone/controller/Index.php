@@ -169,6 +169,7 @@ class Index extends Common {
             }
         }
     }
+
     //处理小区的子分类，如果有子分类进行选择，如果没有则跳转
     public function getCommChild($comm_id ='',$price = 0){
         $commrelate = new CommRelateModel;

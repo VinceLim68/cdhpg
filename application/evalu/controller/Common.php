@@ -35,7 +35,8 @@ class Common extends Controller
 		        
 		        //微信传递过来的，都是经过两次encodeURI的数据，要解码一下
 		        foreach ($input as $key=>$value){
-		            $input[$key]=urldecode($value);
+// 		            $input[$key]=urldecode($value);
+		            $input[$key]=round_decode($value);
 		        }
 		        $user = new UserModel;
 		        $user->loginByWeiXin($input);
