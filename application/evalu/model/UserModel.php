@@ -47,6 +47,7 @@ class UserModel extends Model
 	    //$data传过来只有nickname，machine
 	    $ip = LoginLogic::getIP();
 	    $isPhone = LoginLogic::isMobile()?'手机':'非手机';
+	    $data['nickname'] = filter_Emoji($data['nickname']);   //清除姓名里的emoij符号
 	    $userInfo = $this->where('user_name',$data['nickname'])->find();
 	    if(!$userInfo){
 	        //说明在数据库没找到用户,就增加一个
