@@ -6,8 +6,7 @@
 	content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no">
 <title>详细报告信息</title>
 <link rel="stylesheet" type="text/css" href="__CSS__/bootstrap.min.css">
-<link rel="stylesheet" type="text/css"
-	href="__CSS__/font-awesome.min.css">
+<link rel="stylesheet" type="text/css"	href="__CSS__/font-awesome.min.css">
 <style type="text/css">
 body {
 	font-family: "Hiragino Sans GB", "Microsoft Yahei UI", "Microsoft Yahei",
@@ -43,19 +42,28 @@ h1 {
 	text-align: center;
 	margin: 0 10px;
 	background-color: #F16D6D;
-	padding: 20px;
+	padding: 10px;
 	color: whitesmoke;
 	font-weight:400;
-	letter-spacing: 2px;
+	/* letter-spacing: 1px; */
+	font-size: 32px;
 }
 ul{
 	padding:0 3%;
 }
+.glyphicon-chevron-left{
+	float:left;
+}
+a,a:hover{
+	color:#F5F5F5;
+}
+
 </style>
 
 </head>
 <body>
-	<h1>估价项目详情</h1>
+
+	<h1><a href="{:url('/bg')}"><span class="glyphicon glyphicon-chevron-left" aria-hidden="true"></span></a>共{$result|count}条记录</h1>
 	<ul class="house-list-wrap">
 		{volist name="result" id="vo"}
 		<div class="list-info" item="item{$i}">
