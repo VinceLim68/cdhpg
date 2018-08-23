@@ -28,14 +28,15 @@ function base_decode($str) {
     return $new;
 }
 
-//循环解码直至成功
+//循环解码直至成功,并且清除表情符号
 function round_decode($string){
     //如果有两个以上%说明还需要解码
     while(substr_count($string,"%") > 2){
         $string = urldecode($string);
     }
-    return $string;
+    return filter_Emoji($string);
 }
+
 //生成唯一码，36位
 function getUID(){
     $charid = strtoupper(md5(uniqid(mt_rand(), true)));
