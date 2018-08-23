@@ -411,8 +411,8 @@ dump(getUID());
     }
 
     public function decodeURL_round(){
-        $string = "%2525E9%2525BE%252599%2525E5%2525B1%2525B1%2525E5%2525B1%2525B1%2525E5%2525BA%252584";
-        while(substr_count($string,"%") > 2){
+        $string = "OPPO-OPPO%20R11%20Plus";
+        while(substr_count($string,"%") > 2 or strpos($string,'%2520') !== false or strpos($string,'%20') !== false){
             $string = urldecode($string);
         }
         echo $string;
