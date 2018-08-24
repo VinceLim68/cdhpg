@@ -31,7 +31,9 @@ function base_decode($str) {
 //循环解码直至成功,并且清除表情符号
 function round_decode($string){
     //如果有两个以上%说明还需要解码
-    while(substr_count($string,"%") > 2){
+    while(substr_count($string,"%") > 2  
+        or strpos($string,'%2520') !== false 
+        or strpos($string,'%20') !== false){
         $string = urldecode($string);
     }
     return filter_Emoji($string);
