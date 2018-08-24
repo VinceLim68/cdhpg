@@ -407,14 +407,16 @@ dump(getUID());
 
     //跳转错误信息
     public function jump_errorpage(){
-        $this->error('测试成功');
+        return $this->fetch();
     }
 
     public function decodeURL_round(){
-        $string = "OPPO-OPPO%20R11%20Plus";
+        $string = "%25EF%25BC%25A1%25E9%2599%2588%25E5%25BF%2597%25E7%2587%2595%25EF%25BC%2588%25E6%2588%25BF%25E4%25BA%25A7%2520%25E8%25B5%2584%25E4%25BA%25A7%25E8%25AF%2584%25E4%25BC%25B0%25EF%25BC%2589";
+        echo strlen($string).'</br>';
         while(substr_count($string,"%") > 2 or strpos($string,'%2520') !== false or strpos($string,'%20') !== false){
             $string = urldecode($string);
         }
-        echo $string;
+        echo $string.'</br>';
+        echo strlen($string);
     }
 }

@@ -73,7 +73,7 @@ class UserModel extends Model
 	    session('user.user_id',$userInfo['user_id']);
 	    session('user.user_name',$userInfo['user_name']);
 	    LoginRecordsModel::create([
-	        'user_name'	=>	   $userInfo['user_name']?$userInfo['user_name']:$data['nickname'],
+	        'user_name'	=>	   $userInfo['user_name'],//?$userInfo['user_name']:$data['nickname'],
 	        'login_ip'	=>	   $ip,
             'type'      =>     '微信登录',
 	        'isphone'   =>     $isPhone,
