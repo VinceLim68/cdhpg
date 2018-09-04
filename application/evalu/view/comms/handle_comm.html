@@ -1,5 +1,6 @@
 {extend name="mainbase" /} 
 {block name="pg_cs"}
+<script src="__JS__/jquery-2.1.4.min.js"></script>
 <link rel="stylesheet" href="__CSS__/jquery-ui.min.css" />
 <link rel="stylesheet" type="text/css" href="__CSS__/comms/handle_comm.css">
 <link rel="stylesheet" href="__CSS__/jquery-ui.min.css" />
@@ -26,7 +27,10 @@
 		<li ><a href="#scatter_area_price" aria-controls="scatter_area_price" role="tab" data-toggle="tab" type="area">面积/房价散点</a></li>
 	    <li ><a href="#scatter_floor_price" aria-controls="scatter_floor_price" role="tab" data-toggle="tab" type="total_floor" >总楼层/房价散点</a></li>
 	    <li ><a href="#scatter_builded_year_price" aria-controls="scatter_builded_year_price" role="tab" data-toggle="tab" type="builded_year">建成年份/房价散点</a></li>
+	    <li ><a href="#addresses" aria-controls="addresses" role="tab" data-toggle="tab" >小区地址</a></li>
 		<li ><a href="#list1" aria-controls="list1" role="tab" data-toggle="tab" >数据列表</a></li>
+						
+		<li ><a href="{:url('rules/err_comm_list')}">异常记录</a></li>
 	</ul>
 	<div class="tab-content">
 	
@@ -308,7 +312,17 @@
 			</table>
 		</div>
 		
+		<!-- 小区地址采集 -->
+	    <div role="tabpanel" class="tab-pane" id="addresses">
 
+	    	<div class="panel panel-success">
+    		    <div class="panel-body" style="padding-top: 0; font-size: 18px;">
+					<div id="addAddresses"></div>
+				</div>
+ 		 		{include file="./commhtml/addAddresses.html"/}
+	    	</div>
+	    	
+		</div>
 		
 	</div>
 </div>

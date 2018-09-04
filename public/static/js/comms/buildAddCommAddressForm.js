@@ -4,7 +4,7 @@ function buildAddCommAddressForm(res){
 //	alert(res['aaa'] != undefined );
 //	alert(res['comm_id'] != undefined );
 //	console.log(res);
-	console.log(res[0]!=undefined);
+//	console.log(res[0]!=undefined);
 	var jsonstring = '<form style="margin: 1%;" id="addCommAddressForm">';
 	jsonstring += '<div class="container-fluid" >';
 	
@@ -146,80 +146,16 @@ function buildAddCommAddressForm(res){
 	jsonstring += '</div>';
 	jsonstring += '</div>';
 	
-//    	jsonstring += '<div class="row">';
-//    	jsonstring += '<div class="col-md-4 col-md-offset-1 hide-sm">版块 : '+res['block']+'</div>';
-//    	jsonstring += '<div class="col-md-7 hide-sm">'+res['keywords']+'</div>';
-//    	jsonstring += '</div>';
-//    	jsonstring += '<hr>';
-//    	jsonstring += '<div class="row">';
-//    	jsonstring += '<label class="col-md-2 hide-sm">小区id</label>';
-//    	jsonstring += '<div class="col-md-2 hide-sm">';
-//    	jsonstring += '<label class="col-md-2 ">'+res['comm_id']+'</label>';
-//    	jsonstring += '<input type="hidden" name="comm_id" value="'+res['comm_id']+'">';
-//    	jsonstring += '</div>';
-//    	jsonstring += '<label class="col-md-2 fit-sm">城市</label>';
-//    	jsonstring += '<div class="col-md-2 fit-sm">';
-//    	jsonstring += '<input type="text" name="city" value="'+res['city']+'" placeholder="城市">';
-//    	jsonstring += '</div>';
-//    	jsonstring += '<label class="col-md-2 fit-sm">区块</label>';
-//    	jsonstring += '<div class="col-md-2 fit-sm">';
-//    	jsonstring += '<input type="text" name="region" value="'+res['region']+'" placeholder="区块">';
-//    	jsonstring += '</div>';
-//    	jsonstring += '</div>';
-//    	jsonstring += '<div class="row">';
-//    	jsonstring += '<label class="col-md-2 fit-sm">道路</label>';
-//    	jsonstring += '<div class="col-md-2 fit-sm">';
-//    	jsonstring += '<input type="text" name="road" value="'+res['road']+'"placeholder="道路名">';
-//    	jsonstring += '</div>';
-//    	jsonstring += '<label class="col-md-2 fit-sm">门牌：从</label>';
-//    	jsonstring += '<div class="col-md-6 fit-sm">';
-//    	jsonstring += '<input type="text" name="doorplate" style="width:40%" value="'+res['doorplate']+'" placeholder="门牌">';
-//    	jsonstring += ' ----> <input type="text" name="doorplate2" style="width:40%; float: right;" placeholder="门牌截止">';
-//    	jsonstring += '</div>';
-//    	jsonstring += '</div>';
-//    	jsonstring += '<div class="row">';
-//    	jsonstring += '<label class="col-md-2 fit-sm">门牌类型</label>';
-//    	jsonstring += '<div class="col-md-6 fit-sm">';
-//    	jsonstring += '<label class="radio-inline"><input type="radio" checked name="doortype" value="连续">连续</label>';
-//    	jsonstring += '<label class="radio-inline"><input type="radio" name="doortype" value="单数">单数</label>';
-//    	jsonstring += '<label class="radio-inline"><input type="radio" name="doortype" value="双数">双数</label>';
-//    	jsonstring += '</div>';
-//    	jsonstring += '<div class="col-md-4 fit-sm">';
-//    	jsonstring += '<label class="checkbox-inline"><input type="checkbox" name="iscover">覆盖原记录</label>';
-//    	jsonstring += '</div>';
-//    	jsonstring += '</div>';
-//    	jsonstring += '<div class="row">';
-//    	jsonstring += '<label class="col-md-2 ">物业类型</label>';
-//    	jsonstring += '<div class="col-md-2 fit-sm">';
-//    	jsonstring += '<input type="text" name="type" value="'+res['type']+'" placeholder="物业类型">';
-//    	jsonstring += '</div>';
-//    	jsonstring += '<label class="col-md-2 ">建成年份</label>';
-//    	jsonstring += '<div class="col-md-2 ">';
-//    	jsonstring += '<input type="text" name="buildYear" value="'+res['buildYear']+'" placeholder="建成年份">';
-//    	jsonstring += '</div>';
-//    	jsonstring += '<label class="col-md-2 ">总层数</label>';
-//    	jsonstring += '<div class="col-md-2 ">';
-//    	jsonstring += '<input type="text" name="floors"  value="'+res['floors']+'" placeholder="总层数">';
-//    	jsonstring += '</div>';
-//    	jsonstring += '</div>';
-//    	jsonstring += '<div class="row">';
-//    	jsonstring += '<label class="col-md-2 fit-sm">电梯</label>';
-//    	jsonstring += '<div class="col-md-2 fit-sm">';
-//    	jsonstring += '<input type="text" name="elevator" value="'+res['elevator']+'"placeholder="有电梯否">';
-//    	jsonstring += '</div>';
-//    	jsonstring += '<label class="col-md-2 fit-sm">结构</label>';
-//    	jsonstring += '<div class="col-md-2 fit-sm">';
-//    	jsonstring += '<input type="text" name="structure" value="'+res['structure']+'" placeholder="建筑结构">';
-//    	jsonstring += '</div>';
-//    	jsonstring += '</div>';
-	jsonstring += '</form><button class="btn btn-success btn-block" id="addcommaddresses"'
-		+ '>增加小区地址</button>';
+//	jsonstring += '</form><button class="btn btn-success btn-block" id="addcommaddresses"'
+//		+ '>增加小区地址' + res.length + '</button>';
+//	console.log(res);
 	return jsonstring;
 }
 
 function buildCommAddressList(res){
 	//console.log(res);
 	var html = '<div class="table-responsive"><table class="table table-striped table-condensed">';
+	var thislength = 0
     html += '<thead>';
     html += '<tr class="info">';
     //html += '<th>#</th>';
@@ -243,11 +179,13 @@ function buildCommAddressList(res){
     		html += '<td>' + res[item].floors + '</td>';
     		html += '<td>' + res[item].type + '</td>';
     		html += '</tr>';
-    		
+    		thislength += 1;
     	}
     }
-    
+//    console.log(thislength);
     html += '</tbody>';
     html += '</table></div>';
+    html = '</form><button class="btn btn-success btn-block" id="addcommaddresses"'
+		+ '>增加小区地址(' + thislength + ')</button>' + html;
     return html;
 }

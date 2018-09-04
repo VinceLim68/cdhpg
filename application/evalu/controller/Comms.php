@@ -396,7 +396,6 @@ class Comms extends Common {
 	    }else{
 	        $this->assign('B',false);
 	    }
-        $this->assign('result',$result);
 	    
 	    //取挂牌数据
 	    if(!isset($data['where']) or trim($data['where'])==''){
@@ -409,11 +408,37 @@ class Comms extends Common {
 	    
 	    $fields = Db::query('SHOW COLUMNS FROM for_sale_property');
 	    $title = ['序号','标题','小区','名称','单价','总价','总层','建成'];
-	    $this->assign('saleslist',$saleslist);
-	    $this->assign('title',$title);
-	    $this->assign('fields',$fields);
-	    $this->assign('data',$data);
 	    
+	    //取地址信息
+	    $ca = new CommaddressModel();
+	    $findresult = $ca->alias('a')
+    	    ->join('comm c','c.comm_id = a.comm_id')
+    	    ->where('a.comm_id',$data['community_id'])
+    	    ->field('a.comm_id,city,a.region,road,doorplate,type,
+                        buildYear,floors,elevator,structure,c.comm_name,block,
+                        keywords')
+            ->order(['road','doorplate'])
+            ->select();
+	                        //         dump($findresult);
+//         $commInfo = (new Comm())->where('comm_id',$data['community_id'])->find()->toArray();
+        if($findresult){
+            $getconfigs = action('evalu/comms/getConfig');
+            $findresult = $findresult->toArray();
+            $findresult = array_merge($findresult,$getconfigs);
+            $findresult['commInfo'] = $getComm;
+        }else{
+            $findresult = 0;
+        }
+        
+        
+	    $this->assign([
+	        'saleslist'  => $saleslist,
+	        'title' => $title,
+	        'fields'=>$fields,
+	        'data'=>$data,
+	        'result'=>$result,
+	        'findresult'=> $findresult,    //往js里传递数组，要转化成json
+	    ]);
 	    return $this->fetch();
 	        
 	}

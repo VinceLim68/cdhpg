@@ -1,0 +1,35 @@
+
+
+
+<script src="__JS__/comms/buildAddCommAddressForm.js"></script>
+<script>
+    jQuery(function ($) {
+    	var myjson = {:json_encode($findresult)}
+    	//var myjson =  eval("("+myjson+")");		//把json转为对象
+    	//console.log(myjson);
+    	var table_html = buildCommAddressList(myjson);
+	    var form_html = buildAddCommAddressForm(myjson);
+    	$('#addAddresses').html(form_html +table_html ); 
+    	//批量增加小区地址
+    	
+    	$('#addcommaddresses').on('click',function(event){
+    		$.ajax({
+    			url:"{:url('evalu/comms/ajaxAddCommAddressAction')}",
+    			type:'POST',
+    			data:$('#addCommAddressForm').serialize(),
+    			success: function(msg){
+    				if(isNaN(msg)){
+    					alert(msg);
+    				}else if(msg == 0){
+    					alert('记录未增加成功');
+    				}else{
+    					msg = msg + ' ';
+    					alert('记录增加成功 ' + msg + '个');
+    				}
+    				window.location.reload();
+    			},	
+    		});
+    	})
+    });
+
+</script>
