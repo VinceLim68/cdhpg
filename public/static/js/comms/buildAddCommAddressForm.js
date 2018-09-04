@@ -4,7 +4,7 @@ function buildAddCommAddressForm(res){
 //	alert(res['aaa'] != undefined );
 //	alert(res['comm_id'] != undefined );
 //	console.log(res);
-	console.log(res[0]!=undefined);
+//	console.log(res[0]!=undefined);
 	var jsonstring = '<form style="margin: 1%;" id="addCommAddressForm">';
 	jsonstring += '<div class="container-fluid" >';
 	
@@ -146,14 +146,16 @@ function buildAddCommAddressForm(res){
 	jsonstring += '</div>';
 	jsonstring += '</div>';
 	
-	jsonstring += '</form><button class="btn btn-success btn-block" id="addcommaddresses"'
-		+ '>增加小区地址</button>';
+//	jsonstring += '</form><button class="btn btn-success btn-block" id="addcommaddresses"'
+//		+ '>增加小区地址' + res.length + '</button>';
+//	console.log(res);
 	return jsonstring;
 }
 
 function buildCommAddressList(res){
 	//console.log(res);
 	var html = '<div class="table-responsive"><table class="table table-striped table-condensed">';
+	var thislength = 0
     html += '<thead>';
     html += '<tr class="info">';
     //html += '<th>#</th>';
@@ -177,11 +179,13 @@ function buildCommAddressList(res){
     		html += '<td>' + res[item].floors + '</td>';
     		html += '<td>' + res[item].type + '</td>';
     		html += '</tr>';
-    		
+    		thislength += 1;
     	}
     }
-    
+//    console.log(thislength);
     html += '</tbody>';
     html += '</table></div>';
+    html = '</form><button class="btn btn-success btn-block" id="addcommaddresses"'
+		+ '>增加小区地址(' + thislength + ')</button>' + html;
     return html;
 }
