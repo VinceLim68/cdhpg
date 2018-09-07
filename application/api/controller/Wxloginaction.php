@@ -11,7 +11,7 @@ class Wxloginaction{
         $result = $this->httpGet($url);
         //返回｛openid,session_key
         dump($result);
-        $openid = $result.openid;
+        $openid = $result->openid;
         return $openid;
     }
     
