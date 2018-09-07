@@ -8,7 +8,10 @@ class Wxloginaction{
         $AppID = 'wx1a480f3d8834457c';
         $AppSecret = '2b74d798fa59c148d1c3335f45953159';
         $url = "https://api.weixin.qq.com/sns/jscode2session?appid={$AppID}&secret={$AppSecret}&js_code={$JSCODE}&grant_type=authorization_code";
-        return $this->httpGet($url);
+        $result = $this->httpGet($url);
+        //返回｛data,header,statusCode,errMsg｝，其中data有openid,session_key
+        $openid = $result.data.openid;
+        return $openid;
     }
     
     private function httpGet($url) {
