@@ -1,7 +1,7 @@
 <?php
 namespace app\api\controller;
 
-class WxLoginAction{
+class Wxloginaction{
     
     public function wxLoginAction(){
         $JSCODE = input('code');
@@ -24,4 +24,6 @@ class WxLoginAction{
     
         return $res;
     }
+    
+    
 }
