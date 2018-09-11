@@ -26,16 +26,14 @@ class Common extends Controller
 		{
 	        $input = input();
 		    //如果是微信并且有微信名,LoginLogic::isWeixin() and 
-// 		    dump($input);
 		    if(LoginLogic::isWeixin() and  isset($input['nickname']) and '' != trim($input['nickname'])){
 // 		    if(isset($input['nickname']) and '' != trim($input['nickname'])){
-		        //只要进到这里，无论有没有用户信息，都会登录了。
-		        $nickname = trim($input['nickname']);
-		        $input['nickname'] = $nickname;
+// 		        $nickname = trim($input['nickname']);
+// 		        $input['nickname'] = $nickname;
 		        
+		        //只要进到这里，无论有没有用户信息，都会登录了。
 		        //微信传递过来的，都是经过两次encodeURI的数据，要解码一下
 		        foreach ($input as $key=>$value){
-// 		            $input[$key]=urldecode($value);
 		            $input[$key]=round_decode($value);
 		        }
 		        $user = new UserModel;
