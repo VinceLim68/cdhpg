@@ -44,7 +44,7 @@ class UserModel extends Model
 	//使用微信登录
 	public function loginByWeiXin($data){
 	    //使用微信登录，都会写session
-	    //$data传过来只有nickname，machine
+	    //$data传过来只有nickname，machine,commname(登录时不用),lx(这其实是openid)
 	    $ip = LoginLogic::getIP();
 	    $isPhone = LoginLogic::isMobile()?'手机':'非手机';
 // 	    $data['nickname'] = filter_Emoji($data['nickname']);   //清除姓名里的emoij符号
@@ -56,6 +56,7 @@ class UserModel extends Model
                 'email' =>  '微信',
                 'last_ip'   =>  $ip,
                 'login_times'  => 1, 
+	            'openid'   =>  $data['lx'],
 	        ]);
 	        //新注册用户默认权限是普通会员
 	        $group=array(
@@ -68,6 +69,7 @@ class UserModel extends Model
 	        $this->save([
 	            'login_times'  => $userInfo['login_times']+1,
 	            'last_ip' => $ip,
+// 	            'openid'   =>  $data['lx'],
 	        ],['user_id' => $userInfo['user_id']]);
 	    }
 	    session('user.user_id',$userInfo['user_id']);
@@ -77,7 +79,8 @@ class UserModel extends Model
 	        'login_ip'	=>	   $ip,
             'type'      =>     '微信登录',
 	        'isphone'   =>     $isPhone,
-	        'machine'   =>     $data['machine']
+	        'machine'   =>     $data['machine'],
+            'openid'    =>     $data['lx'],
 	    ]);
 	    return ;
 	}
