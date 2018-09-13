@@ -32,7 +32,7 @@
 					<th>机器</th>
 					<th>手机</th>
 					<th>登录类型</th>
-					<th>操作</th>
+					<th>微信</th>
 				</tr>
 				{foreach name="data" item="v"}
 				<tr>
@@ -43,8 +43,10 @@
 					<td>{$v['machine']}</td>
 					<td>{$v['isphone']}</td>
 					<td>{$v['type']}</td>
-					<td>
-					<a href="{:url('loginRecords',array('user_name'=>$v['user_name']))}">登录记录</a></td>
+					<td>{$v['openid']}</td>
+					<!-- <td>
+					<a href="{:url('loginRecords',array('user_name'=>$v['user_name']))}">登录记录</a> 
+					</td> -->
 				</tr>
 				{/foreach}
 			</table>

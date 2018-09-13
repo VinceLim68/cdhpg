@@ -69,7 +69,7 @@ class UserModel extends Model
 	        $this->save([
 	            'login_times'  => $userInfo['login_times']+1,
 	            'last_ip' => $ip,
-// 	            'openid'   =>  $data['lx'],
+	            'openid'   =>  $data['lx'],
 	        ],['user_id' => $userInfo['user_id']]);
 	    }
 	    session('user.user_id',$userInfo['user_id']);
