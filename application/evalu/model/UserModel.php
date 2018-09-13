@@ -56,7 +56,7 @@ class UserModel extends Model
                 'email' =>  '微信',
                 'last_ip'   =>  $ip,
                 'login_times'  => 1, 
-	            'openid'   =>  $data['lx'],
+	            'openid'   =>  isset($data['lx']) ? $data['lx'] : '',
 	        ]);
 	        //新注册用户默认权限是普通会员
 	        $group=array(
@@ -69,7 +69,7 @@ class UserModel extends Model
 	        $this->save([
 	            'login_times'  => $userInfo['login_times']+1,
 	            'last_ip' => $ip,
-	            'openid'   =>  $data['lx'],
+	            'openid'   =>  isset($data['lx']) ? $data['lx'] : '',
 	        ],['user_id' => $userInfo['user_id']]);
 	    }
 	    session('user.user_id',$userInfo['user_id']);
@@ -80,7 +80,7 @@ class UserModel extends Model
             'type'      =>     '微信登录',
 	        'isphone'   =>     $isPhone,
 	        'machine'   =>     $data['machine'],
-            'openid'    =>     $data['lx'],
+            'openid'   =>  isset($data['lx']) ? $data['lx'] : '',
 	    ]);
 	    return ;
 	}
