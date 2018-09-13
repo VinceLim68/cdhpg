@@ -1,7 +1,7 @@
 <?php
 namespace app\phone\controller;
 use think\Controller;
-use app\phone\model\CPGRecordModel;
+// use app\phone\model\CPGRecordModel;
 use app\evalu\logic\LoginLogic;
 use app\phone\model\AntiModel;
 use app\report\model\EasyPGGjxmdetailModel;
@@ -13,16 +13,22 @@ class Antifake extends Controller {
         //手机查询防伪
         $reportid = input('id');
         $ip = LoginLogic::getIP();      //取查询人的ip
-        $resu = (new CPGRecordModel())->field('customer,RAddress,RMoney,ZID')->where('ZID',$reportid)->find();
-        if(!$resu){
-            //如果在旧系统里没有查询到，就转到新系统里查询
-            $resu = (new EasyGjxmglkModel())
-                        ->alias('a')
-                        ->join('PG_SE_Gjxmbgk w','a.KID = w.KID')
-                        ->field('BgCD as ZID,Wtf as customer,PgAmt*10000 as RMoney,ProjectCovert as RAddress')
-                        ->where('BgCD',$reportid)
-                        ->find()->toArray();
-        } 
+//         $resu = (new CPGRecordModel())->field('customer,RAddress,RMoney,ZID')->where('ZID',$reportid)->find();
+//         if(!$resu){
+//             //如果在旧系统里没有查询到，就转到新系统里查询
+//             $resu = (new EasyGjxmglkModel())
+//                         ->alias('a')
+//                         ->join('PG_SE_Gjxmbgk w','a.KID = w.KID')
+//                         ->field('BgCD as ZID,Wtf as customer,PgAmt*10000 as RMoney,ProjectCovert as RAddress')
+//                         ->where('BgCD',$reportid)
+//                         ->find()->toArray();
+//         } 
+        $resu = (new EasyGjxmglkModel())
+            ->alias('a')
+            ->join('PG_SE_Gjxmbgk w','a.KID = w.KID')
+            ->field('BgCD as ZID,Wtf as customer,PgAmt*10000 as RMoney,ProjectCovert as RAddress')
+            ->where('BgCD',$reportid)
+            ->find()->toArray();
         //登记查询情况
         $anti = new AntiModel();
         $anti->data([
@@ -65,30 +71,30 @@ class Antifake extends Controller {
             $map_old['a.CustomerFrom|a.getreportmethod|e1.name'] = ['like','%'.trim($input['from']).'%'];
             $map_new['Ywly|g.xmjl'] = ['like','%'.trim($input['from']).'%'];
         }
-        $resu_old = (new CPGRecordModel())
-            ->alias('a')
-            ->join('B_Employee e1','a.ywid = e1.EmpID','LEFT')
-            ->join('B_Employee e2','a.qzid1 = e2.EmpID','LEFT')
-            ->join('B_Employee e3','a.qzid2 = e3.EmpID','LEFT')
-            ->join('B_Employee e4','a.PGid1 = e4.EmpID','LEFT')
-            ->join('C_SendRecord e5','a.SendID = e5.SendID','LEFT')
-            ->field(['RName' => 'cqr',
-                'RAddress',
-                'RMoney',           //在旧系统里，这是报告的评估总价
-                'ZID',
-                'RArea',
-                'a.CustomerFrom',
-                'a.customer' => 'Wtf',
-                'a.getreportmethod',
-                'efee1' => 'pgdj',
-                'efor1' => 'yt',
-                'pa_locatedregion',
-                "e2.name+','+e3.name" => "gjs",
-                'e4.name' => 'zgr',
-                'e1.name' => 'ywy',
-                'e5.bank',
-                'PhotoName'])
-            ->where($map_old)->select()->toArray();
+//         $resu_old = (new CPGRecordModel())
+//             ->alias('a')
+//             ->join('B_Employee e1','a.ywid = e1.EmpID','LEFT')
+//             ->join('B_Employee e2','a.qzid1 = e2.EmpID','LEFT')
+//             ->join('B_Employee e3','a.qzid2 = e3.EmpID','LEFT')
+//             ->join('B_Employee e4','a.PGid1 = e4.EmpID','LEFT')
+//             ->join('C_SendRecord e5','a.SendID = e5.SendID','LEFT')
+//             ->field(['RName' => 'cqr',
+//                 'RAddress',
+//                 'RMoney',           //在旧系统里，这是报告的评估总价
+//                 'ZID',
+//                 'RArea',
+//                 'a.CustomerFrom',
+//                 'a.customer' => 'Wtf',
+//                 'a.getreportmethod',
+//                 'efee1' => 'pgdj',
+//                 'efor1' => 'yt',
+//                 'pa_locatedregion',
+//                 "e2.name+','+e3.name" => "gjs",
+//                 'e4.name' => 'zgr',
+//                 'e1.name' => 'ywy',
+//                 'e5.bank',
+//                 'PhotoName'])
+//             ->where($map_old)->select()->toArray();
         $resu_new = (new EasyPGGjxmdetailModel())
             ->alias('d')
             ->join('PG_SE_Gjxmglk g','d.KID = g.KID','LEFT')
@@ -112,7 +118,8 @@ class Antifake extends Controller {
                 "concat(mxkcgjs1,',',mxkcgjs2)" => 'PhotoName'])
             ->where($map_new)
             ->select()->toArray();
-        $resu = array_merge($resu_old,$resu_new);
+//         $resu = array_merge($resu_old,$resu_new);
+        $resu = $resu_new;
 //         halt($resu);
         if(count($resu)>0){
             //用正则取出报告编号，组成一个sort字段
