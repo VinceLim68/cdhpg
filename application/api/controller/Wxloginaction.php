@@ -31,7 +31,8 @@ class Wxloginaction{
     public function returnAsskey()
     {
         //从微信处获得token
-        $url = 'https://api.weixin.qq.com/cgi-bin/token?grant_type=client_credential&appid={$this->AppID}&secret={$this->AppSecret}';
+//         "https://api.weixin.qq.com/cgi-bin/token?grant_type=client_credential&appid=APPID&secret=APPSECRET"
+        $url = "https://api.weixin.qq.com/cgi-bin/token?grant_type=client_credential&appid={$this->AppID}&secret={$this->AppSecret}";
         $ass_key = $this->httpGet($url);
         $a1 = $ass_key->access_token;
         return $a1;
