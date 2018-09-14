@@ -19,6 +19,7 @@ use app\evalu\model\Comm;
 use app\phone\model\GeneralLayoutModel;
 use app\evalu\model\CommaddressModel;
 use app\evalu\logic\LoginLogic;
+use app\api\controller\Wxloginaction;
 
 //手机端的询价系统
 class Index extends Common {
@@ -41,6 +42,7 @@ class Index extends Common {
                 $this->error ( $result );
                 exit ();
             } else {
+                $input = input();
                 //1查询数据,把comm存入session中
                 $thiscomm = input('comm');
                 //如果字符串里有两个以上%，表示已经被encodeURL过了
@@ -83,16 +85,30 @@ class Index extends Common {
                     foreach ($commnames as $comm){
                         $commArr[] = Db::table('comm')->where('comm_id',$comm['comm_id'])->find();
                     }
-                    $this->assign ( 'fields', $commArr );
-                    $this->assign('price',input('price'));
+//                     $value = array(
+//                         'fields'=>$commArr,
+//                         'price'=>$input['price'],);
+                    $this->assign ([
+                        'fields'=>$commArr,
+                        'price'=>$input['price'],
+                        'input'=>base_encode(json_encode($input)),
+                    ]);
+//                         $this->assign($value);
+//                     $this->assign ( 'fields', $commArr );
+//                     $this->assign('price',input('price'));
                     return $this->fetch();
                 }else{
                 //3如果查到一个，转入子功能分类进行选择
                     if(!input('price')){
-                        $this->redirect('getCommChild', ['comm_id' => $commnames[0]['comm_id']]);
+                        $this->redirect('getCommChild', ['comm_id' => $commnames[0]['comm_id'],'input'=>base_encode(json_encode($input))]);
                     }else{
-                        $this->redirect('getCommChild', ['comm_id' => $commnames[0]['comm_id'],'price'=>input('price')]);
+                        $this->redirect('getCommChild', ['comm_id' => $commnames[0]['comm_id'],'input'=>base_encode(json_encode($input)),'price'=>$input['price']]);
                     }
+//                     if(!input('price')){
+//                         $this->redirect('getCommChild', ['comm_id' => $commnames[0]['comm_id']]);
+//                     }else{
+//                         $this->redirect('getCommChild', ['comm_id' => $commnames[0]['comm_id'],'price'=>input('price')]);
+//                     }
                 }
             }
         }
@@ -102,14 +118,15 @@ class Index extends Common {
     public function getCommNameByWX(){
         $input = input();
         //微信传递过来的，都是经过两次encodeURI的数据，要解码一下
+        //传递过来的参数nickname,machine,comm,lx(openid),lx2(formId) 
         foreach ($input as $key=>$value){
             $input[$key]=round_decode($value);
         }
         if(!isset($input['price'])){
             $input['price']=0;
         }
-//         if (isset($input['nickname']) and '' != trim($input['nickname'])) {
-        if (LoginLogic::isWeixin() and  isset($input['nickname']) and '' != trim($input['nickname'])) {
+        if (isset($input['nickname']) and '' != trim($input['nickname'])) {
+//         if (LoginLogic::isWeixin() and  isset($input['nickname']) and '' != trim($input['nickname'])) {
             $result = $this->validate(input(),'GetCommNameValidate');
             if (true !== $result) {
                 // 验证失败 输出错误信息
@@ -154,16 +171,20 @@ class Index extends Common {
                     foreach ($commnames as $comm){
                         $commArr[] = Db::table('comm')->where('comm_id',$comm['comm_id'])->find();
                     }
-                    $this->assign ( 'fields', $commArr );
-                    $this->assign('price',$input['price']);
+                    $this->assign ([
+                        'fields'=>$commArr,
+                        'price'=>$input['price'],
+                        'input'=>base_encode(json_encode($input)),
+                    ]);
+//                     $this->assign('price',$input['price']);
                     return $this->fetch('getCommName');
 //                     $this->redirect('getCommName',['fields'=>$commArr,'price'=>$input['price']]);
                 }else{
                     //3如果查到一个，转入子功能分类进行选择
                     if(!($input['price'])){
-                        $this->redirect('getCommChild', ['comm_id' => $commnames[0]['comm_id']]);
+                        $this->redirect('getCommChild', ['comm_id' => $commnames[0]['comm_id'],'input'=>base_encode(json_encode($input))]);
                     }else{
-                        $this->redirect('getCommChild', ['comm_id' => $commnames[0]['comm_id'],'price'=>$input['price']]);
+                        $this->redirect('getCommChild', ['comm_id' => $commnames[0]['comm_id'],'input'=>base_encode(json_encode($input)),'price'=>$input['price']]);
                     }
                 }
             }
@@ -175,10 +196,13 @@ class Index extends Common {
         $commrelate = new CommRelateModel;
         $list = $commrelate->where('community_id',$comm_id)->select()->toArray();
         $my = [];
+        $input = input();
+//         dump($input);
         if(empty($list)){
             //没有关联规则就跳转
             $my['community_id'] = $comm_id;
             $my['price'] = $price;
+            $my += $input;
             $this->redirect('getPrice', $my);
         }else{
             //如果有关联规则则要进行选择，需要关联其他小区查询
@@ -196,34 +220,12 @@ class Index extends Common {
                 $item['community_id'] = $item1['community_id'];
                 $item['usage'] = base_encode($item1['usage']);
                 $item['price'] = $price;
+                $item += $input;
                 $my[] = $item;
             }
 //             dump($my);
             $this->assign('fields',$my);
             return $this->fetch();
-            
-            
-            //如果有两种以上数据需要手动选择
-//             }elseif(count($list)>=2){
-//                 foreach ($list as $item){
-//                     $item['where'] = base_encode($item['where']);
-//                     $item['create_time'] = base_encode($item['create_time']);
-//                     $item['usage'] = base_encode($item['usage']);
-//                     $item['price'] = $price;
-//                     $my[] = $item;
-//                 }
-//                 $this->assign('fields',$my);
-//                 //dump($my);
-//                 return $this->fetch();
-//             }else{
-//             //否则直接传递
-//                 $item = $list[0];
-//                 $item['where'] = base_encode($item['where']);
-//                 $item['create_time'] = base_encode($item['create_time']);
-//                 $item['usage'] = base_encode($item['usage']);
-//                 $item['price'] = $price;
-//                 $this->redirect('getPrice', $item);
-//             }
         }
     }
     
@@ -234,7 +236,7 @@ class Index extends Common {
         //2.如果没有，就查询挂牌数据库进行计算，并把计算结果写入查询记录中去
         //或者如果有成交记录，也可以重新计算，并把成交记录记入成交表中去
         $data = input();
-        //dump($data);
+//         dump($data);
         if(isset($data['usage'])){$data['usage'] = base_decode($data['usage']);};
         if(!isset($data['price'])){$data['price'] = 0;};
         
@@ -276,7 +278,7 @@ class Index extends Common {
 //             dump($getPrice_result['comm']);
             //===================登记查询记录===============================================
             $ins = QueryRecordsModel::insert_record($getPrice_result);      //返回插入的id,如果是重复数据没有插入，则返回0
-            //===================把离散值过大的数据记录error_comm,以备改进=================================
+            //===================把离散值过大的数据记录error_comm,以备改进=========================
             if($ins != 0){
                 //如果有追加查询记录，再考虑是否把偏离值大的记录下来
                 if($getPrice_result['std_r'] > config('std_r_limit')){
@@ -335,6 +337,22 @@ class Index extends Common {
                 'comm_id'       =>  $getComm['comm_id'],
             ]);
             $this->error('没查询到数据');
+        }
+        //在这里发消息模板？
+//         dump($data);
+        if(isset($data['input'])){
+            $wxinfo = json_decode(base_decode($data['input']));
+            $wx = new Wxloginaction();
+            $wx->sendTemplateMessage($wxinfo);
+            
+//             返回是一个json对象
+//             public 'nickname' => string '大叔' (length=6)
+//             public 'machine' => string 'iphone' (length=6)
+//             public 'comm' => string '瑞景' (length=6)
+//             public 'lx' => string '12345' (length=5)
+//             public 'lx2' => string 'abcde' (length=5)
+//             public 'price' => int 0
+//             dump($wxinfo->nickname);
         }
         return $this->fetch();
 

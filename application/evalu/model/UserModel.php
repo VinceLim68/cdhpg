@@ -35,11 +35,6 @@ class UserModel extends Model
     	    return date("Y-m-d H:i:s",$value);
 	    }
 	}
-	//与角色表多对多关联,不成功
-// 	public function group(){
-// 	    return $this->belongsToMany('GroupModel','group_access','uid','user_id');
-// 	}
-	
 	
 	//使用微信登录
 	public function loginByWeiXin($data){
