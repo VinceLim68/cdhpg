@@ -39,8 +39,10 @@ class Wxloginaction{
     
     public function getToken()
     {
+        
         //获得token控制器，
         //先从数据库里读，如果没有或过期，就从微信处获得，并存储在数据库中
+        return '123';
         
         
     }
