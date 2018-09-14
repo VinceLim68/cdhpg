@@ -419,4 +419,15 @@ dump(getUID());
         echo $string.'</br>';
         echo strlen($string);
     }
+
+//     时间函数测试
+    public function time(){
+        $now = time();
+        echo $now;
+        echo "\r\n ";
+        echo $now+7200;
+        echo date('Y-m-d H:i:s', $now+7200);
+    }
+
+
 }
