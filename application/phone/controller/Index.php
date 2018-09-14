@@ -90,7 +90,7 @@ class Index extends Common {
 //                         'price'=>$input['price'],);
                     $this->assign ([
                         'fields'=>$commArr,
-                        'price'=>$input['price'],
+                        'price'=>isset($input['price'])?$input['price']:0,
                         'input'=>base_encode(json_encode($input)),
                     ]);
 //                         $this->assign($value);
