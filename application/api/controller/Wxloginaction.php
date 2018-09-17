@@ -132,30 +132,35 @@ class Wxloginaction{
             $message = array(
               "touser"=>$token[1],
               "template_id"=>$TEMPLATE_ID,
-              "page"=>"",
+              "page"=>"pages/search/search",
               "form_id"=>$wxinfo->lx2,
               "data"=>array(
                   "keyword1"=>array(
-                      "value"=>$B['comm']['comm_name']
+                      "value"=>$B['comm']['comm_name'],
+                      "color"=>"#888888"
                   ),
                   "keyword2"=>array(
-                      "value"=>$B['mortgagePrice'].'元/平方米'
+                      "value"=>$B['mortgagePrice'],
+                      "color"=>"#ff6666"
                   ),
                   "keyword3"=>array(
-                      "value"=>date("Y-m-d H:i:s",time())
+                      "value"=>date("Y-m-d H:i:s",time()),
+                      "color"=>"#888888"
                   ) ,
                   "keyword4"=>array(
-                      "value"=>"免费"
+                      "value"=>"免费",
+                      "color"=>"#888888"
                   ),
                   "keyword5"=>array(
-                      "value"=>"此价格对应的估价对象：面积".$B['avg_area'].'平方米,'
-                      .$B['avg_floor_index'].'层/共'.$B['avg_total_floor'].'层,建成于'.$B['avg_builded_year'].'年'
+                      "value"=>"此价格对应：面积".$B['avg_area'].'平方米,'
+                      .$B['avg_floor_index'].'层/共'.$B['avg_total_floor'].'层,建成于'.$B['avg_builded_year'].'年。',
+                      "color"=>"#888888"
                   )
               ),
               "emphasis_keyword"=>"keyword2.DATA"
             );
             $res = $this->postCurl($url,$message,'json');//将data数组转换为json数据
-            dump($res);
+//             dump($res);
             if($res){
                 return json_encode(array('state'=>4,'msg'=>$res));
             }else{
