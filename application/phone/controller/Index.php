@@ -125,8 +125,8 @@ class Index extends Common {
         if(!isset($input['price'])){
             $input['price']=0;
         }
-        if (isset($input['nickname']) and '' != trim($input['nickname'])) {
-//         if (LoginLogic::isWeixin() and  isset($input['nickname']) and '' != trim($input['nickname'])) {
+//         if (isset($input['nickname']) and '' != trim($input['nickname'])) {
+        if (LoginLogic::isWeixin() and  isset($input['nickname']) and '' != trim($input['nickname'])) {
             $result = $this->validate(input(),'GetCommNameValidate');
             if (true !== $result) {
                 // 验证失败 输出错误信息
@@ -134,6 +134,7 @@ class Index extends Common {
                 exit ();
             } else {
                 //1查询数据,把comm存入session中
+                halt($input);
                 session('user.comm',$input['comm']);
         
                 //返回$pickitem数组，每个元素中包含comm_id,comm_name,pri_level,keywords
