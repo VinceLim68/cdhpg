@@ -119,8 +119,10 @@ class Wxloginaction{
 //             public 'price' => int 0
 //             dump($wxinfo->nickname);
         dump($wxinfo);
+        dump('1111');
         if(isset($wxinfo->lx2)){
             dump($wxinfo);
+            dump('222');
             $token = $this->getToken($wxinfo->nickname);
     //         dump($token);
             $url = "https://api.weixin.qq.com/cgi-bin/message/wxopen/template/send?access_token={$token[0]}";
