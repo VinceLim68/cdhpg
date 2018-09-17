@@ -340,10 +340,10 @@ class Index extends Common {
         }
         //在这里发消息模板？
 //         dump($data);
-        if(isset($data['input'])){
+        if(isset($data['input']) and LoginLogic::isWeixin() ){
             $wxinfo = json_decode(base_decode($data['input']));
             $wx = new Wxloginaction();
-            $wx->sendTemplateMessage($wxinfo);
+            $wx->sendTemplateMessage($wxinfo,$getPrice_result);
             
 //             返回是一个json对象
 //             public 'nickname' => string '大叔' (length=6)
