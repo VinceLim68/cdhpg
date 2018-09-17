@@ -134,7 +134,7 @@ class Index extends Common {
                 exit ();
             } else {
                 //1查询数据,把comm存入session中
-                halt($input);
+//                 halt($input);
                 session('user.comm',$input['comm']);
         
                 //返回$pickitem数组，每个元素中包含comm_id,comm_name,pri_level,keywords
@@ -237,7 +237,7 @@ class Index extends Common {
         //2.如果没有，就查询挂牌数据库进行计算，并把计算结果写入查询记录中去
         //或者如果有成交记录，也可以重新计算，并把成交记录记入成交表中去
         $data = input();
-//         dump($data);
+        dump($data);
         if(isset($data['usage'])){$data['usage'] = base_decode($data['usage']);};
         if(!isset($data['price'])){$data['price'] = 0;};
         
