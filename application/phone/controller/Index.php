@@ -344,7 +344,7 @@ class Index extends Common {
         if(isset($data['input']) and LoginLogic::isWeixin() ){
             $wxinfo = json_decode(base_decode($data['input']));
             $wx = new Wxloginaction();
-//             dump($wxinfo);
+            dump($wxinfo);
             $wx->sendTemplateMessage($wxinfo,$getPrice_result);
             
 //             返回是一个json对象
