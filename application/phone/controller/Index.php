@@ -237,7 +237,7 @@ class Index extends Common {
         //2.如果没有，就查询挂牌数据库进行计算，并把计算结果写入查询记录中去
         //或者如果有成交记录，也可以重新计算，并把成交记录记入成交表中去
         $data = input();
-        dump($data);
+//         dump($data);
         if(isset($data['usage'])){$data['usage'] = base_decode($data['usage']);};
         if(!isset($data['price'])){$data['price'] = 0;};
         
@@ -344,6 +344,7 @@ class Index extends Common {
         if(isset($data['input']) and LoginLogic::isWeixin() ){
             $wxinfo = json_decode(base_decode($data['input']));
             $wx = new Wxloginaction();
+            dump($wxinfo);
             $wx->sendTemplateMessage($wxinfo,$getPrice_result);
             
 //             返回是一个json对象
