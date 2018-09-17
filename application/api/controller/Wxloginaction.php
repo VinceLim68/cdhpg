@@ -119,41 +119,47 @@ class Wxloginaction{
 //             public 'price' => int 0
 //             dump($wxinfo->nickname);
 //         dump($wxinfo);
-        $token = $this->getToken($wxinfo->nickname);
-//         dump($token);
-        $url = "https://api.weixin.qq.com/cgi-bin/message/wxopen/template/send?access_token={$token[0]}";
-        $TEMPLATE_ID = "Zk891_eS8S8NtQPOgs4MvPxy5NZ38eux1b_8IE4Wrw0";
-//         dump($url);
-        $message = array(
-          "touser"=>$token[1],
-          "template_id"=>$TEMPLATE_ID,
-          "page"=>"",
-          "form_id"=>$wxinfo->lx2,
-          "data"=>array(
-              "keyword1"=>array(
-                  "value"=>$B['comm']['comm_name']
+        if(isset($wxinfo->lx2)){
+            
+            $token = $this->getToken($wxinfo->nickname);
+    //         dump($token);
+            $url = "https://api.weixin.qq.com/cgi-bin/message/wxopen/template/send?access_token={$token[0]}";
+            $TEMPLATE_ID = "Zk891_eS8S8NtQPOgs4MvPxy5NZ38eux1b_8IE4Wrw0";
+    //         dump($url);
+            
+            $message = array(
+              "touser"=>$token[1],
+              "template_id"=>$TEMPLATE_ID,
+              "page"=>"",
+              "form_id"=>$wxinfo->lx2,
+              "data"=>array(
+                  "keyword1"=>array(
+                      "value"=>$B['comm']['comm_name']
+                  ),
+                  "keyword2"=>array(
+                      "value"=>$B['mortgagePrice'].'元/平方米'
+                  ),
+                  "keyword3"=>array(
+                      "value"=>date("Y-m-d H:i:s",time())
+                  ) ,
+                  "keyword4"=>array(
+                      "value"=>"免费"
+                  ),
+                  "keyword5"=>array(
+                      "value"=>"此价格对应的估价对象：面积".$B['avg_area'].'平方米,'
+                      .$B['avg_floor_index'].'层/共'.$B['avg_total_floor'].'层,建成于'.$B['avg_builded_year'].'年'
+                  )
               ),
-              "keyword2"=>array(
-                  "value"=>$B['mortgagePrice'].'元/平方米'
-              ),
-              "keyword3"=>array(
-                  "value"=>date("Y-m-d H:i:s",time())
-              ) ,
-              "keyword4"=>array(
-                  "value"=>"免费"
-              ),
-              "keyword5"=>array(
-                  "value"=>"此价格对应的估价对象：面积".$B['avg_area'].'平方米,'
-                  .$B['avg_floor_index'].'层/共'.$B['avg_total_floor'].'层,建成于'.$B['avg_builded_year'].'年'
-              )
-          ),
-          "emphasis_keyword"=>"keyword2.DATA"
-        );
-        $res = $this->postCurl($url,$message,'json');//将data数组转换为json数据
-        if($res){
-            return json_encode(array('state'=>4,'msg'=>$res));
+              "emphasis_keyword"=>"keyword2.DATA"
+            );
+            $res = $this->postCurl($url,$message,'json');//将data数组转换为json数据
+            if($res){
+                return json_encode(array('state'=>4,'msg'=>$res));
+            }else{
+                return json_encode(array('state'=>5,'msg'=>$res));
+            }
         }else{
-            return json_encode(array('state'=>5,'msg'=>$res));
+            return json_encode(array('state'=>3,'msg'=>'没有formid'));
         }
     }
     
