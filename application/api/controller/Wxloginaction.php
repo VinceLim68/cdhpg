@@ -118,11 +118,11 @@ class Wxloginaction{
 //             public 'lx2' => string 'abcde' (length=5)
 //             public 'price' => int 0
 //             dump($wxinfo->nickname);
-        dump($wxinfo);
-        dump('1111');
+//         dump($wxinfo);
+//         dump('1111');
         if(isset($wxinfo->lx2)){
-            dump($wxinfo);
-            dump('222');
+//             dump($wxinfo);
+//             dump('222');
             $token = $this->getToken($wxinfo->nickname);
     //         dump($token);
             $url = "https://api.weixin.qq.com/cgi-bin/message/wxopen/template/send?access_token={$token[0]}";
@@ -155,6 +155,7 @@ class Wxloginaction{
               "emphasis_keyword"=>"keyword2.DATA"
             );
             $res = $this->postCurl($url,$message,'json');//将data数组转换为json数据
+            dump($res);
             if($res){
                 return json_encode(array('state'=>4,'msg'=>$res));
             }else{
