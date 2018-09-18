@@ -49,7 +49,6 @@ class Wxloginaction{
         //先从数据库里读，如果没有或过期，就从微信处获得，并存储在数据库中
         $wxUser = new UserModel();
         $userInfo = $wxUser->where('user_name',$nickname)->find();
-        dump($userInfo);
 //         dump(strtotime($userInfo->time_out));
         if(!$userInfo){
             return '没有此用户';
@@ -80,7 +79,7 @@ class Wxloginaction{
             }
             $token[] = $userInfo->openid;
         }
-        //返回值：$token[0]=access_token;$token[1]=openid;
+//         返回值：$token[0]=access_token;$token[1]=openid;
         return $token;
     }
     
@@ -119,19 +118,19 @@ class Wxloginaction{
 //             public 'lx2' => string 'abcde' (length=5)
 //             public 'price' => int 0
 //             dump($wxinfo->nickname);
-        dump($wxinfo);
-        dump(isset($wxinfo->lx2));
-        if(isset($wxinfo->lx2)){
+//         dump($wxinfo);
+//         dump(isset($wxinfo->lx2));
+        if(isset($wxinfo->lx2) and isset($wxinfo->lx)){
 //             dump($wxinfo);
-            dump('222');
+//             dump('222');
             $token = $this->getToken($wxinfo->nickname);
     //         dump($token);
             $url = "https://api.weixin.qq.com/cgi-bin/message/wxopen/template/send?access_token={$token[0]}";
             $TEMPLATE_ID = "Zk891_eS8S8NtQPOgs4MvPxy5NZ38eux1b_8IE4Wrw0";
-            dump($token[1]);
+//             dump($token[1]);
             
             $message = array(
-              "touser"=>$token[1],
+              "touser"=>$wxinfo->lx,        //这是参数传递过来的openid
               "template_id"=>$TEMPLATE_ID,
               "page"=>"pages/search/search",
               "form_id"=>$wxinfo->lx2,
@@ -162,6 +161,7 @@ class Wxloginaction{
             );
             $res = $this->postCurl($url,$message,'json');//将data数组转换为json数据
             dump($res);
+            dump($message);
             if($res){
                 return json_encode(array('state'=>4,'msg'=>$res));
             }else{
