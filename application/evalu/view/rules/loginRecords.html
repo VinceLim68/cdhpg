@@ -44,9 +44,9 @@
 					<td>{$v['isphone']}</td>
 					<td>{$v['type']}</td>
 					<td>{$v['openid']}</td>
-					<!-- <td>
-					<a href="{:url('loginRecords',array('user_name'=>$v['user_name']))}">登录记录</a> 
-					</td> -->
+					<td>
+					<a href="{:url('loginRecords',array('user_id'=>$v['user_id']))}">详情</a> 
+					</td> 
 				</tr>
 				{/foreach}
 			</table>

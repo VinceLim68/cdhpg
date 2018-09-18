@@ -472,12 +472,20 @@ class Rules extends Common {
 //         dump(input());
         $login = new LoginRecordsModel();
         $param = input();
-        if(isset($param['user_name'])){
+        if(isset($param['user_id'])){
+//         if(isset($param['user_name'])){
+            $user = (new UserModel())->where('user_id', $param['user_id'])->find();;
+            
             $data=$login->order('logindate desc')
-                        ->where('user_name',$param['user_name'])
+                        ->where('user_name',$user['user_name'])
                         ->paginate(40,false,[
                     	        'query' => request()->param(),
                     	    ]);
+//             $data=$login->order('logindate desc')
+//                         ->where('user_name',$param['user_name'])
+//                         ->paginate(40,false,[
+//                     	        'query' => request()->param(),
+//                     	    ]);
         }else{
             $data=$login->order('logindate desc')->paginate(40,false,[
         	        'query' => request()->param(),

@@ -82,6 +82,7 @@ class UserModel extends Model
             'type'      =>     '微信登录',
 	        'isphone'   =>     $isPhone,
 	        'machine'   =>     $data['machine'],
+	        'user_id'  =>  $userInfo['user_id'],
             'openid'   =>  isset($data['lx']) ? $data['lx'] : '',
 	    ]);
 	    return ;
@@ -136,6 +137,7 @@ class UserModel extends Model
         		    'login_ip'	=>	$ip,
         		    'machine'     =>  $machine,
         		    'type'     =>  $data['type'],
+        		    'user_id'  =>  $userInfo['user_id'],
         		    'isphone'     =>  $isPhone,
         		]);
         		$this->save([
@@ -182,6 +184,7 @@ class UserModel extends Model
 		    'user_name'	=>	$data['user_name'],
 		    'login_ip'	=>	$ip,
 		    'machine'   =>  $machine,
+		    'user_id'  =>  $this->user_id,
 		    'type'      =>  '注册登录',
 		    'isphone'   =>  $isPhone,
 		]);
