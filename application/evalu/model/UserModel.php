@@ -61,7 +61,7 @@ class UserModel extends Model
 	        (new GroupAccessModel()) ->insert($group);
 	    }else{
 	        //如果已经有用户，就修改登录次数.取到openid的，就改openid
-	        if(isset($data['lx']) and '' != trim(data['lx'])){
+	        if(isset($data['lx']) and '' != trim($data['lx'])){
     	        $this->save([
     	            'login_times'  => $userInfo['login_times']+1,
     	            'last_ip' => $ip,
