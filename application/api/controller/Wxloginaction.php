@@ -49,6 +49,7 @@ class Wxloginaction{
         //先从数据库里读，如果没有或过期，就从微信处获得，并存储在数据库中
         $wxUser = new UserModel();
         $userInfo = $wxUser->where('user_name',$nickname)->find();
+        dump($userInfo);
 //         dump(strtotime($userInfo->time_out));
         if(!$userInfo){
             return '没有此用户';
