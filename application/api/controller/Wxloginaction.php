@@ -160,8 +160,8 @@ class Wxloginaction{
               "emphasis_keyword"=>"keyword2.DATA"
             );
             $res = $this->postCurl($url,$message,'json');//将data数组转换为json数据
-            dump($res);
-            dump($message);
+//             dump($res);
+//             dump($message);
             if($res){
                 return json_encode(array('state'=>4,'msg'=>$res));
             }else{
