@@ -60,12 +60,19 @@ class UserModel extends Model
 	        );
 	        (new GroupAccessModel()) ->insert($group);
 	    }else{
-	        //如果已经有用户，就修改登录次数
-	        $this->save([
-	            'login_times'  => $userInfo['login_times']+1,
-	            'last_ip' => $ip,
-	            'openid'   =>  isset($data['lx']) ? $data['lx'] : '',
-	        ],['user_id' => $userInfo['user_id']]);
+	        //如果已经有用户，就修改登录次数.取到openid的，就改openid
+	        if(isset($data['lx']) and '' != trim(data['lx'])){
+    	        $this->save([
+    	            'login_times'  => $userInfo['login_times']+1,
+    	            'last_ip' => $ip,
+    	            'openid'   =>$data['lx'],
+    	        ],['user_id' => $userInfo['user_id']]);
+	        }else{
+    	        $this->save([
+    	            'login_times'  => $userInfo['login_times']+1,
+    	            'last_ip' => $ip,
+    	        ],['user_id' => $userInfo['user_id']]);
+	        }
 	    }
 	    session('user.user_id',$userInfo['user_id']);
 	    session('user.user_name',$userInfo['user_name']);
