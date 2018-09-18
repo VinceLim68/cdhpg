@@ -22,6 +22,7 @@ usage="{$B['comm']['usage']|default=''}" block="{$B['comm']['block']}">
 						{if condition="$B['comm']['usage']!=''"}-{$B['comm']['usage']}{/if}
 						<small style="padding-left:3%">{$B['comm']['region']}-{$B['comm']['block']}</small>
 					</div>
+					{if condition="!$iswx"}
 					<div class="col-md-6 col-xs-12">
 						<form action="{:url('getCommName')}" method="post" >
 							<div class="col-md-8 col-xs-8" style="margin-left:-14px">
@@ -37,6 +38,7 @@ usage="{$B['comm']['usage']|default=''}" block="{$B['comm']['block']}">
 						<i class="ace-icon fa fa-home green"></i><span style="padding-left:1%;">返回</span></a>
 						</div>
 					</div>
+					{/if}
 				</h3>
 			</div>
 		</div>
