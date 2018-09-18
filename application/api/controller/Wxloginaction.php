@@ -118,8 +118,8 @@ class Wxloginaction{
 //             public 'lx2' => string 'abcde' (length=5)
 //             public 'price' => int 0
 //             dump($wxinfo->nickname);
-//         dump($wxinfo);
-//         dump('1111');
+        dump($wxinfo);
+        dump('1111');
         if(isset($wxinfo->lx2)){
 //             dump($wxinfo);
 //             dump('222');
@@ -135,9 +135,6 @@ class Wxloginaction{
               "page"=>"pages/search/search",
               "form_id"=>$wxinfo->lx2,
               "data"=>array(
-                  "first"=>array(
-                     "value"=>"123" 
-                  ),
                   "keyword1"=>array(
                       "value"=>$B['comm']['comm_name'],
                       "color"=>"#173177"

@@ -341,7 +341,8 @@ class Index extends Common {
         }
         //在这里发消息模板？
 //         dump($data);
-        if(isset($data['input']) and LoginLogic::isWeixin() ){
+        $iswx = LoginLogic::isWeixin();
+        if(isset($data['input']) and  $iswx){
             $wxinfo = json_decode(base_decode($data['input']));
             $wx = new Wxloginaction();
 //             dump($wxinfo);
@@ -356,6 +357,8 @@ class Index extends Common {
 //             public 'price' => int 0
 //             dump($wxinfo->nickname);
         }
+//         dump($iswx);
+        $this->assign('iswx',$iswx);
         return $this->fetch();
 
     }
