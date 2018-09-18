@@ -127,7 +127,7 @@ class Wxloginaction{
     //         dump($token);
             $url = "https://api.weixin.qq.com/cgi-bin/message/wxopen/template/send?access_token={$token[0]}";
             $TEMPLATE_ID = "Zk891_eS8S8NtQPOgs4MvPxy5NZ38eux1b_8IE4Wrw0";
-    //         dump($url);
+            dump($token[1]);
             
             $message = array(
               "touser"=>$token[1],
