@@ -2,6 +2,7 @@
 namespace app\api\controller;
 
 use app\evalu\model\UserModel;
+use think\Log;
 
 class Wxloginaction{
     
@@ -102,6 +103,7 @@ class Wxloginaction{
         curl_setopt($curl,CURLOPT_HTTPHEADER,$header);
         $res = curl_exec($curl);
         if(curl_errno($curl)){
+            Log::ERROR('Error+'.curl_error($curl));
             echo 'Error+'.curl_error($curl);
         }
         curl_close($curl);
@@ -163,11 +165,13 @@ class Wxloginaction{
 //             dump($res);
 //             dump($message);
             if($res){
+                Log::INFO(json_encode($res));
                 return json_encode(array('state'=>4,'msg'=>$res));
             }else{
                 return json_encode(array('state'=>5,'msg'=>$res));
             }
         }else{
+            Log::INFO(json_encode($wxinfo).'没有formid');
             return json_encode(array('state'=>3,'msg'=>'没有formid'));
         }
     }
