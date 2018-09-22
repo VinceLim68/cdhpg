@@ -18,9 +18,15 @@ usage="{$B['comm']['usage']|default=''}" block="{$B['comm']['block']}">
 			<div class="row">
 				<h3 style="color: #3c763d;">
 					<div class="col-md-6 col-xs-12" style="margin-bottom: 10px;">
-						{$B['comm']['comm_name']}
-						{if condition="$B['comm']['usage']!=''"}-{$B['comm']['usage']}{/if}
-						<small style="padding-left:3%">{$B['comm']['region']}-{$B['comm']['block']}</small>
+						<div>
+							{$B['comm']['comm_name']}
+							{if condition="$B['comm']['usage']!=''"}-{$B['comm']['usage']}{/if}
+
+							<small style="padding-left:3%">
+								
+								{$B['comm']['region']}-{$B['comm']['block']}
+							</small>
+						</div>
 					</div>
 					{if condition="!$iswx"}
 					<div class="col-md-6 col-xs-12">
@@ -98,10 +104,16 @@ usage="{$B['comm']['usage']|default=''}" block="{$B['comm']['block']}">
 							{$B['priceByDeal'] > 0?	'二手房评估':'抵押评估价'}
 							</span>
 							{if condition="$B['comm']['rela_comm']!='' and $auth['look']"}
-							<span class="badge" style="font-size: 16px">
+							<span  style="font-size: 16px;vertical-align: middle;">
 							参照：{$B['comm']['rela_comm']}*{$B['comm']['rela_ratio']}
 							</span>
 							{/if}
+														
+							{notempty name="$comm_info['memo']"}
+								{if condition="$auth['look']"}
+									<span  style="font-size: 16px;vertical-align: middle;">{$comm_info['memo']}</span>
+								{/if}
+							{/notempty}
 							<h1 style="text-align: center; font-weight: 700;{if condition="$B['std_r'] > $Think.config.std_r_limit or  $B['ori_len'] < $Think.config.min_base_records"}opacity:0.4;{/if}">
 							{$B['priceByDeal'] > 0 ?$B['priceByDeal']:$B['mortgagePrice']}
 								元 <small>/平方米</small>

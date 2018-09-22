@@ -216,7 +216,7 @@ jQuery(function($) {
 				$('#reladialogg').modal('hide');
 			},
 			success:function(response){
-				//alert(response);
+//				alert(response);
 				if(response){
 					var html = '<img src="' + waitingImg + '" /><span style="margin-left:10px;">修改成功,正在刷新页面...</span>';
 				}else{

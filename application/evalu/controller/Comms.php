@@ -367,7 +367,7 @@ class Comms extends Common {
         $commrelate = new CommRelateModel();
 	    
 	    $rela_list = $commrelate->where('community_id',$data['community_id'])->select()->toArray();
-        $this->assign('rela_list',$rela_list);
+//         $this->assign();
 	    
 	    //通过id找小区相关信息
 	    $getComm = Db::table('comm')->where('comm_id',$data['community_id'])->find();
@@ -383,7 +383,7 @@ class Comms extends Common {
 	    
 	    //取同一版块的其他小区列表
 	    $rela_comms = $this->db->where('block_id',$getComm['block_id'])->select()->toArray();
-	    $this->assign('rela_comms',$rela_comms);
+// 	    $this->assign('rela_comms',$rela_comms);
 	    
 	    
 	    $result = SalesModel::getRecordsByCommid($data);
@@ -430,8 +430,10 @@ class Comms extends Common {
             $findresult = 0;
         }
         
-        
+//         dump($data);
 	    $this->assign([
+	        'rela_list'    =>      $rela_list,
+	        'rela_comms'   =>      $rela_comms,
 	        'saleslist'  => $saleslist,
 	        'title' => $title,
 	        'fields'=>$fields,
@@ -570,6 +572,7 @@ class Comms extends Common {
 	    $commrelate = new CommRelateModel();
 	    // 过滤post数组中的非数据表字段数据
 	    $res = $commrelate->allowField(true)->save($data,['id' => $data['rela_id']]);
+// 	    halt($res);
 	    return $res;
 	}
 	

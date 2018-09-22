@@ -274,7 +274,10 @@ class Index extends Common {
             $getPrice_result['elevator'] = config('elevator');
             $getPrice_result['structuer'] = config('structuer');
             
-            $this->assign('B',$getPrice_result);
+            $this->assign([
+                'B'         =>      $getPrice_result,
+                'comm_info' =>      $data,
+            ]);
 //             dump($getPrice_result['area_price_scatter']);
 //             dump($getPrice_result['comm']);
             //===================登记查询记录===============================================
@@ -366,7 +369,7 @@ class Index extends Common {
     //自动插入查询记录
     private function autoInsertQueryIntoEasyPG($B){
         $gjs = ['林晓','匡宾','李志林',"李成军","李智婕A","游加丽","吴丽敏","吴福海","陈淑华","张少芬",'admin',
-            'hope','Aimee','张S FEN','阿敏','鑫贵人生','大叔','k匡','lizhilin','csh','成军'];
+            'hope','Aimee','张S FEN','阿敏','鑫贵人生','大叔','k匡','lizhilin','csh','成军','泊淼～张'];
         $name = session('user.user_name');              //取当前用户名
         if(!in_array($name,$gjs)){                      //如果非估价师
             $employers = config('emplorers');
