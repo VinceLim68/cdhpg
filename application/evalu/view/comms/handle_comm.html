@@ -197,6 +197,9 @@
 				参照：{$B['comm']['rela_comm']}*{$B['comm']['rela_ratio']}
 				</span>
 				{/if}
+				{notempty name="$data['memo']"}
+						<span  style="font-size: 16px;vertical-align: middle;">{$data['memo']}</span>
+				{/notempty}
 				<h1 style="text-align: center; font-weight: 700;{if condition="$B['std_r'] > $Think.config.std_r_limit or  $B['ori_len'] < $Think.config.min_base_records"}opacity:0.4;{/if}">
 				{$B['priceByDeal'] > 0 ?$B['priceByDeal']:$B['mortgagePrice']}
 					元 <small>/平方米</small>
