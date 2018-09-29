@@ -53,6 +53,7 @@ class UserModel extends Model
                 'login_times'  => 1, 
 	            'openid'   =>  isset($data['lx']) ? $data['lx'] : '',
 	        ]);
+	        
 	        //新注册用户默认权限是普通会员
 	        $group=array(
 	            'uid'=>$userInfo->user_id,

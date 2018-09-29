@@ -34,82 +34,103 @@ class Index extends Common {
     //得到小区id后，再跳转到getCommChild进行小区内的子分类选择
     public function getCommName(){
         if (request()->isPost() or request()->isGet()) {
-//             halt(input());
+
             $result = $this->validate(input(),'GetCommNameValidate');
-            	
             if (true !== $result) {
                 // 验证失败 输出错误信息
-                $this->error ( $result );
+                $this->error($result);
                 exit ();
             } else {
                 $input = input();
+                //把传来的参数解码一下，这里设计的函数round_decode会自动辨别有没有编码
+                foreach ($input as $key=>$value){
+                    $input[$key]=round_decode($value);
+                }
+                
+//                 if(!isset($input['price'])){
+//                     $input['price']=0;
+//                 }
                 //1查询数据,把comm存入session中
-                $thiscomm = input('comm');
-                //如果字符串里有两个以上%，表示已经被encodeURL过了
-                if(substr_count($thiscomm,"%")>2){
-                    $thiscomm = urldecode($thiscomm);
-                }
-                session('user.comm',$thiscomm);
-                
-                //返回$pickitem数组，每个元素中包含comm_id,comm_name,pri_level,keywords
-                $commnames = MatchLogic::matchSearch($thiscomm);
-                
-                //2如果没有查到，转到小区地址表中去查询
-                if(!$commnames){
-                   $address = MatchLogic::matchIDByAddress($thiscomm);
-                   if(isset($address['comm_id']) and $address['comm_id']>999 ){
-                        $commnames[] = (new Comm())->field ( "comm_id,comm_name,pri_level,keywords" )
-                            ->where('comm_id', $address['comm_id'])
-                            ->find()
-                            ->toArray();
-                        session('user.comm',$commnames[0]['comm_name']);
-                   }
-                }
-                if(!$commnames){
-                    //如果还是没有查到，记录到miss_comm表中去
-                    try{
-                        $errorcomm = ErrorCommModel::create([
-                            'memo'     =>  '没有小区名',
-                            'user_id'       =>  session('user.user_id'),
-                            'user_name'     =>  session('user.user_name'),
-                            'type'          =>  1,
-                            'comm_name'     =>  $thiscomm,
+//                 $thiscomm = input('comm');
+//                 //如果字符串里有两个以上%，表示已经被encodeURL过了
+//                 if(substr_count($thiscomm,"%")>2){
+//                     $thiscomm = urldecode($thiscomm);
+//                 }
+//                 session('user.comm',$thiscomm);
+                $return = $this->getCommNameAction($input);
+                switch ($return['status']) {
+                    case 'macth no comm and insert error record failed':
+                        $this->error($return['message']);
+                        break;
+                    case 'macth no comm':
+                        $this->error($return['message']);
+                        break;
+                    case 'macth many comms':
+                        $this->assign ([
+                            'fields'=>$return['commArr'],
+                            'price'=>isset($input['price'])?$input['price']:0,
+                            'input'=>base_encode(json_encode($input)),
                         ]);
-                    }catch(\Exception $e){
-                        $this->error('没有查询到叫"'.$thiscomm.'"的地方');
-                    }
-                    $this->error('没有查询到叫"'.$thiscomm.'"的地方');
-                }elseif(count($commnames)>1){
-                //4如果查到多个，列表展示，让用户手动挑选后，再转入子功能分类进行选择
-                    $commArr = [];      //取出完整的数据
-                    foreach ($commnames as $comm){
-                        $commArr[] = Db::table('comm')->where('comm_id',$comm['comm_id'])->find();
-                    }
-//                     $value = array(
-//                         'fields'=>$commArr,
-//                         'price'=>$input['price'],);
-                    $this->assign ([
-                        'fields'=>$commArr,
-                        'price'=>isset($input['price'])?$input['price']:0,
-                        'input'=>base_encode(json_encode($input)),
-                    ]);
-//                         $this->assign($value);
-//                     $this->assign ( 'fields', $commArr );
-//                     $this->assign('price',input('price'));
-                    return $this->fetch();
-                }else{
-                //3如果查到一个，转入子功能分类进行选择
-                    if(!input('price')){
-                        $this->redirect('getCommChild', ['comm_id' => $commnames[0]['comm_id'],'input'=>base_encode(json_encode($input))]);
-                    }else{
-                        $this->redirect('getCommChild', ['comm_id' => $commnames[0]['comm_id'],'input'=>base_encode(json_encode($input)),'price'=>$input['price']]);
-                    }
-//                     if(!input('price')){
-//                         $this->redirect('getCommChild', ['comm_id' => $commnames[0]['comm_id']]);
-//                     }else{
-//                         $this->redirect('getCommChild', ['comm_id' => $commnames[0]['comm_id'],'price'=>input('price')]);
-//                     }
+                        return $this->fetch();
+                        break;
+                    default:            //匹配到唯一，或者直接匹配到地址
+                        if(!input('price')){
+                            $this->redirect('getCommChild', ['comm_id' => $return['commnames'][0]['comm_id'],'input'=>base_encode(json_encode($input))]);
+                        }else{
+                            $this->redirect('getCommChild', ['comm_id' => $return['commnames'][0]['comm_id'],'input'=>base_encode(json_encode($input)),'price'=>$input['price']]);
+                        };
+                        break;
                 }
+//                 //返回$pickitem数组，每个元素中包含comm_id,comm_name,pri_level,keywords
+//                 $commnames = MatchLogic::matchSearch($thiscomm);
+                
+//                 //2如果没有查到，转到小区地址表中去查询
+//                 if(!$commnames){
+//                    $address = MatchLogic::matchIDByAddress($thiscomm);
+//                    if(isset($address['comm_id']) and $address['comm_id']>999 ){
+//                         $commnames[] = (new Comm())->field ( "comm_id,comm_name,pri_level,keywords" )
+//                             ->where('comm_id', $address['comm_id'])
+//                             ->find()
+//                             ->toArray();
+//                         //这里给$commnames赋了值，而且是唯一值，下面的分支就会走到唯一去。
+//                         session('user.comm',$commnames[0]['comm_name']);
+                        
+//                    }
+//                 }
+//                 if(!$commnames){
+//                     //如果还是没有查到，记录到miss_comm表中去
+//                     try{
+//                         $errorcomm = ErrorCommModel::create([
+//                             'memo'     =>  '没有小区名',
+//                             'user_id'       =>  session('user.user_id'),
+//                             'user_name'     =>  session('user.user_name'),
+//                             'type'          =>  1,
+//                             'comm_name'     =>  $thiscomm,
+//                         ]);
+//                     }catch(\Exception $e){
+//                         $this->error('没有查询到叫"'.$thiscomm.'"的地方');
+//                     }
+//                     $this->error('没有查询到叫"'.$thiscomm.'"的地方');
+//                 }elseif(count($commnames)>1){
+//                 //4如果查到多个，列表展示，让用户手动挑选后，再转入子功能分类进行选择
+//                     $commArr = [];      //取出完整的数据
+//                     foreach ($commnames as $comm){
+//                         $commArr[] = Db::table('comm')->where('comm_id',$comm['comm_id'])->find();
+//                     }
+//                     $this->assign ([
+//                         'fields'=>$commArr,
+//                         'price'=>isset($input['price'])?$input['price']:0,
+//                         'input'=>base_encode(json_encode($input)),
+//                     ]);
+//                     return $this->fetch();
+//                 }else{
+//                 //3如果查到一个，转入子功能分类进行选择
+//                     if(!input('price')){
+//                         $this->redirect('getCommChild', ['comm_id' => $commnames[0]['comm_id'],'input'=>base_encode(json_encode($input))]);
+//                     }else{
+//                         $this->redirect('getCommChild', ['comm_id' => $commnames[0]['comm_id'],'input'=>base_encode(json_encode($input)),'price'=>$input['price']]);
+//                     }
+//                 }
             }
         }
     }
@@ -122,74 +143,159 @@ class Index extends Common {
         foreach ($input as $key=>$value){
             $input[$key]=round_decode($value);
         }
-        if(!isset($input['price'])){
-            $input['price']=0;
-        }
+//         if(!isset($input['price'])){
+//             $input['price']=0;
+//         }
 //         if (isset($input['nickname']) and '' != trim($input['nickname'])) {
         if (LoginLogic::isWeixin() and  isset($input['nickname']) and '' != trim($input['nickname'])) {
             $result = $this->validate(input(),'GetCommNameValidate');
             if (true !== $result) {
                 // 验证失败 输出错误信息
-                $this->error ( $result );
+                $this->error($result);
                 exit ();
             } else {
-                //1查询数据,把comm存入session中
-//                 halt($input);
-                session('user.comm',$input['comm']);
-        
-                //返回$pickitem数组，每个元素中包含comm_id,comm_name,pri_level,keywords
-                $commnames = MatchLogic::matchSearch($input['comm']);
-        
-                //2如果没有查到，转到小区地址表中去查询
-                if(!$commnames){
-                    $address = MatchLogic::matchIDByAddress($input['comm']);
-                    if(isset($address['comm_id']) and $address['comm_id']>999 ){
-                        $commnames[] = (new Comm())->field ( "comm_id,comm_name,pri_level,keywords" )
-                        ->where('comm_id', $address['comm_id'])
-                        ->find()
-                        ->toArray();
-                        session('user.comm',$commnames[0]['comm_name']);
-                        //                        halt($commnames);
-                    }
-                }
-                if(!$commnames){
-                    //如果还是没有查到，记录到miss_comm表中去
-                    try{
-                        $errorcomm = ErrorCommModel::create([
-                            'memo'     =>  '没有小区名',
-                            'user_id'       =>  session('user.user_id'),
-                            'user_name'     =>  session('user.user_name'),
-                            'type'          =>  1,
-                            'comm_name'     =>  $input['comm'],
-                        ]);
-                    }catch(\Exception $e){
-                        $this->error('没有查询到叫"'.$input['comm'].'"的地方');
-                    }
-                    $this->error('没有查询到叫"'.$input['comm'].'"的地方');
-                }elseif(count($commnames)>1){
-                    //4如果查到多个，列表展示，让用户手动挑选后，再转入子功能分类进行选择
-                    $commArr = [];      //取出完整的数据
-                    foreach ($commnames as $comm){
-                        $commArr[] = Db::table('comm')->where('comm_id',$comm['comm_id'])->find();
-                    }
-                    $this->assign ([
-                        'fields'=>$commArr,
-                        'price'=>$input['price'],
+                $return = $this->getCommNameAction($input);
+                switch ($return['status']) {
+                    case 'macth no comm and insert error record failed':
+                        $this->error($return['message']);
+                        break;
+                    case 'macth no comm':
+                        $this->error($return['message']);
+                        break;
+                    case 'macth many comms':
+                        $this->assign ([
+                        'fields'=>$return['commArr'],
+                        'price'=>isset($input['price'])?$input['price']:0,
                         'input'=>base_encode(json_encode($input)),
-                    ]);
-//                     $this->assign('price',$input['price']);
-                    return $this->fetch('getCommName');
-//                     $this->redirect('getCommName',['fields'=>$commArr,'price'=>$input['price']]);
-                }else{
-                    //3如果查到一个，转入子功能分类进行选择
-                    if(!($input['price'])){
-                        $this->redirect('getCommChild', ['comm_id' => $commnames[0]['comm_id'],'input'=>base_encode(json_encode($input))]);
-                    }else{
-                        $this->redirect('getCommChild', ['comm_id' => $commnames[0]['comm_id'],'input'=>base_encode(json_encode($input)),'price'=>$input['price']]);
-                    }
+                        ]);
+                        return $this->fetch();
+                        break;
+                    default:            //匹配到唯一，或者直接匹配到地址
+                        if(!input('price')){
+                            $this->redirect('getCommChild', ['comm_id' => $return['commnames'][0]['comm_id'],'input'=>base_encode(json_encode($input))]);
+                        }else{
+                            $this->redirect('getCommChild', ['comm_id' => $return['commnames'][0]['comm_id'],'input'=>base_encode(json_encode($input)),'price'=>$input['price']]);
+                        };
+                        break;
                 }
+                //1查询数据,把comm存入session中
+//                 session('user.comm',$input['comm']);
+        
+//                 //返回$pickitem数组，每个元素中包含comm_id,comm_name,pri_level,keywords
+//                 $commnames = MatchLogic::matchSearch($input['comm']);
+        
+//                 //2如果没有查到，转到小区地址表中去查询
+//                 if(!$commnames){
+//                     $address = MatchLogic::matchIDByAddress($input['comm']);
+//                     if(isset($address['comm_id']) and $address['comm_id']>999 ){
+//                         $commnames[] = (new Comm())->field ( "comm_id,comm_name,pri_level,keywords" )
+//                         ->where('comm_id', $address['comm_id'])
+//                         ->find()
+//                         ->toArray();
+//                         session('user.comm',$commnames[0]['comm_name']);
+//                         //                        halt($commnames);
+//                     }
+//                 }
+//                 if(!$commnames){
+//                     //如果还是没有查到，记录到miss_comm表中去
+//                     try{
+//                         $errorcomm = ErrorCommModel::create([
+//                             'memo'     =>  '没有小区名',
+//                             'user_id'       =>  session('user.user_id'),
+//                             'user_name'     =>  session('user.user_name'),
+//                             'type'          =>  1,
+//                             'comm_name'     =>  $input['comm'],
+//                         ]);
+//                     }catch(\Exception $e){
+//                         $this->error('没有查询到叫"'.$input['comm'].'"的地方');
+//                     }
+//                     $this->error('没有查询到叫"'.$input['comm'].'"的地方');
+//                 }elseif(count($commnames)>1){
+//                     //4如果查到多个，列表展示，让用户手动挑选后，再转入子功能分类进行选择
+//                     $commArr = [];      //取出完整的数据
+//                     foreach ($commnames as $comm){
+//                         $commArr[] = Db::table('comm')->where('comm_id',$comm['comm_id'])->find();
+//                     }
+//                     $this->assign ([
+//                         'fields'=>$commArr,
+//                         'price'=>$input['price'],
+//                         'input'=>base_encode(json_encode($input)),
+//                     ]);
+// //                     $this->assign('price',$input['price']);
+//                     return $this->fetch('getCommName');
+// //                     $this->redirect('getCommName',['fields'=>$commArr,'price'=>$input['price']]);
+//                 }else{
+//                     //3如果查到一个，转入子功能分类进行选择
+//                     if(!($input['price'])){
+//                         $this->redirect('getCommChild', ['comm_id' => $commnames[0]['comm_id'],'input'=>base_encode(json_encode($input))]);
+//                     }else{
+//                         $this->redirect('getCommChild', ['comm_id' => $commnames[0]['comm_id'],'input'=>base_encode(json_encode($input)),'price'=>$input['price']]);
+//                     }
+//                 }
             }
         }
+    }
+    
+    //封装匹配小区名称功能，把不规范的名称转为规范的名称
+    //     返回值：
+    //      1、直接匹配地址成功
+    //      2、没有查询到小区名称，且无法记录错误信息
+    //      3、没有查询到小区名称，记录了错误信息
+    //      4、匹配到多个小区名称，返回所有匹配的小区表中的记录
+    //      5、匹配到一个小区名称
+    public function getCommNameAction($input){
+        //1把comm存入session中
+        session('user.comm',$input['comm']);
+        
+        //先匹配地址
+        $address = MatchLogic::matchIDByAddress($input['comm']);
+
+//         地址匹配成功
+        if(isset($address['comm_id']) and $address['comm_id']>999 ){
+            $commnames[] = (new Comm())->field ( "comm_id,comm_name,pri_level,keywords" )
+            ->where('comm_id', $address['comm_id'])
+            ->find()
+            ->toArray();
+            session('user.comm',$commnames[0]['comm_name']);
+            $return['status']='match address success';
+            $return['commnames']=$commnames;
+        }else{
+//              地址未匹配成功，进行小区名称匹配
+//              返回$pickitem数组，每个元素中包含comm_id,comm_name,pri_level,keywords
+            $commnames = MatchLogic::matchSearch($input['comm']);
+            if(!$commnames){
+                //如果还是没有查到，记录到miss_comm表中去
+                try{
+                    $errorcomm = ErrorCommModel::create([
+                        'memo'     =>  '没有小区名',
+                        'user_id'       =>  session('user.user_id'),
+                        'user_name'     =>  session('user.user_name'),
+                        'type'          =>  1,
+                        'comm_name'     =>  $input['comm'],
+                    ]);
+                }catch(\Exception $e){
+                    $return['status'] = 'macth no comm and insert error record failed';
+                    $return['message'] = '没有查询到叫"'.$input['comm'].'"的地方,追加错误信息时未成功';
+                    return $return;
+                }
+                $return['status'] = 'macth no comm';
+                $return['message'] = '没有查询到叫"'.$input['comm'].'"的地方';
+            }elseif(count($commnames)>1){
+                //如果匹配到多个小区名称，列表展示，让用户手动挑选后，再转入子功能分类进行选择
+                $commArr = [];      //取出完整的数据
+                foreach ($commnames as $comm){
+                    $commArr[] = Db::table('comm')->where('comm_id',$comm['comm_id'])->find();
+                }
+                $return['status'] = 'macth many comms';
+                $return['commArr'] = $commArr;
+            }else{
+                //只匹配到一个小区名称
+                $return['status'] = 'macth one comm';
+                $return['commnames'] = $commnames;
+            }
+        }
+        
+        return $return;
     }
 
     //处理小区的子分类，如果有子分类进行选择，如果没有则跳转
