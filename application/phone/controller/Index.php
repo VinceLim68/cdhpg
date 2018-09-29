@@ -164,9 +164,9 @@ class Index extends Common {
                         break;
                     case 'macth many comms':
                         $this->assign ([
-                        'fields'=>$return['commArr'],
-                        'price'=>isset($input['price'])?$input['price']:0,
-                        'input'=>base_encode(json_encode($input)),
+                            'fields'=>$return['commArr'],
+                            'price'=>isset($input['price'])?$input['price']:0,
+                            'input'=>base_encode(json_encode($input)),
                         ]);
                         return $this->fetch('getCommName');
                         break;

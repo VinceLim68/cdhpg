@@ -274,11 +274,17 @@ class Comms extends Common {
 	//小区名-->id,如果是唯一，返回一个comm对象，如果不是，返回html列表供选择
 	public function ajaxGetCommName(){
 // 	    dump(input());
-	    if(null !== input('from')){
-	        $from = input('from');
-	    }
+	    $input = input();
+	    if(isset($input['from'])){
+	        $from = $input['from'];
+	    };
+	    $input['comm'] = $input['commName'];       //这是为了使用函数需要有comm元素而不是commName
+	    
+// 	    if(null !== input('from')){
+// 	        $from = input('from');
+// 	    }
 	    if (request()->isGet()) {
-	        $result = $this->validate ( input (), [
+	        $result = $this->validate ($input, [
 	            'commName' => 'require|max:25|min:2',
 	        ],
 	            [
@@ -291,38 +297,70 @@ class Comms extends Common {
 	            // 验证失败 输出错误信息
 	            return $result;
 	        } else {
+	            
+	            $return = action('phone/index/getCommNameAction',['input'=>$input]);
+	            switch ($return['status']) {
+	                case 'macth no comm and insert error record failed':
+	                    return $return['message'];
+	                    break;
+	                case 'macth no comm':
+	                    return $return['message'];
+	                    break;
+	                case 'macth many comms':
+	                    $mystr = '<table class="table table-striped">';
+	                    $mystr .= '<tr><th>小区</th><th>ID</th><th>区块</th><th>版块</th><th>地址</th></tr>';
+	                    foreach ($return['commArr'] as $v){
+	                        $mystr .= '<tr>';
+	                        if(isset($from)){
+	                            $mystr .= '<td><a href="'.url($from).'?community_id='.$v['comm_id'].'">'.$v['comm_name'].'</a></td>';
+	                        }else{
+	                            $mystr .= '<td><a href="'.url("handle_comm").'?community_id='.$v['comm_id'].'">'.$v['comm_name'].'</a></td>';
+	                        }
+	                        $mystr .= '<td>'.$v['comm_id'].'</td>';
+	                        $mystr .= '<td>'.$v['region'].'</td>';
+	                        $mystr .= '<td>'.$v['block'].'</td>';
+	                        $mystr .= '<td>'.$v['comm_addr'].'</td>';
+	                        $mystr .= '</tr>';
+	                    }
+	                    $mystr .= '</table>';
+	                    return $mystr;
+	                    break;
+	                default:            //匹配到唯一，或者直接匹配到地址
+	                    return $return['commnames'][0];
+	                    break;
+	            };
 	            //找出匹配的记录，每条记录的内容 是：comm_id,comm_name,pri_level,keywords
-	            $commnames = MatchLogic::matchSearch(input('commName'));
-                if(!$commnames){
-                    //如果没有查到
-                    return ('没有查询到叫"'.input('param.commName').'"的地方');
-                }elseif(count($commnames)>1){
-                    //4如果查到多个，列表展示，让用户手动挑选后，再转入统计模块
-                    $commArr = [];      //取出完整的数据
-                    $mystr = '<table class="table table-striped">';
-                    $mystr .= '<tr><th>小区</th><th>ID</th><th>区块</th><th>版块</th><th>地址</th></tr>';
-                    foreach ($commnames as $comm){
-                        $v = Db::table('comm')->where('comm_id',$comm['comm_id'])->find();
-                        $mystr .= '<tr>';
-                        if(isset($from)){
-                            $mystr .= '<td><a href="'.url($from).'?community_id='.$v['comm_id'].'">'.$v['comm_name'].'</a></td>';
-                        }else{
-                            $mystr .= '<td><a href="'.url("handle_comm").'?community_id='.$v['comm_id'].'">'.$v['comm_name'].'</a></td>';
-                        }
-                        $mystr .= '<td>'.$v['comm_id'].'</td>';
-                        $mystr .= '<td>'.$v['region'].'</td>';
-                        $mystr .= '<td>'.$v['block'].'</td>';
-                        $mystr .= '<td>'.$v['comm_addr'].'</td>';
-                        $mystr .= '</tr>';
-                        $commArr[] = $v;
-                    }
+// 	            $commnames = MatchLogic::matchSearch(input('commName'));
+//                 if(!$commnames){
+//                     //如果没有查到
+//                     return ('没有查询到叫"'.input('param.commName').'"的地方');
+//                 }elseif(count($commnames)>1){
+//                     //4如果查到多个，列表展示，让用户手动挑选后，再转入统计模块
+//                     $commArr = [];      //取出完整的数据
+//                     $mystr = '<table class="table table-striped">';
+//                     $mystr .= '<tr><th>小区</th><th>ID</th><th>区块</th><th>版块</th><th>地址</th></tr>';
+//                     foreach ($commnames as $comm){
+//                         $v = Db::table('comm')->where('comm_id',$comm['comm_id'])->find();
+//                         $mystr .= '<tr>';
+//                         if(isset($from)){
+//                             $mystr .= '<td><a href="'.url($from).'?community_id='.$v['comm_id'].'">'.$v['comm_name'].'</a></td>';
+//                         }else{
+//                             $mystr .= '<td><a href="'.url("handle_comm").'?community_id='.$v['comm_id'].'">'.$v['comm_name'].'</a></td>';
+//                         }
+//                         $mystr .= '<td>'.$v['comm_id'].'</td>';
+//                         $mystr .= '<td>'.$v['region'].'</td>';
+//                         $mystr .= '<td>'.$v['block'].'</td>';
+//                         $mystr .= '<td>'.$v['comm_addr'].'</td>';
+//                         $mystr .= '</tr>';
+//                         $commArr[] = $v;
+//                     }
 
-                    $mystr .= '</table>';
-                    return $mystr;
-                }else{
-                    //3如果只查到一个，直接返回comm_id
-                    return $commnames[0];
-                }
+//                     $mystr .= '</table>';
+//                     return $mystr;
+//                 }else{
+//                     //3如果只查到一个，直接返回comm_id
+//                     return $commnames[0];
+//                 }
 	        }
 	   }
 	}
