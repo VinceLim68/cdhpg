@@ -168,7 +168,7 @@ class Index extends Common {
                         'price'=>isset($input['price'])?$input['price']:0,
                         'input'=>base_encode(json_encode($input)),
                         ]);
-                        return $this->fetch();
+                        return $this->fetch('getCommName');
                         break;
                     default:            //匹配到唯一，或者直接匹配到地址
                         if(!input('price')){
