@@ -13,6 +13,7 @@ use app\evalu\model\UserModel;
 use think\Controller;
 use think\Session;
 use app\evalu\logic\LoginLogic;
+use think\Log;
 
 class Test extends Controller {
     //做一个测试模块,项目完成后删除
@@ -429,5 +430,13 @@ dump(getUID());
         echo date('Y-m-d H:i:s', $now+7200);
     }
 
-
+    // 测试日志
+    public function test_log(){
+//        Log::write('测试日志信息，这是警告级别，并且实时写入','notice');
+//        log::write('write now','info');
+       Log::info('日志信息2');
+       Log::record('错误信息2','error');
+       trace('trace日志信息2','info');
+       
+    }
 }
