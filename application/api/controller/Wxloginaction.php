@@ -165,13 +165,13 @@ class Wxloginaction{
 //             dump($res);
 //             dump($message);
             if($res){
-                Log::INFO(json_encode($res));
+                Log::record(json_encode($res),'error');
                 return json_encode(array('state'=>4,'msg'=>$res));
             }else{
                 return json_encode(array('state'=>5,'msg'=>$res));
             }
         }else{
-            Log::INFO(json_encode($wxinfo).'没有formid');
+            Log::record(json_encode($wxinfo).'没有formid','error');
             return json_encode(array('state'=>3,'msg'=>'没有formid'));
         }
     }
