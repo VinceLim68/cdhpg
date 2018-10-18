@@ -15,14 +15,16 @@
   <div class="panel-body">
 	{if condition="$res['ZID'] == null "} 
 		<p>未查询到您的报告，请检查报告编号，不用区分大小写</p>
+		<p>或致电我公司人工复核：0592-5208829</p>
+	    <p>查询时间：{$time}</p>
 	{else /}
 	    <p>报告编号：厦诚德行房估字{$res['ZID']}号</p>
 	    <p>估价项目：{$res['RAddress']}</p>
 	    <p>委&nbsp;&nbsp;托&nbsp;&nbsp;人：{$res['customer']}</p>
 	    <p>估价金额：{$res['RMoney']}元</p>
+	    <p>查询时间：{$time}</p>
+	    <p>联系电话：0592-5208829</p>
 	{/if}
-    <p>查询时间：{$time}</p>
-    <p>联系电话：0592-5208829</p>
     
   </div>
 

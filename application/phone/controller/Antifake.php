@@ -28,14 +28,20 @@ class Antifake extends Controller {
             ->join('PG_SE_Gjxmbgk w','a.KID = w.KID')
             ->field('BgCD as ZID,Wtf as customer,PgAmt*10000 as RMoney,ProjectCovert as RAddress')
             ->where('BgCD',$reportid)
-            ->find()->toArray();
+            ->find();
+//         ->toArray();
         //登记查询情况
         $anti = new AntiModel();
         $anti->data([
             'ip'    =>  $ip,
             'zid'   =>  $resu['ZID']
         ])->save();
-        $this->assign('res',$resu);
+        if($resu){
+            $this->assign('res',$resu->toArray());
+        }else{
+            $resu['ZID'] = null;
+            $this->assign('res',$resu);
+        }
         $this->assign('time',$anti->create_time);
         return $this->fetch();
     }
