@@ -124,27 +124,31 @@ jQuery(function($) {
 						+annual_income+'/(1+5%)×12% ='+property_tax+'元/平方米。');
 			};
 			
-			//所得税
-			if(authority_type=='个人'){            //如何是个人缴纳所得税
-				if(property_type == '住宅'){
-					var income_tax = myround(annual_income/1.05*0.05*0.1);
-					$("input[name='income_tax']").val(income_tax);
-					$("textarea[name='income_tax_desc']").val('个人出租住房时，应纳个人所得税=增值税不含税收入×5%×税率 '+
-							'，根据有关规定，其所得减按10％的税率征收，所得税='+annual_income+'/(1+5%)×5%×10% ='
-							+income_tax+'元/平方米。');
-				}else{
-					var income_tax = myround(annual_income/1.05*0.05*0.2);
-					$("input[name='income_tax']").val(income_tax);
-					$("textarea[name='income_tax_desc']").val('个人出租其他房屋时，应纳个人所得税=增值税不含税收入×5%×税率 '+
-							'，根据有关规定，其所得按照20%税率征收个人所得税，所得税='+annual_income+'/(1+5%)×5%×20% ='
-							+income_tax+'元/平方米。');
-				}
-			}else{
-				var income_tax = 0;
-				$("input[name='income_tax']").val(income_tax);
-				$("textarea[name='income_tax_desc']").val('因企业出租房屋所得与其他收入合并计算所得税，各企业构成相差较大，'+
-				'理论上不动产的价值不会因为不同的持有者而不同，为保证估价测算的客观性，在这里中暂不考虑企业所得税对价值的影响。');
-			};
+			//所得税，收益法不应该有所得税
+			var income_tax = 0;
+			$("input[name='income_tax']").val(income_tax);
+			$("textarea[name='income_tax_desc']").val('因为所得税与特定业主的经营状况直接相关，为保证估价结果作为客观价值指导的普遍适用性，运营费用是从'
+					+ '从估价的角度出发，区别与会计上的成本费用，不包括所得税。故所得税为0.');
+//			if(authority_type=='个人'){            //如果是个人缴纳所得税
+//				if(property_type == '住宅'){
+//					var income_tax = myround(annual_income/1.05*0.05*0.1);
+//					$("input[name='income_tax']").val(income_tax);
+//					$("textarea[name='income_tax_desc']").val('个人出租住房时，应纳个人所得税=增值税不含税收入×5%×税率 '+
+//							'，根据有关规定，其所得减按10％的税率征收，所得税='+annual_income+'/(1+5%)×5%×10% ='
+//							+income_tax+'元/平方米。');
+//				}else{
+//					var income_tax = myround(annual_income/1.05*0.05*0.2);
+//					$("input[name='income_tax']").val(income_tax);
+//					$("textarea[name='income_tax_desc']").val('个人出租其他房屋时，应纳个人所得税=增值税不含税收入×5%×税率 '+
+//							'，根据有关规定，其所得按照20%税率征收个人所得税，所得税='+annual_income+'/(1+5%)×5%×20% ='
+//							+income_tax+'元/平方米。');
+//				}
+//			}else{
+//				var income_tax = 0;
+//				$("input[name='income_tax']").val(income_tax);
+//				$("textarea[name='income_tax_desc']").val('因企业出租房屋所得与其他收入合并计算所得税，各企业构成相差较大，'+
+//				'理论上不动产的价值不会因为不同的持有者而不同，为保证估价测算的客观性，在这里中暂不考虑企业所得税对价值的影响。');
+//			};
 			
 			//其他零星税收
 			if(authority_type=='个人' && property_type == '住宅'){
@@ -161,8 +165,10 @@ jQuery(function($) {
 			//其他税收合计
 			var other_tax = myround(parseFloat(little_tax) + parseFloat(income_tax) + parseFloat(property_tax));
 			$("input[name='other_tax']").val(other_tax);
-			$("textarea[name='other_tax_desc']").val('其他税收 = 房产税 + 所得税 + 其他零星税收='+property_tax+'+'
-					+income_tax+'+'+little_tax+'='+other_tax+'元/平方米。');
+//			$("textarea[name='other_tax_desc']").val('其他税收 = 房产税 + 所得税 + 其他零星税收='+property_tax+'+'
+//					+income_tax+'+'+little_tax+'='+other_tax+'元/平方米。');
+			$("textarea[name='other_tax_desc']").val('其他税收 = 房产税  + 其他零星税收 ='+property_tax
+					+'+'+little_tax+'='+other_tax+'元/平方米。');
 		}else{
 			//采用税后收益来计算
 			//增值税率
