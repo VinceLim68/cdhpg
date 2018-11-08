@@ -128,7 +128,8 @@ class Wxloginaction{
             $token = $this->getToken($wxinfo->nickname);
     //         dump($token);
             $url = "https://api.weixin.qq.com/cgi-bin/message/wxopen/template/send?access_token={$token[0]}";
-            $TEMPLATE_ID = "Zk891_eS8S8NtQPOgs4MvPxy5NZ38eux1b_8IE4Wrw0";
+//             $TEMPLATE_ID = "Zk891_eS8S8NtQPOgs4MvPxy5NZ38eux1b_8IE4Wrw0";
+            $TEMPLATE_ID = "VAIP7p4SYk1qvzPcvYEblfMIi7gu02cUrtUtGWGSLKM";
 //             dump($token[1]);
             
             $message = array(
@@ -138,28 +139,29 @@ class Wxloginaction{
               "form_id"=>$wxinfo->lx2,
               "data"=>array(
                   "keyword1"=>array(
-                      "value"=>$B['comm']['comm_name'],
-                      "color"=>"#173177"
-                  ),
-                  "keyword2"=>array(
                       "value"=>$B['mortgagePrice'],
                       "color"=>"#ff6666"
                   ),
+                  "keyword2"=>array(
+                      "value"=>$B['comm']['comm_name'],
+                      "color"=>"#173177"
+                  ),
                   "keyword3"=>array(
-                      "value"=>date("Y-m-d H:i:s",time()),
+//                       "value"=>date("Y-m-d H:i:s",time()),
+//                       "color"=>"#888888"
+                      "value"=>"免费",
                       "color"=>"#888888"
                   ) ,
                   "keyword4"=>array(
-                      "value"=>"免费",
-                      "color"=>"#888888"
-                  ),
-                  "keyword5"=>array(
                       "value"=>"此价格对应：面积".$B['avg_area'].'平方米,'
                       .$B['avg_floor_index'].'层/共'.$B['avg_total_floor'].'层,建成于'.$B['avg_builded_year'].'年。',
                       "color"=>"#888888"
+                  ),
+                  "keyword5"=>array(
+                      "value"=>"点击可使用‘大叔询价’自助系统"
                   )
               ),
-              "emphasis_keyword"=>"keyword2.DATA"
+              "emphasis_keyword"=>"keyword1.DATA"
             );
             $res = $this->postCurl($url,$message,'json');//将data数组转换为json数据
 //             dump($res);
