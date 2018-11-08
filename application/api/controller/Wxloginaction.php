@@ -139,7 +139,7 @@ class Wxloginaction{
               "form_id"=>$wxinfo->lx2,
               "data"=>array(
                   "keyword1"=>array(
-                      "value"=>$B['mortgagePrice'],
+                      "value"=>$B['mortgagePrice'].'元/㎡',
                       "color"=>"#ff6666"
                   ),
                   "keyword2"=>array(
@@ -154,11 +154,11 @@ class Wxloginaction{
                   ) ,
                   "keyword4"=>array(
                       "value"=>"此价格对应：面积".$B['avg_area'].'平方米,'
-                      .$B['avg_floor_index'].'层/共'.$B['avg_total_floor'].'层,建成于'.$B['avg_builded_year'].'年。',
+                      .$B['avg_floor_index'].'层/共'.$B['avg_total_floor'].'层,建成于'.$B['avg_builded_year'].'年。本估价三日内有效。',
                       "color"=>"#888888"
                   ),
                   "keyword5"=>array(
-                      "value"=>"点击可使用‘大叔询价’自助系统"
+                      "value"=>"欢迎点击试用‘大叔询价’小程序"
                   )
               ),
               "emphasis_keyword"=>"keyword1.DATA"
