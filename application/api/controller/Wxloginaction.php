@@ -110,6 +110,7 @@ class Wxloginaction{
         return $res;
     }
     
+    //发送模板消息
     public function sendTemplateMessage($wxinfo,$B){
 //         发送微信模板消息
 //             $wxinfo传进来是一个json对象
@@ -153,7 +154,7 @@ class Wxloginaction{
                       "color"=>"#888888"
                   ) ,
                   "keyword4"=>array(
-                      "value"=>"此价格对应：面积".$B['avg_area'].'平方米,'
+                      "value"=>"此价格对应：面积".$B['avg_area'].'㎡,'
                       .$B['avg_floor_index'].'层/共'.$B['avg_total_floor'].'层,建成于'.$B['avg_builded_year'].'年。本估价三日内有效。',
                       "color"=>"#888888"
                   ),

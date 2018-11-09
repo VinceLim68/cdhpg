@@ -489,7 +489,8 @@ class Index extends Common {
                 $renameData['Xjrname'] = '外部客户';
             }
             $renameData['Mark'] = $B['len']."个数据，挂牌价格".$B['min']."-".$B['max']."元/平方米";
-            $renameData['Xjxqaddr'] = "二手房提供合同后的最高价".$B['dealPrice'];
+            $renameData['Xjxqaddr'] = "自助询价结果，仅供参考";
+//             $renameData['Xjxqaddr'] = "二手房提供合同后的最高价".$B['dealPrice'];
             $renameData['Xjyt'] = '住宅';
             $renameData['Xjlcs'] = $B['avg_floor_index'];
             $renameData['Xjzlcs'] = $B['avg_total_floor'];
