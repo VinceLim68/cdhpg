@@ -121,20 +121,15 @@ class Wxloginaction{
 //             public 'lx2' => string 'abcde' (length=5)
 //             public 'price' => int 0
 //             dump($wxinfo->nickname);
-//         dump($wxinfo);
-//         dump(isset($wxinfo->lx2));
         if(isset($wxinfo->lx2) and isset($wxinfo->lx)){
-//             dump($wxinfo);
-//             dump('222');
             $token = $this->getToken($wxinfo->nickname);
-    //         dump($token);
             $url = "https://api.weixin.qq.com/cgi-bin/message/wxopen/template/send?access_token={$token[0]}";
 //             $TEMPLATE_ID = "Zk891_eS8S8NtQPOgs4MvPxy5NZ38eux1b_8IE4Wrw0";
             $TEMPLATE_ID = "VAIP7p4SYk1qvzPcvYEblfMIi7gu02cUrtUtGWGSLKM";
-//             dump($token[1]);
             
             $message = array(
-              "touser"=>$wxinfo->lx,        //这是参数传递过来的openid
+//               "touser"=>$wxinfo->lx,        //这是参数传递过来的openid
+              "touser"=>'oBO2o5eRfB6nVaFcJB1JVbP9fS_0',
               "template_id"=>$TEMPLATE_ID,
               "page"=>"pages/search/search",
               "form_id"=>$wxinfo->lx2,
@@ -165,8 +160,6 @@ class Wxloginaction{
               "emphasis_keyword"=>"keyword1.DATA"
             );
             $res = $this->postCurl($url,$message,'json');//将data数组转换为json数据
-//             dump($res);
-//             dump($message);
             if($res){
                 Log::record(json_encode($res),'error');
                 return json_encode(array('state'=>4,'msg'=>$res));
