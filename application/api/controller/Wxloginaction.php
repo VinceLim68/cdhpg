@@ -128,8 +128,8 @@ class Wxloginaction{
             $TEMPLATE_ID = "VAIP7p4SYk1qvzPcvYEblfMIi7gu02cUrtUtGWGSLKM";
             
             $message = array(
-//               "touser"=>$wxinfo->lx,        //这是参数传递过来的openid
-              "touser"=>'oBO2o5eRfB6nVaFcJB1JVbP9fS_0',
+              "touser"=>$wxinfo->lx,        //这是参数传递过来的openid
+//               "touser"=>'oBO2o5eRfB6nVaFcJB1JVbP9fS_0',
               "template_id"=>$TEMPLATE_ID,
               "page"=>"pages/search/search",
               "form_id"=>$wxinfo->lx2,
