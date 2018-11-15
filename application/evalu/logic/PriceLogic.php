@@ -246,7 +246,11 @@ class PriceLogic
             $Yname = '(建成年份)';
         }
         $scatter_Y_top = config('scatter_Y_top');
-        $XY_scatter['Yunit'] = (100 - $scatter_Y_top)/($XY_scatter['Y5']-$XY_scatter['Y0']);
+        if(0 != $XY_scatter['Y5']-$XY_scatter['Y0']){
+            $XY_scatter['Yunit'] = (100 - $scatter_Y_top)/($XY_scatter['Y5']-$XY_scatter['Y0']);
+        }else{
+            $XY_scatter['Yunit'] = (100 - $scatter_Y_top);
+        }
         
         //这是散点
         foreach ($dots as $A_item){
