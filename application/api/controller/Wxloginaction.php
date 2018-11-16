@@ -132,6 +132,7 @@ class Wxloginaction{
             
             $message = array(
               "touser"=>$wxinfo->lx,        //这是参数传递过来的openid
+//                 "touser"=>'oBO2o5eRfB6nVaFcJB1JVbP9fS_0',
               "weapp_template_msg"=>array(
                   "template_id"=>$TEMPLATE_ID,
                   "page"=>"pages/search/search",
