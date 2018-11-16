@@ -124,78 +124,78 @@ class Wxloginaction{
         if(isset($wxinfo->lx2) and isset($wxinfo->lx)){
             
             $token = $this->getToken($wxinfo->nickname);
-            //使用统一的服务消息
-            $url = "https://api.weixin.qq.com/cgi-bin/message/wxopen/template/uniform_send?access_token={$token[0]}";
-//             //使用模板消息
-//             $url = "https://api.weixin.qq.com/cgi-bin/message/wxopen/template/send?access_token={$token[0]}";
+//             //使用统一的服务消息
+//             $url = "https://api.weixin.qq.com/cgi-bin/message/wxopen/template/uniform_send?access_token={$token[0]}";
+            //使用模板消息
+            $url = "https://api.weixin.qq.com/cgi-bin/message/wxopen/template/send?access_token={$token[0]}";
             $TEMPLATE_ID = "VAIP7p4SYk1qvzPcvYEblfMIi7gu02cUrtUtGWGSLKM";
-            
-            $message = array(
-              "touser"=>$wxinfo->lx,        //这是参数传递过来的openid
-//                 "touser"=>'oBO2o5eRfB6nVaFcJB1JVbP9fS_0',
-              "weapp_template_msg"=>array(
-                  "template_id"=>$TEMPLATE_ID,
-                  "page"=>"pages/search/search",
-                  "form_id"=>$wxinfo->lx2,
-                  "data"=>array(
-                      "keyword1"=>array(
-                          "value"=>$B['mortgagePrice'].'元/㎡',
-                          "color"=>"#ff6666"
-                      ),
-                      "keyword2"=>array(
-                          "value"=>$B['comm']['comm_name'],
-                          "color"=>"#173177"
-                      ),
-                      "keyword3"=>array(
-                          "value"=>"免费",
-                          "color"=>"#888888"
-                      ) ,
-                      "keyword4"=>array(
-                          "value"=>"此价格对应：面积".$B['avg_area'].'㎡,'
-                          .$B['avg_floor_index'].'层/共'.$B['avg_total_floor'].'层,建成于'.$B['avg_builded_year'].'年。本估价三日内有效。',
-                          "color"=>"#888888"
-                      ),
-                      "keyword5"=>array(
-                          "value"=>"欢迎点击试用‘大叔询价’小程序"
-                      )
-                  ),
-                  "emphasis_keyword"=>"keyword1.DATA"
-                ), 
-                "mp_template_msg"=>array(),
-            );
             
 //             $message = array(
 //               "touser"=>$wxinfo->lx,        //这是参数传递过来的openid
-// //               "touser"=>'oBO2o5eRfB6nVaFcJB1JVbP9fS_0',
-//               "template_id"=>$TEMPLATE_ID,
-//               "page"=>"pages/search/search",
-//               "form_id"=>$wxinfo->lx2,
-//               "data"=>array(
-//                   "keyword1"=>array(
-//                       "value"=>$B['mortgagePrice'].'元/㎡',
-//                       "color"=>"#ff6666"
+// //                 "touser"=>'oBO2o5eRfB6nVaFcJB1JVbP9fS_0',
+//               "weapp_template_msg"=>array(
+//                   "template_id"=>$TEMPLATE_ID,
+//                   "page"=>"pages/search/search",
+//                   "form_id"=>$wxinfo->lx2,
+//                   "data"=>array(
+//                       "keyword1"=>array(
+//                           "value"=>$B['mortgagePrice'].'元/㎡',
+//                           "color"=>"#ff6666"
+//                       ),
+//                       "keyword2"=>array(
+//                           "value"=>$B['comm']['comm_name'],
+//                           "color"=>"#173177"
+//                       ),
+//                       "keyword3"=>array(
+//                           "value"=>"免费",
+//                           "color"=>"#888888"
+//                       ) ,
+//                       "keyword4"=>array(
+//                           "value"=>"此价格对应：面积".$B['avg_area'].'㎡,'
+//                           .$B['avg_floor_index'].'层/共'.$B['avg_total_floor'].'层,建成于'.$B['avg_builded_year'].'年。本估价三日内有效。',
+//                           "color"=>"#888888"
+//                       ),
+//                       "keyword5"=>array(
+//                           "value"=>"欢迎点击试用‘大叔询价’小程序"
+//                       )
 //                   ),
-//                   "keyword2"=>array(
-//                       "value"=>$B['comm']['comm_name'],
-//                       "color"=>"#173177"
-//                   ),
-//                   "keyword3"=>array(
-// //                       "value"=>date("Y-m-d H:i:s",time()),
-// //                       "color"=>"#888888"
-//                       "value"=>"免费",
-//                       "color"=>"#888888"
-//                   ) ,
-//                   "keyword4"=>array(
-//                       "value"=>"此价格对应：面积".$B['avg_area'].'㎡,'
-//                       .$B['avg_floor_index'].'层/共'.$B['avg_total_floor'].'层,建成于'.$B['avg_builded_year'].'年。本估价三日内有效。',
-//                       "color"=>"#888888"
-//                   ),
-//                   "keyword5"=>array(
-//                       "value"=>"欢迎点击试用‘大叔询价’小程序"
-//                   )
-//               ),
-//               "emphasis_keyword"=>"keyword1.DATA"
+//                   "emphasis_keyword"=>"keyword1.DATA"
+//                 ), 
+//                 "mp_template_msg"=>array(),
 //             );
+            
+            $message = array(
+              "touser"=>$wxinfo->lx,        //这是参数传递过来的openid
+//               "touser"=>'oBO2o5eRfB6nVaFcJB1JVbP9fS_0',
+              "template_id"=>$TEMPLATE_ID,
+              "page"=>"pages/search/search",
+              "form_id"=>$wxinfo->lx2,
+              "data"=>array(
+                  "keyword1"=>array(
+                      "value"=>$B['mortgagePrice'].'元/㎡',
+                      "color"=>"#ff6666"
+                  ),
+                  "keyword2"=>array(
+                      "value"=>$B['comm']['comm_name'],
+                      "color"=>"#173177"
+                  ),
+                  "keyword3"=>array(
+//                       "value"=>date("Y-m-d H:i:s",time()),
+//                       "color"=>"#888888"
+                      "value"=>"免费",
+                      "color"=>"#888888"
+                  ) ,
+                  "keyword4"=>array(
+                      "value"=>"此价格对应：面积".$B['avg_area'].'㎡,'
+                      .$B['avg_floor_index'].'层/共'.$B['avg_total_floor'].'层,建成于'.$B['avg_builded_year'].'年。本估价三日内有效。',
+                      "color"=>"#888888"
+                  ),
+                  "keyword5"=>array(
+                      "value"=>"欢迎点击试用‘大叔询价’小程序"
+                  )
+              ),
+              "emphasis_keyword"=>"keyword1.DATA"
+            );
             $res = $this->postCurl($url,$message,'json');//将data数组转换为json数据
             if($res){
                 Log::record(json_encode($res),'error');
