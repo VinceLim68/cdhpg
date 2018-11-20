@@ -21,7 +21,7 @@ class Wxloginaction{
     
     //使用诚德行公众号来推送消息模板
     public function sendTemplateMessageByOffical(){
-        $token = $this->getOfficalAccountToken();
+        $token = json_decode($this->getOfficalAccountToken());
         dump($token);
         $url = "https://api.weixin.qq.com/cgi-bin/message/template/send?access_token={$token['access_token']}";
         $TEMPLATE_ID = "LbCAQNeXI1xKsmUV8SDh4Jr-ftuO5BqSfQerYWUWtoY";
