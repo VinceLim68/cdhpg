@@ -9,6 +9,60 @@ class Wxloginaction{
     protected $AppID = 'wx1a480f3d8834457c';
     protected $AppSecret = '2b74d798fa59c148d1c3335f45953159';
     
+    
+    //调用微信模块，获取诚德行公众号的token,为发送消息模板做准备
+    private function getOfficalAccountToken(){
+        $officalAccountAppID = 'wx4b5d934a60e5391d';
+        $officalAccountAppSecret = 'f91e5f646126f1455cbfaca3641bf89b';
+        $url = "https://api.weixin.qq.com/cgi-bin/token?grant_type=client_credential&appid={$officalAccountAppID}&secret={$officalAccountAppSecret}";
+        $token = $this->httpGet($url);
+        return $token;
+    }
+    
+    //使用诚德行公众号来推送消息模板
+    public function sendTemplateMessageByOffical(){
+        $token = $this->getOfficalAccountToken();
+        $url = "https://api.weixin.qq.com/cgi-bin/message/template/send?access_token={$token['access_token']}";
+        $TEMPLATE_ID = "LbCAQNeXI1xKsmUV8SDh4Jr-ftuO5BqSfQerYWUWtoY";
+        
+        $message = array(
+            "touser"=>"oG-Mtw5t7s9vheckOQNxB_AwYp8Q",
+            "template_id"=>$TEMPLATE_ID,
+            "data"=>array(
+                "first"=>array(
+                    "value"=>"first",
+                    "color"=>"#173177"
+                ),
+                "keyword1"=>array(
+                    "value"=>"我是申请人",
+                    "color"=>"#173177"
+                ),
+                "keyword2"=>array(
+                    "value"=>"我是待办类型",
+                    "color"=>"#173177"
+                    
+                ),
+                "keyword3"=>array(
+                    "value"=>"申请时间",
+                    "color"=>"#173177"
+                    
+                ),
+                "keyword4"=>array(
+                    "value"=>"申请内容",
+                    "color"=>"#173177"
+                    
+                ),
+                "remark"=>array(
+                    "value"=>"remark！",
+                    "color"=>"#173177"
+                )
+            )
+        );
+        $res = $this->postCurl($url,$message,'json');
+        echo $res;
+        return $res;
+    }
+    
     public function getOpenid(){
         //取openid
         $JSCODE = input('code');
@@ -36,8 +90,7 @@ class Wxloginaction{
         //从微信处获得token
         $url = "https://api.weixin.qq.com/cgi-bin/token?grant_type=client_credential&appid={$this->AppID}&secret={$this->AppSecret}";
         $ass_key = json_decode($this->httpGet($url));
-        //         返回样式：
-        // object(stdClass)[5]
+        // 返回样式：object(stdClass)[5]
         //         public 'access_token' => string '13_VnRFb6W3iwwlosTPMU4eMlyC12LBVdvL_GbwBW1dedS8LvP4iXCabqeFhk8BzNKxNvd2tL7_0jIpNhBczf1oz6itDf8Hpjrk7U2CFf3uIhBoPaN0iZMY66-vCUdlXL0IaxrM6XxrftKGYd-iJJUhABAWWH' (length=157)
         //         public 'expires_in' => int 7200
 
@@ -61,21 +114,16 @@ class Wxloginaction{
             {
                 //null判断,字符串用is_null,数字用'未设置'
                 //如果没有token,或者没有有效时间，或者过期，则重新取token
-//                 dump(is_null($userInfo->token)) ;
-//                 dump($userInfo->time_out == '未设置' );
-//                 dump((strtotime($userInfo->time_out) - 900) <= $now);
-//                 echo '重新取';
                 $asskey = $this->returnAsskey();
                 //存入表中
                 $wxUser->save([
                     'token'  => $asskey->access_token,
-                    'time_out' => $asskey->expires_in + $now,
+                    'time_out' => $asskey->expires_in + $now - 900,
                 ],['user_id' => $userInfo['user_id']]);
                 //赋值token
                 $token[] = $asskey->access_token;
             }else{
                 //表中有有效的token,直接取
-//                 echo '直接取';
                 $token[] = $userInfo->token;
             }
             $token[] = $userInfo->openid;
@@ -110,7 +158,7 @@ class Wxloginaction{
         return $res;
     }
     
-    //发送模板消息
+    //小程序发送模板消息
     public function sendTemplateMessage($wxinfo,$B){
 //         发送微信模板消息
 //             $wxinfo传进来是一个json对象
