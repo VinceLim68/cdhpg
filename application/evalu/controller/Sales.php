@@ -172,11 +172,11 @@ class Sales extends Common {
 		$commName = input('commName');
 		$title = input('title');
 		$idArr = MatchLogic::getId($commName,$title );
-		if (!$idArr){
+		if (count($idArr) > 0){
     		$idArr = MatchLogic::getId($commName,$title,"roads" );
 		}
-// 		dump($idArr);
-		return ($idArr);
+        //返回一个小区id的列表
+		return $idArr;
 		
 	}
 	

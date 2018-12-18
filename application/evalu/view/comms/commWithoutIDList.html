@@ -123,6 +123,8 @@
 		<li id="showThisCommNameRecords" style="margin-left:20px">该小区的所有记录</li>
 	{else /} 
 		<li id="returnTo" style="margin-left:20px">返回所有未解析小区列表</li>
+        <li id="matchIDs" style="display: inline-block; width: 160px;">所有可匹配小区id</li>
+    	<li id="getFinalID" style="display: inline-block; width: 160px;">最终小区id</li>
 	    <li id="detail">跳转原始页面</li>
 	{/if}
 	    <li id="newCommunity">创建新小区</li>
@@ -171,6 +173,43 @@ jQuery(function($) {
            	 	var url = $(t).parent().find("td").eq(0).attr("url");
            	 	window.open(url);                 
              },
+             'matchIDs':function(t){
+            	 //匹配所有符合的id值
+            	 var commname = $(t).parent().find("td").eq(0).html();		//取小区名称
+            	 var title = $(t).parent().find("td").eq(1).html();		//取标题
+            	 //var  = $(t).parent().find("td").eq(3).html();		//
+             	 //alert(id + '\n,' + title + ',' + commname);
+            	 $.ajax({
+             		url:"{:url('Sales/matchComm')}",
+             		data:{
+             			//id:id,
+             			commName : commname,
+             			title : title,
+             		},
+             		success:function(response){  
+             			//alert(response)
+             			alert('小区名称：' + commname + '\n' + '标题：' + title + '\n' + '所有可匹配结果是：' + response) ; 
+     		        }  
+             		
+           		}); 
+            	 
+             },
+             'getFinalID':function(t){
+            	//综合匹配出唯一的id值
+            	 var commname = $(t).parent().find("td").eq(0).html();		//取小区名称
+            	 var title = $(t).parent().find("td").eq(1).html();		//取标题
+            	 $.ajax({
+             		url:'{:url("Sales/match")} ',
+             		type:'POST',
+             		data:{
+             			commName : commname,
+             			title : title,
+             		},
+             		success:function(response){  
+             			alert('小区名称：' + commname + '\n' + '标题：' + title + '\n' + '综合匹配的小区ID是：' + response)
+     		        }  
+             	}); 
+             }
             
            }
      });
