@@ -187,8 +187,12 @@ jQuery(function($) {
              			title : title,
              		},
              		success:function(response){  
-             			//alert(response)
-             			alert('小区名称：' + commname + '\n' + '标题：' + title + '\n' + '所有可匹配结果是：' + response) ; 
+             			if(response.length>=1){
+	             			alert('所有可匹配结果是：\n' + response) ; 
+             			}else{
+	             			alert('未匹配成功') ; 
+             				
+             			}
      		        }  
              		
            		}); 
@@ -206,7 +210,7 @@ jQuery(function($) {
              			title : title,
              		},
              		success:function(response){  
-             			alert('小区名称：' + commname + '\n' + '标题：' + title + '\n' + '综合匹配的小区ID是：' + response)
+             			alert('综合匹配小区最终ID是 ： ' + response) ; 
      		        }  
              	}); 
              }

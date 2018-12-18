@@ -95,6 +95,7 @@ class MatchLogic {
 	static public function matchID($data){
 		//这是最后匹配id的控制器，前面getid可能匹配出多个id,或者没有匹配出id,在这里进行进一步的处理
 		$getid = self::getId($data['community_name'],$data['title'],"comms");
+		//dump( $getid);
 		$id = 0;
 		if(count($getid) == 1) {
 			#如果匹配到唯一id

@@ -146,7 +146,7 @@ class Sales extends Common {
 	public function match(){
 		//用这个来测试综合匹配id功能
 		$data = [
-		    "id" => input('id'),
+		    //"id" => input('id'),
 		    "title" => input("title"),
 		    "community_name" => input("commName"),
 		];
@@ -171,11 +171,15 @@ class Sales extends Common {
 // 		$byId = input('id');
 		$commName = input('commName');
 		$title = input('title');
+
 		$idArr = MatchLogic::getId($commName,$title );
-		if (count($idArr) > 0){
+		//echo (count($idArr));
+		if (count($idArr) == 0){
     		$idArr = MatchLogic::getId($commName,$title,"roads" );
 		}
         //返回一个小区id的列表
+        //dump($idArr);
+//         $idArr[]=array(1,2,3);
 		return $idArr;
 		
 	}

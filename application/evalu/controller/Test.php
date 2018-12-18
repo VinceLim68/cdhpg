@@ -369,9 +369,22 @@ dump(getUID());
     
     //测试匹配小区id功能
     public function getCommID(){
-        $commName = '瑞景新村';
-        $title = ' 	r:同安 b:城北 a:洋坂里238-247号 新华都锦华金都对面 洋坂里满二 单价1.1万左右 黄';
-        MatchLogic::getId($commName,$title );
+        $commName = '保利李白的院子';
+        $title = ' 	a:漳州-天柱山高速路口旁 高层,全新未入住,4500每平中式精装,看房有钥匙。单价6万8';
+        $getid = MatchLogic::getId($commName,$title,'comms' );
+        //echo gettype($getid);
+        return  $getid;
+        //return $getid[0];
+    }
+    
+    //获得小区的最终id(唯一）
+    public function matchID(){
+        $data = [
+            "title" => ' 	a:漳州-天柱山高速路口旁 高层,全新未入住,4500每平中式精装,看房有钥匙。单价6万8',
+            "community_name" => '保利李白的院子',
+        ];
+        $data['community_id'] = MatchLogic::matchID($data);
+        return $data['community_id'] ;
     }
     
     //是否是微信过来的请求
