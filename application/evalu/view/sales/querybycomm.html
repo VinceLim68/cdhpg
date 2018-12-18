@@ -138,16 +138,23 @@ jQuery(function($) {
             	 var id = $(t).parent().find("td").eq(0).html();		//取序号
             	 var title = $(t).parent().find("td").eq(1).html();		//取标题
             	 var commname = $(t).parent().find("td").eq(3).html();		//取小区名称
-            	 //alert(id + '\n,' + title + ',' + commname);
             	 $.ajax({
              		url:'matchComm',
+             		//type:'POST',
              		data:{
              			id:id,
              			commName : commname,
              			title : title,
              		},
-             		success:function(response){  
-             			alert(id + '\n' + title + '\n' + commname + '\n匹配结果是：\n' + response) ; 
+             		success:function(response){
+             			//alert(response.length);
+             			//alert(JSON.stringify(response));
+             			if(response.length>=1){
+	             			alert('所有可匹配结果是：\n' + response) ; 
+             			}else{
+	             			alert('未匹配成功') ; 
+             				
+             			}
      		        }  
              		
            		});
@@ -162,12 +169,12 @@ jQuery(function($) {
              		url:'match',
              		type:'POST',
              		data:{
-             			id:id,
+             			//id:id,
              			commName : commname,
              			title : title,
              		},
              		success:function(response){  
-             			alert(id + '\n' + title + '\n' + commname + '\n综合匹配的小区ID是 ： ' + response) ; 
+             			alert('综合匹配小区最终ID是 ： ' + response) ; 
      		        }  
              	});
              }
