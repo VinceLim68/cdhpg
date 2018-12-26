@@ -1166,11 +1166,10 @@ class Comms extends Common {
     //基价管理
 	public function managePriceIndex(){
 	    $data = input();
-// 	    dump($data);
 	    $data = action('Sales/datahandle',  ['data' => $data]);
 	    //原来是用price做为order的默认值，这里要改成community_id
 	    if($data['order'] == 'price'){
-	        $data['order'] = 'from_date';
+	        $data['order'] = 'from_date desc';
 	    }
 	    $order = $data['order'].' '.$data['sort'];
 	    if('' !== $data['set'] and '' != $data['where']){
@@ -1180,10 +1179,8 @@ class Comms extends Common {
 	    }
 	    
 	    //查询记录,无论是否修改，都需要查询
-// 	        dump($data);
 	    if( isset($data['block_id']) and ('' != $data['block_id']) and ('' == $data['where']) ){
 	        //如果给了区块id，就只查询区块id,如果有where值，就清除区块查询
-//             dump('block');
     	    $list = Db::view('commhistoryprice','id,community_id,usage,create_time,median,mean,min,max,mortgagePrice,dealPrice,len,ori_len,std_r,from_date')
     	    ->view('comm','comm_name,block,comm_addr,block_id','comm.comm_id=commhistoryprice.community_id')
     	    ->where('block_id',$data['block_id'])
@@ -1194,13 +1191,11 @@ class Comms extends Common {
     	            'order'=>  $data['order'],
     	        ],
     	    ]);
-//     	    dump($list);
 	    }elseif(isset($data['community_id']) and ('' != $data['community_id']) and ('' == $data['where'])){
 	        //如果有community_id，则按community_id查询，其实是按小区名称查询
-// 	        dump('community_id');
 	        $list = (new CommhistorypriceModel())->with('comm')
 	        ->where('community_id',$data['community_id'])
-	        ->order('from_date')
+	        ->order('from_date desc')
 	        ->paginate(100,false,[
 	            'query'=>[
 	                'where'=>  $data['where'],
@@ -1210,8 +1205,6 @@ class Comms extends Common {
 	        ]);
 	    }else{
 	        //否则正常查询
-	        //dump($data);
-// 	        dump('search');
     	    $HPrice = new CommhistorypriceModel();
     	    $list = $HPrice->with('comm')
     	    ->where($data['where'] )
