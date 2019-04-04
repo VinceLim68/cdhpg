@@ -1,0 +1,130 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport"
+	content="width=device-width,initial-scale=1,user-scalable=0">
+<title>大叔读书</title>
+<link rel="stylesheet" href="__CSS__/bootstrap.min.css">
+<link rel="stylesheet" href="__CSS__/notes/notes.css">
+</head>
+<body>
+	<div id='essay'>
+		<h1>{$item.itemname}</h1>
+		{assign name="prevcount" value="1" /}
+		<ul>
+			{empty name="notes"}
+			<li class="item" itemId="" itemPid="0" itemCount="1" itemName=""
+				itemOrder="1">
+				<div class="itemrow">
+					<span class="iconfront"></span>
+					<div class="input-group content">
+						<input type="text" class="form-control"
+							aria-label="Text input with segmented button dropdown"
+							placeholder="您可以输入第一条笔记">
+						<div class="input-group-btn">
+							<button class="btn btn-default cancle" type="button">
+								<span class="glyphicon glyphicon-remove" aria-hidden="true"></span>
+							</button>
+							<button class="btn btn-default ok" type="button">
+								<span class="glyphicon glyphicon-ok" aria-hidden="true"></span>
+							</button>
+						</div>
+					</div>
+					<span class="iconafter"></span>
+				</div>
+			</li> {else /} {volist name="notes" id="vo" } {if $vo.Count gt $prevcount}
+			<ul>{++$prevcount} {/if} {if $vo.Count lt $prevcount}
+			</ul>
+			{--$prevcount} {/if}
+			<li class="item" itemId="{$vo.id}" itemPid="{$vo.pid}"
+				itemCount="{$vo.Count}" itemName="{$vo.item}"
+				itemOrder="{$vo.order}">
+				<div class="itemrow">
+					<span class="iconfront"></span>
+					<div class="input-group content">{$vo.count}</div>
+					<span class="iconafter"></span>
+				</div>
+			</li> {/volist} {/empty}
+		</ul>
+		<ul>
+			<li class="show">Lorem ipsum dolor sit amet</li>
+			<li style="list-style: none;">
+				<div id="core_34671124" class="coreDiv selectedTask withActionMenu">
+					<span class="glyphicon glyphicon glyphicon-menu-down "
+						aria-hidden="true"></span> <span class=" editable">在一行里显示下拉图标、文本内容及按钮</span>
+					<span class="glyphicon glyphicon-option-vertical pull-right"></span>
+				</div>
+			</li>
+			<li>Integer molestie lorem at massa</li>
+			<li class="show">隐蒧</li>
+			<li>Nulla volutpat aliquam velit
+				<ul>
+					<li style="list-style: none;">Phasellus iaculis neque</li>
+					<li>Purus sodales ultricies
+						<ul >
+							<li><div id="core_34671124"
+									class="coreDiv selectedTask withActionMenu">
+									<span class="glyphicon glyphicon glyphicon-menu-down "
+										aria-hidden="true"></span> <span class=" editable">在一行里显示下拉图标、文本内容及按钮</span>
+									<span class="glyphicon glyphicon-option-vertical pull-right"
+										aria-hidden="true"></span>
+								</div></li>
+							<li>Purus sodales ultricies</li>
+							<li>111
+								<ul class="hide">
+									<li>直接在li下面插入一个新ul-li</li>
+								</ul>
+							</li>
+							<li>直接加li是弟节点</li>
+							<li>1232
+								<ul>
+									<li style="list-style: none;">
+										<div class="bs-callout bs-callout-info">
+											<h4>Alternate elements</h4>
+											<p>
+												在 HTML5 中可以放心使用
+												<code>&lt;b&gt;</code>
+												和
+												<code>&lt;i&gt;</code>
+												标签。
+												<code>&lt;b&gt;</code>
+												用于高亮单词或短语，不带有任何着重的意味；而
+												<code>&lt;i&gt;</code>
+												标签主要用于发言、技术词汇等。
+											</p>
+										</div>
+									</li>
+									<li style="list-style: none;">Purus sodales ultricies</li>
+									<li>Vestibulum laoreet porttitor sem</li>
+									<li>Ac tristique libero volutpat at</li>
+								</ul>
+							</li>
+						</ul>
+					</li>
+
+					<li>Vestibulum laoreet porttitor sem</li>
+					<ul>
+						<li>在li下面插</li>
+						<ul>
+							<li>22222在li下面插</li>
+						</ul>
+
+						<li>在li下面插</li>
+					</ul>
+					<li>Ac tristique libero volutpat at</li>
+				</ul>
+			</li>
+			<li>Faucibus porta lacus fringilla vel</li>
+			<li>Aenean sit amet erat nunc</li>
+			<li>Eget porttitor lorem</li>
+		</ul>
+	</div>
+	<script src="__JS__/jquery.min.js"></script>
+	<script src="__JS__/bootstrap.min.js"></script>
+	<script type="text/javascript">
+		
+	</script>
+	<script src="__JS__/notes/notes.js"></script>
+</body>
+</html>

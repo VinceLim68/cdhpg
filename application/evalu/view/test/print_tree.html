@@ -1,0 +1,67 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width,initial-scale=1,user-scalable=0" >
+    <title>Todo</title>
+    <link rel="stylesheet" href="__CSS__/bootstrap.min.css"> 
+    <link rel="stylesheet" href="__CSS__/test/print_tree.css">
+    <!-- <link rel="stylesheet" href="__CSS__/fontawesome-2019.css"> -->
+    <!-- <link rel="stylesheet" href="https://use.fontawesome.com/releases/v5.6.3/css/all.css" integrity="sha384-UHRtZLI+pbxtHCWp1t77Bi1L4ZtiqrqD80Kn4Z8NTSRyMA2Fd33n5dQ8lWUE00s/" crossorigin="anonymous"> 
+    --><!--<script src="https://cdn.jsdelivr.net/npm/vue@2.5.16/dist/vue.js"></script> -->
+</head>
+<body>
+    <div id="todo" class="todo">
+        <div class="header">
+            <section>
+                <form action="javascript:void(0)">
+                    <label for="title">读书笔记</label>
+                    <button class="addBtn" v-on:click="addTodo"></button>
+                    <input type="text" name="title" placeholder="add todo..." required="required" autocomplete="off" v-model="title" v-on:keypress.enter="addTodo">
+                </form>
+            </section>
+        </div>
+        <section>
+            <h2>书目<span id="todoCount" class="count">{$items|count}</span></h2>
+            <ol id="todoList">
+	            {volist name="items" id="vo" empty="$empty" }
+					<li style="display:{$vo.Count<=2 ? 'block' : 'none'};" 
+						   itemId="{$vo.id}"
+						   itemPid="{$vo.pid}"
+						   itemCount="{$vo.Count}"
+						   itemName = "{$vo.name}">
+						
+	                    <p style="margin-left:{$vo.Count*20-20}px;
+								  font-weight:{$vo.Count<=2 ? 'bold' : 'normal'};
+								  font-size:{$vo.Count*-2+24}px;
+								  " 
+						   >
+						   <span class="arrow glyphicon  {$vo.Count==1?'glyphicon-menu-up':'glyphicon-menu-down'}" aria-hidden="true"></span>
+						 <!--   <div class="inputInP"></div> -->
+						   <span class="note">
+						   		{$vo.name}
+								   <span class="right glyphicon glyphicon-remove-circle" aria-hidden="true" title="删除"></span>
+								   <span class="right glyphicon glyphicon-plus-sign" aria-hidden="true" title="增加下级摘要"></span>
+								   <span class="right glyphicon glyphicon-plus" aria-hidden="true" title="增加同级摘要"></span>
+						   </span>
+						   
+						</p>
+					</li>
+					
+				{/volist}
+            </ol>
+            <h2>Done<span id="doneCount" class="count">{{doneList.length}}</span></h2>
+            <ol id="doneList">
+                <li v-for="(item,index) in doneList">
+                    <input type="checkbox" v-on:click="checkedDone(index)" v-model="item.done">
+                    <p>{{item.title}}</p>
+                    <a href="javascript:void(0)" v-on:click="deleteDoneTodo(index)">-</a>
+                </li>
+            </ol>
+        </section>
+        <p class="footer">大叔</p>
+    </div>
+    <script type="text/javascript" src="__JS__/jquery-3.2.1.js"></script>
+	<script type="text/javascript" src="__JS__/test/print_tree.js"></script>
+</body>
+</html>

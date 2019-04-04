@@ -1,0 +1,79 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport"
+	content="width=device-width,initial-scale=1,user-scalable=0">
+<title>Todo</title>
+<link rel="stylesheet" href="__CSS__/notes/items.css">
+<link rel="stylesheet" href="__CSS__/bootstrap.min.css">
+</head>
+<body>
+	<div id="todo" class="todo">
+		<div class="header">
+			<section>
+				<form action="javascript:void(0)">
+					<label for="title">读书笔记</label>
+					<button class="addBtn" v-on:click="addTodo"></button>
+					<input type="text" name="title" placeholder="add todo..."
+						required="required" autocomplete="off" v-model="title"
+						v-on:keypress.enter="addTodo">
+				</form>
+			</section>
+		</div>
+
+
+		<section>
+			<h2>
+				书目<span id="todoCount" class="count">{$items|count}</span>
+			</h2>
+			<ol id="todoList">
+
+				{volist name="items" id="vo" empty="$empty" }
+				<li class="item" style="display: {$vo.Count<=2? 'block': 'none'}"
+					itemId="{$vo.id}" itemPid="{$vo.pid}" itemCount="{$vo.Count}"
+					itemName="{$vo.item}" itemOrder="{$vo.order}">
+
+					<div class="col-lg-12" style="margin-left: {$vo.Count*20 -20}px">
+						<span 
+							class="arrow glyphicon  {$vo.Count==1?'glyphicon-menu-up':'glyphicon-menu-down'}"
+							 aria-hidden="true"></span>
+						<div class="row">
+							<div class="input-group" >
+								<span class="note" >{$vo.item}</span>
+								<div class="input-group-btn">
+									<button type="button" class="btn btn-default dropdown-toggle"
+										data-toggle="dropdown" aria-haspopup="true"
+										aria-expanded="false">
+										<span class="glyphicon glyphicon-option-vertical"></span>
+									</button>
+									<ul class="dropdown-menu dropdown-menu-right">
+										<li><a href="#" class='addSameClass'>增加同级</a></li>
+										<li><a href="#" class='addChildClass'>增加下级</a></li>
+										<li><a href="#">删除</a></li>
+										<li role="separator" class="divider"></li>
+										<li><a href="#" class='goIntoNotes'>进入</a></li>
+									</ul>
+								</div>
+							</div>
+							<!-- /input-group -->
+						</div>
+						<!-- /.col-lg-6 -->
+					</div>
+					<!-- /.row -->
+				</li> {/volist}
+			</ol>
+
+		</section>
+		<p class="footer">大叔</p>
+	</div>
+	<!-- <script type="text/javascript" src="__JS__/jquery-3.2.1.js"></script> -->
+	<script src="__JS__/jquery.min.js"></script>
+	<script src="__JS__/bootstrap.min.js"></script>
+	<script type="text/javascript">
+		var ajaxItem = "{:url('item')}";
+		var gotoNotes = "{:url('notes')}";
+	</script>
+	<script type="text/javascript" src="__JS__/notes/items.js"></script>
+</body>
+</html>
