@@ -204,6 +204,44 @@ jQuery(function($) {
 		$("textarea[name='where']").val(where);
 	});
 	
+	//	修改过滤公式时，自动转化成memo
+	jQuery("body").on("dblclick","input[name='memo']",function(){
+		var replacedict = {
+				' ':'',
+				'%':'',
+				'"':'”',
+				"title":'标题', 
+				"price":'单价', 
+				"id":'序号', 
+				"community_id":'小区编号', 
+				"community_name":'小区名称', 
+				"spatial_arrangement":'户型',
+				"floor_index":'楼层',
+				"total_floor":'总楼层',
+				"builded_year":'建成年份',
+				"area":'面积',
+				"total_price":'总价',
+				"advantage":'优势',
+				">=":'不小于',
+				"<=":'不大于',
+				"like":'包含',
+				">":'大于',
+				"<":'小于',
+				"and":'，并且',
+				"or":'，或者',
+				"=":'等于',
+				'not':'不'
+					};
+		
+	      
+		var where = $("textarea[name='where']").val();
+		for (var item in replacedict) {
+			where = where.replace(new RegExp(item,'g'),replacedict[item]);
+		}
+		$("input[name='memo']").val(where);
+//		alert(where);
+	});
+	
 	//修改关联规则
 	$('#relaform').on('click','#modi_rela',function(){
 		var id = $('#reladialogg .modal-header h4 small span').text();
