@@ -369,7 +369,7 @@ class Comms extends Common {
 	    //小区根据功能拆分
 	    //取近30天离散度最大的小区
 	    $commid = Db::table('error_comm')
-	       ->where("create_time", ">= time", strtotime('-30 day'))
+// 	       ->where("create_time", ">= time", strtotime('-30 day'))
 	       ->where("type",2)
 	       ->order("memo desc")
 	       ->find();
