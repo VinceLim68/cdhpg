@@ -336,6 +336,7 @@ class Index extends Common {
         }
     }
     
+    //核心的查询功能，根据comm_id求出评估价
     public function getPrice(){
         //$comm_id ='',$price = 0
         //通过小区编号求取相应的报价参数
