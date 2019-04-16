@@ -336,7 +336,7 @@ return [
     'EasyPG'    =>  [
             // 数据库类型mssql,sqlserver
             'type'        => 'Sqlsrv',
-            // 服务器地址
+            // 服务器地址v
 //             'hostname'    => 'office.xmcdhpg.cn',
 //             'hostport'    =>    '8008',
             'hostname'    => '192.168.1.250',
