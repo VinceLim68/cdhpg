@@ -76,13 +76,13 @@ usage="{$B['comm']['usage']|default=''}" block="{$B['comm']['block']}">
 						<li ><a href="#casetab" aria-controls="casetab" role="tab" data-toggle="tab" id="case">成交案例</a></li>
 						{/if}
 				    	{if condition="$auth['inputFiles']"}
-						<li ><a href="{:url('inputFiles',['community_id'=>$B['comm']['comm_id'],'price'=>$B['price']])}">采集总平图</a></li>
+						<li ><a href="{:url('inputFiles',['community_id'=>$B['comm']['comm_id'],'price'=>$B['price'],'input'=>$input])}">采集总平图</a></li>
 						{/if}
 				    	{if condition="$auth['inputAddress']"}
-						<li ><a href="{:url('inputAddress',['community_id'=>$B['comm']['comm_id'],'price'=>$B['price']])}">采集小区地址</a></li>
+						<li ><a href="{:url('inputAddress',['community_id'=>$B['comm']['comm_id'],'price'=>$B['price'],'input'=>$input])}">采集小区地址</a></li>
 						{/if}
 				    	{if condition="$auth['showSaleList']"}
-						<li ><a href="{:url('showSaleList',['community_id'=>$B['comm']['comm_id'],'price'=>$B['price']])}">数据列表</a></li>
+						<li ><a href="{:url('showSaleList',['community_id'=>$B['comm']['comm_id'],'price'=>$B['price'],'input'=>$input])}">数据列表</a></li>
 						{/if}
  						{if condition="$auth['insert']"}
 		 				<li ><a href="#query_record" aria-controls="query_record" role="tab" data-toggle="tab" >登记询价记录</a></li> 

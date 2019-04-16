@@ -22,7 +22,7 @@
 						<small style="padding-left:3%">{$findresult[0]['region']|default=''}</small>
 					</div>
 					<div class="col-md-1 col-xs-3">
-						<a class="btn btn-success" href="{:url('getprice',['community_id'=>$data['community_id'],'price'=>$data['price']])}" 
+						<a class="btn btn-success" href="{:url('getprice',['community_id'=>$data['community_id'],'price'=>$data['price'],'input'=>$data['input']])}" 
 						style="margin-left:3%;letter-spacing: 3px;" role="button">
 						<i class="ace-icon fa fa-home green"></i><span style="padding-left:1%;">返回</span></a>
 					</div>

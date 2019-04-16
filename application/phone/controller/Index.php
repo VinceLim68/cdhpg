@@ -343,6 +343,7 @@ class Index extends Common {
             
         }
         $this->assign('iswx',$iswx);
+        $this->assign('input',$data['input']);
         return $this->fetch();
 
     }
