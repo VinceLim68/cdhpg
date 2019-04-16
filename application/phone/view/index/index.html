@@ -29,11 +29,15 @@
         <label class="sr-only" ></label>
         <input type="text" class="form-control input-lg" name="price" placeholder="需要输入二手房的成交单价">
     </div>
-	
     <div class="checkbox">
         <label >
-              <input type="checkbox" id="is_sold">我是二手房
+              <input type="checkbox" id="is_sold" name="is_sold">我是二手房
         </label>
+        {if condition="$auth['admin']"}
+        <label style="margin-left:10px">
+              <input type="checkbox" id="is_now" name='is_now' >使用现状数据
+        </label>
+    	{/if}
     </div>
     <button type="submit" class="btn btn-success btn-block btn-lg">马上估值</button>
     <button class="btn btn-success btn-block btn-lg" id="count">速算评估费</button>

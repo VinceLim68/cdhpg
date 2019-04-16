@@ -119,8 +119,8 @@ class Index extends Controller {
         return $this->fetch();
 	}
 	
+    //输入报告编号，查出报告下的所有估价对象
 	public function ajaxGetGjxmDetails(){
-	    //输入报告编号，查出报告下的所有估价对象
 	    $input = input();//
 // 	    $input['No'] = "DY2018030076";
 	    //$test = "DY2018030076";GjxmdetailKID,fwlp,yt

@@ -51,7 +51,7 @@ class Antifake extends Controller {
         return $this->fetch();
     }
     
-    //查询报告的详细信息,查询页面
+    //查询报告的详细信息的查询页面
     public function myitem(){
         return $this->fetch();
     }

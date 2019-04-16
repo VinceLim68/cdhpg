@@ -20,12 +20,15 @@ use app\phone\model\GeneralLayoutModel;
 use app\evalu\model\CommaddressModel;
 use app\evalu\logic\LoginLogic;
 use app\api\controller\Wxloginaction;
+use app\evalu\model\SalesNowModel;
 
 //手机端的询价系统
 class Index extends Common {
     
     public function index() {
         //手机询价界面
+        $auth = $this->getAuth();
+        $this->assign('auth',$auth);
         return $this->fetch();
     }
     
@@ -34,29 +37,21 @@ class Index extends Common {
     //得到小区id后，再跳转到getCommChild进行小区内的子分类选择
     public function getCommName(){
         if (request()->isPost() or request()->isGet()) {
-
-            $result = $this->validate(input(),'GetCommNameValidate');
+            $input = input();
+//             halt($input);
+            $result = $this->validate($input,'GetCommNameValidate');
             if (true !== $result) {
                 // 验证失败 输出错误信息
                 $this->error($result);
                 exit ();
             } else {
-                $input = input();
+//                 $input = input();
+//                 halt($input);
                 //把传来的参数解码一下，这里设计的函数round_decode会自动辨别有没有编码
                 foreach ($input as $key=>$value){
                     $input[$key]=round_decode($value);
                 }
                 
-//                 if(!isset($input['price'])){
-//                     $input['price']=0;
-//                 }
-                //1查询数据,把comm存入session中
-//                 $thiscomm = input('comm');
-//                 //如果字符串里有两个以上%，表示已经被encodeURL过了
-//                 if(substr_count($thiscomm,"%")>2){
-//                     $thiscomm = urldecode($thiscomm);
-//                 }
-//                 session('user.comm',$thiscomm);
                 $return = $this->getCommNameAction($input);
                 switch ($return['status']) {
                     case 'macth no comm and insert error record failed':
@@ -74,6 +69,7 @@ class Index extends Common {
                         return $this->fetch();
                         break;
                     default:            //匹配到唯一，或者直接匹配到地址
+//                         halt($input);
                         if(!input('price')){
                             $this->redirect('getCommChild', ['comm_id' => $return['commnames'][0]['comm_id'],'input'=>base_encode(json_encode($input))]);
                         }else{
@@ -81,56 +77,6 @@ class Index extends Common {
                         };
                         break;
                 }
-//                 //返回$pickitem数组，每个元素中包含comm_id,comm_name,pri_level,keywords
-//                 $commnames = MatchLogic::matchSearch($thiscomm);
-                
-//                 //2如果没有查到，转到小区地址表中去查询
-//                 if(!$commnames){
-//                    $address = MatchLogic::matchIDByAddress($thiscomm);
-//                    if(isset($address['comm_id']) and $address['comm_id']>999 ){
-//                         $commnames[] = (new Comm())->field ( "comm_id,comm_name,pri_level,keywords" )
-//                             ->where('comm_id', $address['comm_id'])
-//                             ->find()
-//                             ->toArray();
-//                         //这里给$commnames赋了值，而且是唯一值，下面的分支就会走到唯一去。
-//                         session('user.comm',$commnames[0]['comm_name']);
-                        
-//                    }
-//                 }
-//                 if(!$commnames){
-//                     //如果还是没有查到，记录到miss_comm表中去
-//                     try{
-//                         $errorcomm = ErrorCommModel::create([
-//                             'memo'     =>  '没有小区名',
-//                             'user_id'       =>  session('user.user_id'),
-//                             'user_name'     =>  session('user.user_name'),
-//                             'type'          =>  1,
-//                             'comm_name'     =>  $thiscomm,
-//                         ]);
-//                     }catch(\Exception $e){
-//                         $this->error('没有查询到叫"'.$thiscomm.'"的地方');
-//                     }
-//                     $this->error('没有查询到叫"'.$thiscomm.'"的地方');
-//                 }elseif(count($commnames)>1){
-//                 //4如果查到多个，列表展示，让用户手动挑选后，再转入子功能分类进行选择
-//                     $commArr = [];      //取出完整的数据
-//                     foreach ($commnames as $comm){
-//                         $commArr[] = Db::table('comm')->where('comm_id',$comm['comm_id'])->find();
-//                     }
-//                     $this->assign ([
-//                         'fields'=>$commArr,
-//                         'price'=>isset($input['price'])?$input['price']:0,
-//                         'input'=>base_encode(json_encode($input)),
-//                     ]);
-//                     return $this->fetch();
-//                 }else{
-//                 //3如果查到一个，转入子功能分类进行选择
-//                     if(!input('price')){
-//                         $this->redirect('getCommChild', ['comm_id' => $commnames[0]['comm_id'],'input'=>base_encode(json_encode($input))]);
-//                     }else{
-//                         $this->redirect('getCommChild', ['comm_id' => $commnames[0]['comm_id'],'input'=>base_encode(json_encode($input)),'price'=>$input['price']]);
-//                     }
-//                 }
             }
         }
     }
@@ -143,10 +89,6 @@ class Index extends Common {
         foreach ($input as $key=>$value){
             $input[$key]=round_decode($value);
         }
-//         if(!isset($input['price'])){
-//             $input['price']=0;
-//         }
-//         if (isset($input['nickname']) and '' != trim($input['nickname'])) {
         if (LoginLogic::isWeixin() and  isset($input['nickname']) and '' != trim($input['nickname'])) {
             $result = $this->validate(input(),'GetCommNameValidate');
             if (true !== $result) {
@@ -178,60 +120,6 @@ class Index extends Common {
                         };
                         break;
                 }
-                //1查询数据,把comm存入session中
-//                 session('user.comm',$input['comm']);
-        
-//                 //返回$pickitem数组，每个元素中包含comm_id,comm_name,pri_level,keywords
-//                 $commnames = MatchLogic::matchSearch($input['comm']);
-        
-//                 //2如果没有查到，转到小区地址表中去查询
-//                 if(!$commnames){
-//                     $address = MatchLogic::matchIDByAddress($input['comm']);
-//                     if(isset($address['comm_id']) and $address['comm_id']>999 ){
-//                         $commnames[] = (new Comm())->field ( "comm_id,comm_name,pri_level,keywords" )
-//                         ->where('comm_id', $address['comm_id'])
-//                         ->find()
-//                         ->toArray();
-//                         session('user.comm',$commnames[0]['comm_name']);
-//                         //                        halt($commnames);
-//                     }
-//                 }
-//                 if(!$commnames){
-//                     //如果还是没有查到，记录到miss_comm表中去
-//                     try{
-//                         $errorcomm = ErrorCommModel::create([
-//                             'memo'     =>  '没有小区名',
-//                             'user_id'       =>  session('user.user_id'),
-//                             'user_name'     =>  session('user.user_name'),
-//                             'type'          =>  1,
-//                             'comm_name'     =>  $input['comm'],
-//                         ]);
-//                     }catch(\Exception $e){
-//                         $this->error('没有查询到叫"'.$input['comm'].'"的地方');
-//                     }
-//                     $this->error('没有查询到叫"'.$input['comm'].'"的地方');
-//                 }elseif(count($commnames)>1){
-//                     //4如果查到多个，列表展示，让用户手动挑选后，再转入子功能分类进行选择
-//                     $commArr = [];      //取出完整的数据
-//                     foreach ($commnames as $comm){
-//                         $commArr[] = Db::table('comm')->where('comm_id',$comm['comm_id'])->find();
-//                     }
-//                     $this->assign ([
-//                         'fields'=>$commArr,
-//                         'price'=>$input['price'],
-//                         'input'=>base_encode(json_encode($input)),
-//                     ]);
-// //                     $this->assign('price',$input['price']);
-//                     return $this->fetch('getCommName');
-// //                     $this->redirect('getCommName',['fields'=>$commArr,'price'=>$input['price']]);
-//                 }else{
-//                     //3如果查到一个，转入子功能分类进行选择
-//                     if(!($input['price'])){
-//                         $this->redirect('getCommChild', ['comm_id' => $commnames[0]['comm_id'],'input'=>base_encode(json_encode($input))]);
-//                     }else{
-//                         $this->redirect('getCommChild', ['comm_id' => $commnames[0]['comm_id'],'input'=>base_encode(json_encode($input)),'price'=>$input['price']]);
-//                     }
-//                 }
             }
         }
     }
@@ -304,7 +192,7 @@ class Index extends Common {
         $list = $commrelate->where('community_id',$comm_id)->select()->toArray();
         $my = [];
         $input = input();
-//         dump($input);
+//         halt($input);
         if(empty($list)){
             //没有关联规则就跳转
             $my['community_id'] = $comm_id;
@@ -344,7 +232,8 @@ class Index extends Common {
         //2.如果没有，就查询挂牌数据库进行计算，并把计算结果写入查询记录中去
         //或者如果有成交记录，也可以重新计算，并把成交记录记入成交表中去
         $data = input();
-//         dump($data);
+//         halt($data);
+//         halt(json_decode(base_decode($data['input']))->is_now);
         if(isset($data['usage'])){$data['usage'] = base_decode($data['usage']);};
         if(!isset($data['price'])){$data['price'] = 0;};
         
@@ -367,7 +256,12 @@ class Index extends Common {
         session('comm.comm_id',$data['community_id']);
         session('comm.comm_name',$getComm['comm_name']);
 //         dump($data);
-        $result = SalesModel::getRecordsByCommid($data);
+        if(isset(json_decode(base_decode($data['input']))->is_now)){
+            $result = SalesNowModel::getRecordsByCommid($data);
+        }else{
+            $result = SalesModel::getRecordsByCommid($data);
+        }
+        
 //         $result = SalesModel::getRecordsByCommid($comm_id);
         
         
@@ -425,17 +319,7 @@ class Index extends Common {
             }
             //===================还要分配一下权限===============================================
             //得到用户的权限
-            $thisAuth = new \Auth();
-            $auth['history'] = $thisAuth->check('phone/index/gethistory', session('user.user_id'));
-            $auth['case'] = $thisAuth->check('phone/index/getcase', session('user.user_id'));
-            $auth['insert'] = $thisAuth->check('phone/index/insertquery', session('user.user_id'));
-            $auth['excel'] = $thisAuth->check('phone/index/createxcel', session('user.user_id'));
-            $auth['look'] = $thisAuth->check('phone/index/look', session('user.user_id'));
-            $auth['admin'] = $thisAuth->check('isadmin', session('user.user_id'));
-            $auth['dispute'] = $thisAuth->check('phone/index/dispute', session('user.user_id'));
-            $auth['inputFiles'] = $thisAuth->check('phone/index/inputFiles', session('user.user_id'));
-            $auth['inputAddress'] = $thisAuth->check('phone/index/inputAddress', session('user.user_id'));
-            $auth['showSaleList'] = $thisAuth->check('phone/index/showSaleList', session('user.user_id'));
+            $auth = $this->getAuth();
             $this->assign('auth',$auth);
         }else{
             //如果未查询出数据
@@ -449,28 +333,34 @@ class Index extends Common {
             ]);
             $this->error('没查询到数据');
         }
-        //在这里发消息模板？
-//         dump($data);
+        
+        //在这里发消息模板
         $iswx = LoginLogic::isWeixin();
         if(isset($data['input']) and  $iswx){
             $wxinfo = json_decode(base_decode($data['input']));
             $wx = new Wxloginaction();
-//             dump($wxinfo);
             $wx->sendTemplateMessage($wxinfo,$getPrice_result);
             
-//             返回是一个json对象
-//             public 'nickname' => string '大叔' (length=6)
-//             public 'machine' => string 'iphone' (length=6)
-//             public 'comm' => string '瑞景' (length=6)
-//             public 'lx' => string '12345' (length=5)
-//             public 'lx2' => string 'abcde' (length=5)
-//             public 'price' => int 0
-//             dump($wxinfo->nickname);
         }
-//         dump($iswx);
         $this->assign('iswx',$iswx);
         return $this->fetch();
 
+    }
+    
+    //获得权限
+    private  function  getAuth(){
+        $thisAuth = new \Auth();
+        $auth['history'] = $thisAuth->check('phone/index/gethistory', session('user.user_id'));
+        $auth['case'] = $thisAuth->check('phone/index/getcase', session('user.user_id'));
+        $auth['insert'] = $thisAuth->check('phone/index/insertquery', session('user.user_id'));
+        $auth['excel'] = $thisAuth->check('phone/index/createxcel', session('user.user_id'));
+        $auth['look'] = $thisAuth->check('phone/index/look', session('user.user_id'));
+        $auth['admin'] = $thisAuth->check('isadmin', session('user.user_id'));
+        $auth['dispute'] = $thisAuth->check('phone/index/dispute', session('user.user_id'));
+        $auth['inputFiles'] = $thisAuth->check('phone/index/inputFiles', session('user.user_id'));
+        $auth['inputAddress'] = $thisAuth->check('phone/index/inputAddress', session('user.user_id'));
+        $auth['showSaleList'] = $thisAuth->check('phone/index/showSaleList', session('user.user_id'));
+        return $auth;
     }
     
     //自动插入查询记录
