@@ -16,9 +16,9 @@ return [
 		// 应用命名空间
 		'app_namespace' => 'app',
 		// 应用调试模式
-		'app_debug' => true,
+		'app_debug' => false,
 		// 应用Trace
-		'app_trace' => TRUE,
+		'app_trace' => false,
 		// 应用模式状态
 		'app_status' => '',
 		// 是否支持多模块
@@ -336,10 +336,12 @@ return [
     'EasyPG'    =>  [
             // 数据库类型mssql,sqlserver
             'type'        => 'Sqlsrv',
-            // 服务器地址v
-//             'hostname'    => 'office.xmcdhpg.cn',
-//             'hostport'    =>    '8008',
-            'hostname'    => '192.168.1.250',
+
+            // 服务器地址
+//            'hostname'    => 'office.xmcdhpg.cn',
+//            'hostport'    =>    '8008',
+             'hostname'    => '192.168.1.250',
+
             // 数据库名
             'database'    => 'EasyPG',
             // 数据库用户名
