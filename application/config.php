@@ -285,7 +285,7 @@ return [
     'how_long_before_to_start_query'=>  3,              //从几个月前开始查询
     'select_records_per_time'       =>  300000,         //每次查询，以30万为单位递增
     'select_more_months_per_time'   =>  3,               //每次查询增加的月数
-    'std_times'                     =>  1.5,            //设定清洗数据时标准差的倍数
+    'std_times'                     =>  2,            //设定清洗数据时标准差的倍数
     'max_sale'                      =>  63000,          //最大的挂牌价
 //     'max_evaluation'                =>  50000,          //最大挂牌价对应的评估价   79%
 //     'max_evaluation'                =>  48000,          //最大挂牌价对应的评估价   2018/4/13调整,76%

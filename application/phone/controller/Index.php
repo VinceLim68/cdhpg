@@ -207,6 +207,7 @@ class Index extends Common {
             $ori_item['community_id'] = $comm_id;
             $ori_item['price'] = $price;
             $ori_item['usage'] = base_encode('原始数据');
+            $ori_item += $input; 
             $my[] = $ori_item;
             
             //再取出关联规则
