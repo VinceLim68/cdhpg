@@ -259,8 +259,10 @@ class Index extends Common {
 //         dump($data);
         if(isset(json_decode(base_decode($data['input']))->is_now)){
             $result = SalesNowModel::getRecordsByCommid($data);
+            $isNow = TRUE;
         }else{
             $result = SalesModel::getRecordsByCommid($data);
+            $isNow = FALSE;
         }
         
 //         $result = SalesModel::getRecordsByCommid($comm_id);
@@ -343,8 +345,12 @@ class Index extends Common {
             $wx->sendTemplateMessage($wxinfo,$getPrice_result);
             
         }
-        $this->assign('iswx',$iswx);
-        $this->assign('input',$data['input']);
+        $this->assign([
+            'iswx'  =>  $iswx,
+            'input' =>  $data['input'],
+            'isNow' =>  $isNow
+        ]);
+//         $this->assign('input',$data['input']);
         return $this->fetch();
 
     }

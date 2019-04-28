@@ -4,21 +4,21 @@
 <meta charset="UTF-8">
 <meta name="viewport"
 	content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no">
-<title>诚德行防伪</title>
+<title>国之策防伪</title>
 <link rel="stylesheet" type="text/css" href="__CSS__/bootstrap.min.css">
 <link rel="stylesheet" type="text/css"	href="__CSS__/font-awesome.min.css">
 </head>
 <body>
 <div class="panel panel-info">
   <!-- Default panel contents -->
-  <div class="panel-heading"><h2>诚德行报告查询结果</h2></div>
+  <div class="panel-heading"><h2>国之策/诚德行报告查询结果</h2></div>
   <div class="panel-body">
 	{if condition="$res['ZID'] == null "} 
 		<p>未查询到您的报告，请检查报告编号，不用区分大小写</p>
 		<p>或致电我公司人工复核：0592-5208829</p>
 	    <p>查询时间：{$time}</p>
 	{else /}
-	    <p>报告编号：厦诚德行房估字{$res['ZID']}号</p>
+	    <p>报告编号：{$res['ZID']}</p>
 	    <p>估价项目：{$res['RAddress']}</p>
 	    <p>委&nbsp;&nbsp;托&nbsp;&nbsp;人：{$res['customer']}</p>
 	    <p>估价金额：{$res['RMoney']}元</p>
