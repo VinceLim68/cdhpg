@@ -32,9 +32,18 @@ usage="{$B['comm']['usage']|default=''}" block="{$B['comm']['block']}">
 					{if condition="!$iswx"}
 					<div class="col-md-6 col-xs-12">
 						<form action="{:url('getCommName')}" method="post" >
-							<div class="col-md-8 col-xs-8" style="margin-left:-14px">
+							<div class="col-md-6 col-xs-6" style="margin-left:-14px">
 						    	<input type="text" class="form-control" name="comm"  placeholder="小区名/地址">
 						    </div>
+						    {if condition="$auth['admin']"}
+						    <div class="col-md-2 col-xs-2" style="font-size: 14px;">
+						    	<div class="checkbox">
+								    <label>
+								      <input type="checkbox"  style="margin: 0px 0px 0px -20px;" name='is_now'> 现状
+								    </label>
+							  	</div>
+						  	</div>
+						  	{/if}
 							<div class="col-md-2 col-xs-2" style="padding:0;">
 						  		<button type="submit" class="btn btn-success" style="letter-spacing:3px;">
 						  		<i class="ace-icon glyphicon glyphicon-search"></i>估值</button>
