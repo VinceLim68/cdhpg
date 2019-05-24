@@ -543,7 +543,13 @@ usage="{$B['comm']['usage']|default=''}" block="{$B['comm']['block']}">
 		} );
 		{/if}
 		jQuery(".table td.inputaction input").on('keyup',countfee);
-		
+		jQuery("input[name='is_now']").on('click',function(){
+			if($(this).is(':checked')){
+				$("input[name='comm']").val($('#hidefeild').attr('comm_name'));
+			}else{
+				$("input[name='comm']").val('');
+			}
+		})
 		jQuery("#areafee").on('keyup',function(){
 			var $area = $('#areafee').val();
 			var $up = {$B['priceByDeal'] > 0 ?$B['priceByDeal']:$B['mortgagePrice']};
