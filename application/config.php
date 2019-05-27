@@ -276,7 +276,8 @@ return [
 				// 数据库密码
 				'password' => 'root',
 				// 数据库编码默认采用utf8
-				'charset' => 'utf8' 
+// 				'charset' => 'utf8' 
+				'charset' => 'utf8mb4' 
 		],
     
     //以下是自己配置的信息
