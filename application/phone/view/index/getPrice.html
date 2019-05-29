@@ -32,11 +32,11 @@ usage="{$B['comm']['usage']|default=''}" block="{$B['comm']['block']}">
 					{if condition="(!$iswx) OR ($auth['admin']) "}
 					<div class="col-md-6 col-xs-12">
 						<form action="{:url('getCommName')}" method="post" >
-							<div class="col-md-6 col-xs-6" style="margin-left:-14px">
+							<div class="col-md-6 col-xs-5" style="margin-left:-14px">
 						    	<input type="text" class="form-control" name="comm"  placeholder="小区名/地址">
 						    </div>
 						    {if condition="$auth['admin']"}
-						    <div class="col-md-2 col-xs-2" style="font-size: 14px;">
+						    <div class="col-md-2 col-xs-3" style="font-size: 14px;">
 						    	<div class="checkbox">
 								    <label>
 								      <input type="checkbox"  style="margin: 0px 0px 0px -20px;" name='is_now'> 现状
