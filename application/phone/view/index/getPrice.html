@@ -29,7 +29,7 @@ usage="{$B['comm']['usage']|default=''}" block="{$B['comm']['block']}">
 							</small>
 						</div>
 					</div>
-					{if condition="!$iswx"}
+					{if condition="(!$iswx) OR ($auth['admin']) "}
 					<div class="col-md-6 col-xs-12">
 						<form action="{:url('getCommName')}" method="post" >
 							<div class="col-md-6 col-xs-6" style="margin-left:-14px">
@@ -46,12 +46,12 @@ usage="{$B['comm']['usage']|default=''}" block="{$B['comm']['block']}">
 						  	{/if}
 							<div class="col-md-2 col-xs-2" style="padding:0;">
 						  		<button type="submit" class="btn btn-success" style="letter-spacing:3px;">
-						  		<i class="ace-icon glyphicon glyphicon-search"></i>估值</button>
+						  		{if condition="(!$iswx)"}<i class="ace-icon glyphicon glyphicon-search"></i>{/if}估值</button>
 							</div>
 						</form>
 						<div class="col-md-2 col-xs-2">
 						<a style="margin-left:3%;letter-spacing: 3px;" class="btn btn-success " href="{:url('index')}">
-						<i class="ace-icon fa fa-home green"></i><span style="padding-left:1%;">返回</span></a>
+						{if condition="(!$iswx)"}<i class="ace-icon fa fa-home green"></i>{/if}<span style="padding-left:1%;">返回</span></a>
 						</div>
 					</div>
 					{/if}
