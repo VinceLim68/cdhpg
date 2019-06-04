@@ -21,8 +21,23 @@ class Rules extends Common {
 	 * 用户列表
 	 */
 	public function user(){
+	    if (request()->isPost()) {
+	        $input = input();
+	    }
+	    
+	    if(isset($input['searchStr']) and !empty($input['searchStr'])){
+	        //通过用户名和邮箱来查询
+    	    $data=(new UserModel())
+    	           ->where('user_name','like','%'.$input['searchStr'].'%')
+    	           ->whereOr('email','like','%'.$input['searchStr'].'%')
+    	           ->order('register_date desc')
+    	           ->paginate(20);
+	    }else{
+	           $data=(new UserModel())
+    	           ->order('register_date desc')
+    	           ->paginate(20);
+	    }
 
-	    $data=(new UserModel())->order('register_date desc')->paginate(20);
 	    $group = new GroupAccessModel();
 	    //关联角色
 	    foreach ($data as $d){

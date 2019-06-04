@@ -330,37 +330,6 @@ class Comms extends Common {
 	                    break;
 	            };
 	            //找出匹配的记录，每条记录的内容 是：comm_id,comm_name,pri_level,keywords
-// 	            $commnames = MatchLogic::matchSearch(input('commName'));
-//                 if(!$commnames){
-//                     //如果没有查到
-//                     return ('没有查询到叫"'.input('param.commName').'"的地方');
-//                 }elseif(count($commnames)>1){
-//                     //4如果查到多个，列表展示，让用户手动挑选后，再转入统计模块
-//                     $commArr = [];      //取出完整的数据
-//                     $mystr = '<table class="table table-striped">';
-//                     $mystr .= '<tr><th>小区</th><th>ID</th><th>区块</th><th>版块</th><th>地址</th></tr>';
-//                     foreach ($commnames as $comm){
-//                         $v = Db::table('comm')->where('comm_id',$comm['comm_id'])->find();
-//                         $mystr .= '<tr>';
-//                         if(isset($from)){
-//                             $mystr .= '<td><a href="'.url($from).'?community_id='.$v['comm_id'].'">'.$v['comm_name'].'</a></td>';
-//                         }else{
-//                             $mystr .= '<td><a href="'.url("handle_comm").'?community_id='.$v['comm_id'].'">'.$v['comm_name'].'</a></td>';
-//                         }
-//                         $mystr .= '<td>'.$v['comm_id'].'</td>';
-//                         $mystr .= '<td>'.$v['region'].'</td>';
-//                         $mystr .= '<td>'.$v['block'].'</td>';
-//                         $mystr .= '<td>'.$v['comm_addr'].'</td>';
-//                         $mystr .= '</tr>';
-//                         $commArr[] = $v;
-//                     }
-
-//                     $mystr .= '</table>';
-//                     return $mystr;
-//                 }else{
-//                     //3如果只查到一个，直接返回comm_id
-//                     return $commnames[0];
-//                 }
 	        }
 	   }
 	}
@@ -1478,13 +1447,10 @@ class Comms extends Common {
     public function commAddressList(){
         $data = input();
         if (request()->isPost()){
-//             halt($data);
             if(isset($data['community_id'])){
-//                 input('get.community_id')=null;
                 unset($data['community_id']);
             }
         };
-//         dump($data);
         $data['num'] = 0;
         $replace = array('“'=>'"');
         $replace += array('”' => '"');
@@ -1513,11 +1479,18 @@ class Comms extends Common {
             $data['set'] = '';
         }
         $data["action"] = url('commAddressList');
-//         dump(url('commAddressList'));
-//         dump($data);
+        
+        if(isset($data['commName']) and $data['commName']!=''){
+            //表示是通知简易查询过来的，简易查询才有‘commName’字段
+            $list = (new CommaddressModel())->getListByStrname($data);
+        }else{
+    //         dump(url('commAddressList'));
+//             dump($data);
+    //         halt($data);
+            $list = (new CommaddressModel())->getListByFormdata($data);
+            
+        }
         $title = ['序号','小区编码','小区','城市','行政区','路','门牌号','类型','建成','总层','电梯','结构'];
-//         halt($data);
-        $list = (new CommaddressModel())->getListByFormdata($data);
 //         halt($list->toArray());
         $fields = Db::query('SHOW COLUMNS FROM commaddress');
         $this->assign([

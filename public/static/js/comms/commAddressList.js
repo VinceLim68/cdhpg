@@ -43,7 +43,7 @@ jQuery(function($) {
 		});
 	})
 	
-	$("#search_form").on("submit", function(event) {
+/*	$("#search_form").on("submit", function(event) {
 		//关联首页签的小区搜索框，可以跳转另一个小区
 		event.preventDefault();
 	    $.ajax({
@@ -63,5 +63,5 @@ jQuery(function($) {
 			  },
 	    })
 		
-	});
+	});*/
 })

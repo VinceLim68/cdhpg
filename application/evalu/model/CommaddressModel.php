@@ -24,6 +24,38 @@ class CommaddressModel extends Model {
 	    return date('Y-01-01',strtotime($value));
 	}
 	
+	public function getListByStrname($data){
+	    $list = $this->field('
+                id,
+                comm_id,
+                comm_name,
+                city,
+                region,
+                road,
+                doorplate,
+                type,
+                buildYear,
+                floors,
+                elevator,
+                structure
+	           ')
+        	    ->where('comm_name','like','%'.$data['commName'].'%')
+        	    ->whereOr('road','like','%'.$data['commName'].'%')
+        	    ->whereOr('city','like','%'.$data['commName'].'%')
+        	    ->whereOr('region','like','%'.$data['commName'].'%')
+        	    ->whereOr('type','like','%'.$data['commName'].'%')
+        	    ->order($data['neworder'])
+        	    ->paginate(100,false,[
+        	        'query'=>[
+        	            'where'=>  $data['where'],
+        	            'order'=>  $data['order'],
+        	            'set'=>  $data['set'],
+//         	            'community_id' =>  isset($data['community_id']) ? $data['community_id'] : '',
+        	        ],
+        	    ]);
+    	    return $list;
+	}
+	
 	public function getListByFormdata($data){
 	    //通过页面输入的参数来按页查询数据
 // 	    if('' !== $data['set']){

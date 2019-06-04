@@ -21,20 +21,22 @@
 
 		<!-- 数据列表 --> 
 		<div role="tabpanel" class="tab-pane in active" id="list1">
-			<div class="widget-header" id='search_div' style='padding-top: 5px; background: #5AA7D6;'>
-				<div class="text-muted" style="color:white;float:left;margin:auto 0;margin-top: 6px;">共{$list->total()}条记录</div>
-				<div id="pages" style="float:left;margin-left:5px;">{$list->render()}</div>
+			<div class="widget-header row" id='search_div' style='padding-top: 5px; background: #5AA7D6;'>
+				<div class="text-muted " style="color:white;float:left;margin:auto 0;margin-top: 6px;">
+					{$list->total()}
+				</div>
+				<div  id="pages" style="float:left;margin-left:5px;">{$list->render()}</div>
 				<form class="form-inline" id="search_form" style="float:left;">
 				  <div class="form-group">
-				    <label >小区名称</label>
+				    <label ></label>
 				    <input class="form-control" name="commName" id="commName"  placeholder="请输入小区名称" >
 				  </div>
-				  <button type="submit" class="btn btn-success" style="border-radius: 5px;padding: 3px 15px;">
+				  <button type="submit" class="btn btn-success" style="border-radius: 5px;padding: 3px 3px;">
 		  			<span class="glyphicon glyphicon-search" aria-hidden="true"></span>查询
 	  				</button>
 				</form>
 				<a href="javascript:;" onclick="ActiveMyquery()" class="btn btn-sm btn-info"
-					style="margin-right: 20px; border-radius: 20px; margin-bottom: 3px;float:right;">
+					style=" border-radius: 20px; margin-bottom: 3px;float:right;">
 					<span class="ace-icon fa fa-search icon-on-right bigger-110"></span>高级查询
 				</a>
 			</div>

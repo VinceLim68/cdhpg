@@ -25,7 +25,8 @@ class UserModel extends Model
 	
 	public function getPassAttr($value)
 	{
-	    return md5($value);
+	    return ($value);
+// 	    return md5($value);
 	}
 	
 	public function getTimeOutAttr($value){
