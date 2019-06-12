@@ -113,6 +113,7 @@ class Antifake extends Controller {
                 'cqr',
                 'pgdj',
                 'yt',
+                'jcnf',
                 'XqName' => 'pa_locatedregion',
                 'jzmj' => 'detail_area',
                 'd.pgAmt' => 'detail_total_price',      //估价对象的评估总价
@@ -176,6 +177,7 @@ class Antifake extends Controller {
             pgdj	numeric	18	6	YES	评估单价
             pgAmt	numeric	18	6	YES	评估总价
             zcs	varchar	50		YES	总层数
+            jcnf varchar 30 建成年份
             GjxmglkKID	varchar	36		YES	项目KID
     CPGRecordModel
         RName   产权人

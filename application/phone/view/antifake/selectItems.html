@@ -81,20 +81,22 @@ a,a:hover{
 			</div>
 			<div class="baseinfo">
 				{present name="vo.ywy"} <span>项目经理:{$vo.ywy}&nbsp;&nbsp;&nbsp;&nbsp;</span>
-				{/present} 本对象的评估价格:&nbsp;&nbsp; {present
-				name="vo.detail_total_price"} <span>{$vo.detail_total_price/1}万&nbsp;</span>
-				{else /} {present name="vo.RMoney"} <span>{$vo.RMoney/10000}万&nbsp;</span>
-				{/present} {/present} {present name="vo.pgdj"} <span>{$vo.pgdj/1}元/㎡</span>
+				{/present} 
+				本报告的评估价格:&nbsp;&nbsp; 
+				{present name="vo.RMoney"} 
+				<span>{$vo.RMoney/10000}万&nbsp;</span>
+				{/present}
+				{present name="vo.RArea"} <span>{$vo.RArea/1}㎡</span>
 				{/present}
 			</div>
 			<div class="detail-info" style="display: none;" id="item{$i}"
 				isshow="hide">
 				<div class="baseinfo">
-					本报告的评估价格:&nbsp;&nbsp; {present name="vo.RMoney"} {present
-					name="vo.detail_total_price"} <span>{$vo.RMoney/1}万&nbsp;</span>
-					{else /} <span>{$vo.RMoney/10000}万&nbsp;</span> {/present}
-					{/present} {present name="vo.RArea"} <span>{$vo.RArea/1}㎡</span>
+					本对象的评估价格:&nbsp;&nbsp; {present
+					name="vo.detail_total_price"} <span>{$vo.detail_total_price/1}万&nbsp;</span>
+					{/present} {present name="vo.pgdj"} <span>{$vo.pgdj/1}元/㎡</span>
 					{/present}
+
 				</div>
 				<div class="baseinfo">
 					{present name="vo.detail_area"} 本估价对象的面积:&nbsp;&nbsp;<span>{$vo.detail_area/1}㎡&nbsp;&nbsp;&nbsp;&nbsp;</span>
@@ -109,7 +111,7 @@ a,a:hover{
 				<div class="baseinfo">
 					{present name="vo.CustomerFrom"} <span>来源:{$vo.CustomerFrom}</span>
 					{/present} {present name="vo.getreportmethod"} <span>&nbsp;&nbsp;&nbsp;&nbsp;取报告:{$vo.getreportmethod}</span>
-					{/present} {present name="vo.ywyname"} <span>&nbsp;&nbsp;&nbsp;&nbsp;业务员:{$vo.ywyname}</span>
+					{/present} {present name="vo.jcnf"} <span>&nbsp;&nbsp;&nbsp;&nbsp;建成年份:{$vo.jcnf}</span>
 					{/present}
 				</div>
 			</div>
