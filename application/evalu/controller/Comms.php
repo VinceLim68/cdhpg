@@ -1610,15 +1610,15 @@ class Comms extends Common {
         if(isset($data['iscover'])){
             //如果要覆盖，使用replace
             $sql = "REPLACE INTO `commaddress`
-                (`comm_id` , `city` , `region` , `road` , `doorplate` , `type` ,
+                (`comm_id`  , `comm_name` , `city` , `region` , `road` , `doorplate` , `type` ,
                 `buildYear` , `floors` , `elevator` , `structure`)
-                VALUES (?,?,?,?,?,?,?,?,?,?) ";
+                VALUES (?,?,?,?,?,?,?,?,?,?,?) ";
         }else{
             //如果不需要覆盖，使用insert ignore
             $sql = "INSERT IGNORE INTO `commaddress`
-                (`comm_id` , `city` , `region` , `road` , `doorplate` , `type` ,
+                (`comm_id` , `comm_name` , `city` , `region` , `road` , `doorplate` , `type` ,
                 `buildYear` , `floors` , `elevator` , `structure`)
-                VALUES (?,?,?,?,?,?,?,?,?,?) ";
+                VALUES (?,?,?,?,?,?,?,?,?,?,?) ";
         }
 //         dump($data);
 //         halt(date('Y-m-d',strtotime($data['buildYear'])));
@@ -1635,15 +1635,13 @@ class Comms extends Common {
             if($data['doortype'] =='单数' and $i%2==0){
                 continue;
             }
-            if(Db::execute($sql,[$data['comm_id'],$data['city'],$data['region'],
+            if(Db::execute($sql,[$data['comm_id'],$data['comm_name'],$data['city'],$data['region'],
                 $data['road'],$data['doorplate_prefix'].$i.'号'.$data['doorplate3'],$data['type'],
                 date('Y-m-d',strtotime($data['buildYear'])),$data['floors'],$data['elevator'],$data['structure']
             ])){
                 $insert_nums += 1;
             }
-            
         }
-//         halt($insert_nums);
         return $insert_nums;
 
     }
