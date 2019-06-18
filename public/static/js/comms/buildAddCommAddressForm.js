@@ -144,7 +144,7 @@ function buildAddCommAddressForm(res){
 	
 	
 	jsonstring += '<div class="row">';
-	jsonstring += '<div style="margin-top: 4px;" class="col-md-2 col-xs-3 ">';
+	jsonstring += '<div class="col-md-2 col-xs-3 ">';
 	jsonstring += '<div style="float: right;">楼牌：</div>';
 	jsonstring += '</div>';
 	jsonstring += '<div class="col-md-5 col-xs-9">';
