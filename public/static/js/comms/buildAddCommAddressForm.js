@@ -171,7 +171,7 @@ function buildCommAddressList(res){
 	var thislength = 0
     html += '<thead>';
     html += '<tr class="info">';
-    //html += '<th>#</th>';
+    html += '<th>小区</th>';
     html += '<th>路</th>';
     html += '<th>门牌</th>';
     html += '<th>建成</th>';
@@ -186,6 +186,7 @@ function buildCommAddressList(res){
     	if(res[item].road != undefined){
     		html += '<tr>';
     		//html += '<th scope="row">1</th>';
+    		html += '<td>' + res[item].comm_name + '</td>';
     		html += '<td>' + res[item].road + '</td>';
     		html += '<td>' + res[item].doorplate + '</td>';
     		html += '<td>' + res[item].buildYear + '</td>';
