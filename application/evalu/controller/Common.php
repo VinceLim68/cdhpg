@@ -77,7 +77,9 @@ class Common extends Controller
  		if($isPhone=='非手机'){
  		    //只有经过授权才能使用桌面系统
     		if(!$auth->check('onDesktop', session('user.user_id'))){
-    		    halt(session('user.user_id'));
+    		    //如果没有权限删除session,否则会死循环，无法登录别的帐号
+    		    Session::delete('user.user_id');
+    		    Session::delete('user.user_name');
     		    $this->error('程序出错了！！！如需要合作开发或者业务联系，请找18006006153林先生！！');
     		}
 		} 
