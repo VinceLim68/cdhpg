@@ -89,9 +89,9 @@ class Rules extends Common {
 	        }
 	        $data=array_filter($data);
 	        // 如果修改密码则md5
-	        if (!empty($data['pass'])) {
-	            $data['pass']=md5($data['password']);
-	        }
+// 	        if (!empty($data['pass'])) {
+// 	            $data['pass']=md5($data['pass']);
+// 	        }
 	        $U = new UserModel();
 	        $result = $U->allowField(true)->save($data,['user_id'=>$uid]);
 	        if($result){
