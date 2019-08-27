@@ -110,7 +110,7 @@ class Common extends Controller
     		        }
     		    }
     		    
-    		    
+    		    halt('111');
     		    
     		    
     		    $this->error('程序出错了！！！如需要合作开发或者业务联系，请找18006006153林先生！！');
