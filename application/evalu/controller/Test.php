@@ -671,4 +671,10 @@ move(ROOT_PATH . 'public' . DS . 'layout', '');
     {
         $this->fetch();
     }
+
+    //测试跳转
+    public function redirct(){
+        $this->error('程序出错了！！！','evalu/login/login');
+        
+    }
 }

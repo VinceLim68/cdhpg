@@ -80,11 +80,11 @@ class Common extends Controller
     		    //如果没有权限删除session,否则会死循环，无法登录别的帐号
     		    Session::delete('user.user_id');
     		    Session::delete('user.user_name');
-    		    $this->error('程序出错了！！！如需要合作开发或者业务联系，请找18006006153林先生！！');
+    		    $this->error('程序出错了！！！如需要合作开发或者业务联系，请找18006006153林先生！！','evalu/login/login');
     		}
 		} 
  		if(!$auth->check($act,session('user.user_id'))){
-		    $this->error(session('user.user_name').':'.$act.'你没有权限访问');
+		    $this->error(session('user.user_name').':'.$act.'你没有权限访问','evalu/login/login');
 		} 
 	}
 

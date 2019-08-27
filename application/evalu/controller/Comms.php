@@ -422,7 +422,7 @@ class Comms extends Common {
     	    ->join('comm c','c.comm_id = a.comm_id')
     	    ->where('a.comm_id',$data['community_id'])
     	    ->field('a.comm_id,city,a.region,road,doorplate,type,
-                        buildYear,floors,elevator,structure,c.comm_name,block,
+                        buildYear,floors,elevator,structure,a.comm_name,block,
                         keywords')
             ->order(['road','doorplate'])
             ->select();

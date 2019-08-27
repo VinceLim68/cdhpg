@@ -15,13 +15,18 @@
     			type:'POST',
     			data:$('#addCommAddressForm').serialize(),
     			success: function(msg){
-    				if(isNaN(msg)){
+/*     				if(isNaN(msg)){
     					alert(msg);
     				}else if(msg == 0){
     					alert('记录未增加成功');
     				}else{
     					msg = msg + ' ';
     					alert('记录增加成功 ' + msg + '个');
+    				} */
+    				if(msg>=1){
+    					alert('记录增加成功'+msg+'个');
+    				}else{
+    					alert('记录未增加成功');
     				}
     				window.location.reload();
     			},	
