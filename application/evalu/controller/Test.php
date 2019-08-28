@@ -677,4 +677,21 @@ move(ROOT_PATH . 'public' . DS . 'layout', '');
         $this->error('程序出错了！！！','evalu/login/login');
         
     }
+
+    //测试子查询
+    public function childsql(){
+        $road = '日圆三里';
+        $res = Db::table('comm')
+            ->where('comm_id','IN',function($query) use($road){
+                $query
+                ->table('commaddress')
+                ->where('road',$road)
+                ->where('comm_id','<>','')
+                ->group('comm_id')
+                ->field('comm_id');
+        })
+        ->select();
+        dump($res);
+    }
+
 }

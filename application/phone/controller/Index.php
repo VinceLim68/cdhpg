@@ -152,22 +152,34 @@ class Index extends Common {
 //              返回$pickitem数组，每个元素中包含comm_id,comm_name,pri_level,keywords
             $commnames = MatchLogic::matchSearch($input['comm']);
             if(!$commnames){
-                //如果还是没有查到，记录到miss_comm表中去
-                try{
-                    $errorcomm = ErrorCommModel::create([
-                        'memo'     =>  '没有小区名',
-                        'user_id'       =>  session('user.user_id'),
-                        'user_name'     =>  session('user.user_name'),
-                        'type'          =>  1,
-                        'comm_name'     =>  $input['comm'],
-                    ]);
-                }catch(\Exception $e){
-                    $return['status'] = 'macth no comm and insert error record failed';
-                    $return['message'] = '没有查询到叫"'.$input['comm'].'"的地方,追加错误信息时未成功';
-                    return $return;
+//                 如果没有查到，转成按路名来查询（不同的城市怎么办？）
+                $commArr = MatchLogic::matchIDByRoad($input['comm']);
+                if(!$commArr){
+                    //如果还是没有查到，记录到miss_comm表中去
+                    try{
+                        $errorcomm = ErrorCommModel::create([
+                            'memo'     =>  '没有小区名',
+                            'user_id'       =>  session('user.user_id'),
+                            'user_name'     =>  session('user.user_name'),
+                            'type'          =>  1,
+                            'comm_name'     =>  $input['comm'],
+                        ]);
+                    }catch(\Exception $e){
+                        $return['status'] = 'macth no comm and insert error record failed';
+                        $return['message'] = '没有查询到叫"'.$input['comm'].'"的地方,追加错误信息时未成功';
+                        return $return;
+                    }
+                    $return['status'] = 'macth no comm';
+                    $return['message'] = '没有查询到叫"'.$input['comm'].'"的地方';
+                }elseif(count($commArr)>1){
+                    //用路名匹配到多个小区
+                    $return['status'] = 'macth many comms';
+                    $return['commArr'] = $commArr;
+                }else{
+                    //用路名只匹配到一个小区名称
+                    $return['status'] = 'macth one comm';
+                    $return['commnames'] = $commArr;
                 }
-                $return['status'] = 'macth no comm';
-                $return['message'] = '没有查询到叫"'.$input['comm'].'"的地方';
             }elseif(count($commnames)>1){
                 //如果匹配到多个小区名称，列表展示，让用户手动挑选后，再转入子功能分类进行选择
                 $commArr = [];      //取出完整的数据

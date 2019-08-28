@@ -153,6 +153,21 @@ class MatchLogic {
         return $res;
 	}
 	
+// 	通过路名来查询小区
+	public static function matchIDByRoad($road){
+	    $res = Db::table('comm')
+	    ->where('comm_id','IN',function($query) use($road){
+	        $query
+	        ->table('commaddress')
+	        ->where('road',$road)
+	        ->where('comm_id','<>','')
+	        ->group('comm_id')
+	        ->field('comm_id');
+	    })
+	    ->select();
+	    return $res;
+	}
+	
 	static private function mul_handle($ids){
 		//当匹配到多个记录时进行判断
 		//处理的原则是以起始字段在前的为准，如果起始字段相同，则以字符串长的为准， 如果起始与字串长度都一样，则人工判断
