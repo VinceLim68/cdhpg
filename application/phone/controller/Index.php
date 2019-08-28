@@ -179,6 +179,7 @@ class Index extends Common {
                     //用路名只匹配到一个小区名称
                     $return['status'] = 'macth one comm';
                     $return['commnames'] = $commArr;
+                    session('user.comm',$commArr[0]['comm_name']);
                 }
             }elseif(count($commnames)>1){
                 //如果匹配到多个小区名称，列表展示，让用户手动挑选后，再转入子功能分类进行选择
@@ -192,6 +193,7 @@ class Index extends Common {
                 //只匹配到一个小区名称
                 $return['status'] = 'macth one comm';
                 $return['commnames'] = $commnames;
+                session('user.comm',$commnames[0]['comm_name']);
             }
         }
         
